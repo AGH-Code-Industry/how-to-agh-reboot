@@ -10,7 +10,7 @@
     "lint:fix": "eslint --fix",
     "prepare": "husky",
     "push": "prisma db push",
-    "migrate": "prisma migrate dev",
+    "reset": "prisma migrate reset",
     "migrate:new": "prisma migrate dev --name",
     "seed": "prisma db seed",
     "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('pnpm') === -1) throw new Error('You must use PNPM to install')\""

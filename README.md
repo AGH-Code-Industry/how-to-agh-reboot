@@ -17,7 +17,7 @@ Run `pnpm run dev` to start a developer server at http://localhost:3000
 
 ## Working with Database
 
-Project is using an SQLite database by default, which will be located in the root of the project. If the `dev.db` file is not present or you suspect it's "behind" the current version of the database schema, it is advised to run `pnpm run migrate` to apply the migrations and generate files for the client module.
+Project is using an SQLite database by default, which will be located in the root of the project. If the `dev.db` file is not present or you suspect it's "behind" the current version of the database schema, it is advised to run `pnpm run reset` to apply the migrations and generate files for the client module.
 
 ### Modifying the schema
 
