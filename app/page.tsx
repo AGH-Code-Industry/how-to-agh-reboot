@@ -1,16 +1,5 @@
-import ExampleClientComponent from '@/components/example/ExampleClientComponent';
-import ExampleServerComponent from '@/components/example/ExampleServerComponent';
-import ExampleUsers from '@/components/example/ExampleUsers';
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-  return (
-    <div>
-      <h3>Example page</h3>
-
-      <ExampleClientComponent />
-      <ExampleServerComponent />
-
-      <ExampleUsers />
-    </div>
-  );
+  redirect('/map');
 }
