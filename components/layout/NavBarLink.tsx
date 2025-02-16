@@ -1,18 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavBarLinkProps = {
   text: string;
   url: string;
-  icon: LucideIcon;
+  children: ReactNode;
 };
 
-export default function NavBarLink({ text, url, icon: Icon }: NavBarLinkProps) {
+export default function NavBarLink({ text, url, children }: NavBarLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === url;
 
@@ -28,7 +27,7 @@ export default function NavBarLink({ text, url, icon: Icon }: NavBarLinkProps) {
       )}
       prefetch={true}
     >
-      <Icon className="size-6" />
+      {children}
       {text}
     </Link>
   );
