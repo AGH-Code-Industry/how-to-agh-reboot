@@ -1,8 +1,15 @@
 'use client';
 import { GeolocateControl, Map as MapLibre, Marker } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { useRef } from 'react';
 
 export default function Map() {
+  const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
+
+  const handleMapLoad = () => {
+    geoControlRef.current?.trigger();
+  };
+
   return (
     <MapLibre
       // Komponent nie przyjmuje className
@@ -19,13 +26,14 @@ export default function Map() {
       pitchWithRotate={false}
       // Styl mapy można edytować np przy użyciu tego https://maputnik.github.io/
       mapStyle={'/map-tiles.json'}
+      onLoad={handleMapLoad}
     >
       <GeolocateControl
         positionOptions={{
           enableHighAccuracy: true,
         }}
-        // Z tym nie działa
-        // trackUserLocation={true}
+        trackUserLocation={true}
+        ref={geoControlRef}
       />
       {/* Znaczniki testowe więc style inline */}
       <Marker longitude={19.904866064457725} latitude={50.06811457654741} color="red" />
