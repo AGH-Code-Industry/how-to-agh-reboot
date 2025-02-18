@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     // Disable static rendered symbol that covers map button
     appIsrStatus: false,
   },
+  reactStrictMode: false,
 };
 
 export default nextConfig;
