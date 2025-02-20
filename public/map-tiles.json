@@ -2786,7 +2786,7 @@
       "id": "agh_layer",
       "type": "fill",
       "source": "agh",
-      "paint": {"fill-color": "rgba(0, 130, 0, 0.4)"}
+      "paint": {"fill-color": "rgba(0, 130, 0, 0.3)"}
     }
   ],
   "id": "k1kr4dtwk"
