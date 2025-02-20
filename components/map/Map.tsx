@@ -13,7 +13,7 @@ export default function Map() {
         longitude: 19.908207508138602,
         latitude: 50.06807388275794,
         zoom: 17,
-        pitch: 60,
+        //pitch: 60,
       }}
       // Zablokowałem pochylanie góra dół przy obracaniu, do przemyślenia czy chcemy to włączone
       pitchWithRotate={false}
