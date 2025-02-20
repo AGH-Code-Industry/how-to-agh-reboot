@@ -13,11 +13,11 @@ const tasks: TaskProps[] = [
 
 export default function Tasks() {
   return (
-    <div className="p-6 mx-auto">
-      <h1 className="text-center text-2xl font-bold mb-6">Zadania</h1>
+    <div className="mx-auto p-6">
+      <h1 className="mb-6 text-center text-2xl font-bold">Zadania</h1>
 
       <div>
-        <h2 className="text-lg font-semibold mb-2">Aktywne zadania</h2>
+        <h2 className="mb-2 text-lg font-semibold">Aktywne zadania</h2>
         <hr className="mb-4 border-muted" />
         <div className="flex flex-col gap-4">
           {tasks.map((task) => (
