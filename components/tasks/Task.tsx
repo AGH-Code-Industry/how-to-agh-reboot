@@ -1,10 +1,10 @@
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
-export interface TaskProps {
+export type TaskProps = {
   title: string;
   description: string;
-}
+};
 
 export default function Task({ title, description }: TaskProps) {
   return (
