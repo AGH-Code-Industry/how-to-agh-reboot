@@ -1,32 +1,34 @@
 import { Progress } from '@/components/ui/progress';
-import './Reward.css'
+import { cn } from '@/lib/utils';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
-interface RewardProps {
+type RewardProps = {
   reward: string;
   requirement: string;
   completion: number;
-}
+};
 
-function Reward({ reward, requirement, completion }: RewardProps) {
-
-  const displayInfo = () => {
-    if (completion < 1) {
-      return <>{requirement}</>
-    }
-    return <i>Odbiór nagrody w namiocie wrss</i>
-  }
-
+export default function Reward({ reward, requirement, completion }: RewardProps) {
   return (
     <>
-      <div className="rewardPanelSingle">
-        <b>{reward}</b>
-        {displayInfo()}
-        <div style={{ width: '95%' }}>
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>{reward}</CardTitle>
+          <CardDescription>
+            {completion < 1 ? requirement : <i>Odbiór nagrody w namiocie wrss</i>}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <Progress value={completion * 100}></Progress>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
-  )
+  );
 }
-
-export default Reward
