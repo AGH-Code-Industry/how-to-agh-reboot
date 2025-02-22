@@ -33,7 +33,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <TRPCProvider>
-            <main className="grow">{children}</main>
+            <main className="grow overflow-y-auto">{children}</main>
             <NavBar />
           </TRPCProvider>
         </ThemeProvider>
