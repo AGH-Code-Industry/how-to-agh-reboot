@@ -1,4 +1,4 @@
-import { PageLayout, PageTitle } from '@/components/layout/PageLayout';
+import { PageLayout, PageSectionTitle, PageTitle } from '@/components/layout/PageLayout';
 import Task, { TaskProps } from '@/components/tasks/Task';
 
 const tasks: TaskProps[] = [
@@ -28,9 +28,7 @@ export default function Tasks() {
   return (
     <PageLayout>
       <PageTitle>Zadania</PageTitle>
-
-      <h2 className="mb-2 text-lg font-semibold">Aktywne zadania</h2>
-      <hr className="mb-4 border-muted" />
+      <PageSectionTitle>Aktywne zadania</PageSectionTitle>
       <div className="flex flex-col gap-4">
         {tasks.map((task) => (
           <Task key={task.title} {...task} />
