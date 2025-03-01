@@ -3,7 +3,7 @@ CREATE TABLE "Event" (
     "event_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "should_be_displayed" BOOLEAN NOT NULL,
+    "should_be_displayed" BOOLEAN NOT NULL DEFAULT true,
     "location_longitude" REAL NOT NULL,
     "location_latitude" REAL NOT NULL,
     "event_type_id" INTEGER NOT NULL,

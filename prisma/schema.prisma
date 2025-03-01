@@ -11,7 +11,7 @@ model Event {
   event_id               Int                 @id @default(autoincrement())
   name                   String
   description            String?
-  should_be_displayed    Boolean
+  should_be_displayed    Boolean             @default(true)
   location_longitude     Float
   location_latitude      Float
   event_type_id          Int
