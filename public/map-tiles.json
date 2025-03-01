@@ -2783,10 +2783,15 @@
       }
     },
     {
-      "id": "agh_layer",
-      "type": "fill",
+      "id": "agh layer",
+      "type": "fill-extrusion",
       "source": "agh",
-      "paint": {"fill-color": "rgba(0, 130, 0, 0.3)"}
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "fill-extrusion-color": "rgba(0, 130, 0, 0.9)",
+        "fill-extrusion-translate": [0, 0],
+        "fill-extrusion-opacity": 0.5
+      }
     }
   ],
   "id": "k1kr4dtwk"
