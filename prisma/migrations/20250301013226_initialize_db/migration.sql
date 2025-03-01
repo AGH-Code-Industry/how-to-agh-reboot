@@ -1,22 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Post` table. If the table is not empty, all the data it contains will be lost.
-  - The primary key for the `User` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `email` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `id` on the `User` table. All the data in the column will be lost.
-  - Added the required column `password` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `surname` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updated_at` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `user_id` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Made the column `name` on table `User` required. This step will fail if there are existing NULL values in that column.
-
-*/
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "Post";
-PRAGMA foreign_keys=on;
-
 -- CreateTable
 CREATE TABLE "Event" (
     "event_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -162,6 +143,16 @@ CREATE TABLE "EventOccurrence" (
 );
 
 -- CreateTable
+CREATE TABLE "User" (
+    "user_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "surname" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATETIME NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "EventVisit" (
     "event_visit_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "time" DATETIME NOT NULL,
@@ -235,23 +226,6 @@ CREATE TABLE "QuizQuestionAnswer" (
     CONSTRAINT "QuizQuestionAnswer_quiz_question_id_fkey" FOREIGN KEY ("quiz_question_id") REFERENCES "QuizQuestion" ("quiz_question_id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "QuizQuestionAnswer_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User" ("user_id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-
--- RedefineTables
-PRAGMA defer_foreign_keys=ON;
-PRAGMA foreign_keys=OFF;
-CREATE TABLE "new_User" (
-    "user_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "name" TEXT NOT NULL,
-    "surname" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" DATETIME NOT NULL
-);
-INSERT INTO "new_User" ("name") SELECT "name" FROM "User";
-DROP TABLE "User";
-ALTER TABLE "new_User" RENAME TO "User";
-PRAGMA foreign_keys=ON;
-PRAGMA defer_foreign_keys=OFF;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "EventTheme_theme_id_event_id_key" ON "EventTheme"("theme_id", "event_id");
