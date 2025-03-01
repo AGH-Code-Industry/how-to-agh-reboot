@@ -452,10 +452,10 @@ async function seedEventOccurrences(tours: any[], occurrences: any[], events: an
 async function seedUsers() {
   // Note: In a real application, these passwords should be hashed
   const users = [
-    { name: 'Jan', surname: 'Kowalski', password: 'hashedpassword1' },
-    { name: 'Anna', surname: 'Nowak', password: 'hashedpassword2' },
-    { name: 'Piotr', surname: 'Wiśniewski', password: 'hashedpassword3' },
-    { name: 'Marta', surname: 'Dąbrowska', password: 'hashedpassword4' }
+    { first_name: 'Jan', last_name: 'Kowalski', password: 'hashedpassword1' },
+    { first_name: 'Anna', last_name: 'Nowak', password: 'hashedpassword2' },
+    { first_name: 'Piotr', last_name: 'Wiśniewski', password: 'hashedpassword3' },
+    { first_name: 'Marta', last_name: 'Dąbrowska', password: 'hashedpassword4' }
   ];
 
   const createdUsers = [];

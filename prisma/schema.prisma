@@ -160,8 +160,8 @@ model EventOccurrence {
 
 model User {
   user_id               Int                  @id @default(autoincrement())
-  name                  String
-  surname               String
+  first_name            String
+  last_name             String
   password              String
   event_visits          EventVisit[]
   quiz_question_answers QuizQuestionAnswer[]
