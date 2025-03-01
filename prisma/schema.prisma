@@ -83,7 +83,7 @@ model EventTheme {
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
-  @@unique([theme_id, event_id]) // Composite unique constraint
+  @@unique([theme_id, event_id])
 }
 
 model Theme {
@@ -162,7 +162,7 @@ model User {
   user_id               Int                  @id @default(autoincrement())
   name                  String
   surname               String
-  password              String // Powinno przechowywać hash hasła, a nie samo hasło!
+  password              String
   event_visits          EventVisit[]
   quiz_question_answers QuizQuestionAnswer[]
   created_at            DateTime             @default(now())
@@ -179,7 +179,7 @@ model EventVisit {
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
-  @@unique([event_id, user_id]) // Composite unique constraint
+  @@unique([event_id, user_id])
 }
 
 model QuestionType {
