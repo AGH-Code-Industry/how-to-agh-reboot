@@ -12,7 +12,7 @@ export default function AccountSettings() {
       <PageSectionTitle>Konto</PageSectionTitle>
       {loggedIn ? (
         <div className="grid grid-cols-2 gap-4">
-          <span className="text-muted-foreground text-center text-sm col-span-full">
+          <span className="col-span-full text-center text-sm text-muted-foreground">
             Zalogowano jako Imię Nazwisko
           </span>
           <Button disabled>Reset hasła</Button>
@@ -20,7 +20,7 @@ export default function AccountSettings() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          <span className="text-muted-foreground text-center text-sm col-span-full">
+          <span className="col-span-full text-center text-sm text-muted-foreground">
             Nie zalogowano. Niektóre funkcje mogą nie być dostępne.
           </span>
           <Button disabled>Utwórz konto</Button>
