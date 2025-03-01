@@ -21,7 +21,7 @@ export default function AccountSettings() {
       ) : (
         <div className="grid grid-cols-2 gap-4">
           <span className="text-muted-foreground text-center text-sm col-span-full">
-            Nie zalogowano. Niektóre funkcje mogą być niedostępne.
+            Nie zalogowano. Niektóre funkcje mogą nie być dostępne.
           </span>
           <Button disabled>Utwórz konto</Button>
           <Button onClick={() => setLoggedIn(true)}>Zaloguj</Button>
