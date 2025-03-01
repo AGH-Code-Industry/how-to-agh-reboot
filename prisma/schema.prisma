@@ -7,18 +7,243 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+model Event {
+  event_id               Int                 @id @default(autoincrement())
+  name                   String
+  description            String?
+  should_be_displayed    Boolean
+  location_longitude     Float
+  location_latitude      Float
+  event_type_id          Int
+  event_type             EventType           @relation(fields: [event_type_id], references: [event_type_id])
+  building_id            Int
+  building               Building            @relation(fields: [building_id], references: [building_id])
+  qr_id                  Int
+  qr                     QR                  @relation(fields: [qr_id], references: [qr_id])
+  owner_id               Int
+  owner                  Owner               @relation(fields: [owner_id], references: [owner_id])
+  event_themes           EventTheme[]
+  event_field_of_studies EventFieldOfStudy[]
+  event_occurrences      EventOccurrence[]
+  event_visits           EventVisit[]
+  created_at             DateTime            @default(now())
+  updated_at             DateTime            @updatedAt
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String?
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model EventType {
+  event_type_id Int      @id @default(autoincrement())
+  name          String
+  events        Event[]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
+model BuildingEntry {
+  building_entry_id Int      @id @default(autoincrement())
+  map_longitude     Float
+  map_latitude      Float
+  building_id       Int
+  building          Building @relation(fields: [building_id], references: [building_id])
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+}
+
+model Building {
+  building_id      Int             @id @default(autoincrement())
+  name             String
+  events           Event[]
+  building_entries BuildingEntry[]
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+}
+
+model QR {
+  qr_id      Int      @id @default(autoincrement())
+  code       String
+  events     Event[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Owner {
+  owner_id   Int      @id @default(autoincrement())
+  name       String
+  events     Event[]
+  tours      Tour[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model EventTheme {
+  event_theme_id Int      @id @default(autoincrement())
+  theme_id       Int
+  theme          Theme    @relation(fields: [theme_id], references: [theme_id])
+  event_id       Int
+  event          Event    @relation(fields: [event_id], references: [event_id])
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@unique([theme_id, event_id]) // Composite unique constraint
+}
+
+model Theme {
+  theme_id     Int          @id @default(autoincrement())
+  name         String
+  event_themes EventTheme[]
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+}
+
+model EventFieldOfStudy {
+  event_field_of_study_id Int          @id @default(autoincrement())
+  field_of_study_id       Int
+  field_of_study          FieldOfStudy @relation(fields: [field_of_study_id], references: [field_of_study_id])
+  event_id                Int
+  event                   Event        @relation(fields: [event_id], references: [event_id])
+  created_at              DateTime     @default(now())
+  updated_at              DateTime     @updatedAt
+
+  @@unique([field_of_study_id, event_id])
+}
+
+model FieldOfStudy {
+  field_of_study_id      Int                 @id @default(autoincrement())
+  name                   String
+  faculty_id             Int
+  faculty                Faculty             @relation(fields: [faculty_id], references: [faculty_id])
+  event_field_of_studies EventFieldOfStudy[]
+  created_at             DateTime            @default(now())
+  updated_at             DateTime            @updatedAt
+}
+
+model Faculty {
+  faculty_id       Int            @id @default(autoincrement())
+  name             String
+  field_of_studies FieldOfStudy[]
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+}
+
+model Tour {
+  tour_id           Int               @id @default(autoincrement())
+  name              String
+  description       String?
+  owner_id          Int
+  owner             Owner             @relation(fields: [owner_id], references: [owner_id])
+  event_occurrences EventOccurrence[]
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+}
+
+model Occurrence {
+  occurrence_id     Int               @id @default(autoincrement())
+  start_time        DateTime
+  end_time          DateTime
+  event_occurrences EventOccurrence[]
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+}
+
+model EventOccurrence {
+  event_occurrence_id Int        @id @default(autoincrement())
+  tour_id             Int
+  tour                Tour       @relation(fields: [tour_id], references: [tour_id])
+  occurrence_id       Int
+  occurrence          Occurrence @relation(fields: [occurrence_id], references: [occurrence_id])
+  event_id            Int
+  event               Event      @relation(fields: [event_id], references: [event_id])
+  created_at          DateTime   @default(now())
+  updated_at          DateTime   @updatedAt
+
+  @@unique([tour_id, occurrence_id, event_id])
+}
+
+model User {
+  user_id               Int                  @id @default(autoincrement())
+  name                  String
+  surname               String
+  password              String // Powinno przechowywać hash hasła, a nie samo hasło!
+  event_visits          EventVisit[]
+  quiz_question_answers QuizQuestionAnswer[]
+  created_at            DateTime             @default(now())
+  updated_at            DateTime             @updatedAt
+}
+
+model EventVisit {
+  event_visit_id Int      @id @default(autoincrement())
+  time           DateTime
+  event_id       Int
+  event          Event    @relation(fields: [event_id], references: [event_id])
+  user_id        Int
+  user           User     @relation(fields: [user_id], references: [user_id])
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@unique([event_id, user_id]) // Composite unique constraint
+}
+
+model QuestionType {
+  question_type_id Int        @id @default(autoincrement())
+  name             String
+  questions        Question[]
+  created_at       DateTime   @default(now())
+  updated_at       DateTime   @updatedAt
+}
+
+model Question {
+  question_id      Int            @id @default(autoincrement())
+  time             DateTime?
+  title            String
+  description      String?
+  question_type_id Int
+  question_type    QuestionType   @relation(fields: [question_type_id], references: [question_type_id])
+  answers          Answer[]
+  quiz_questions   QuizQuestion[]
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+}
+
+model Answer {
+  answer_id   Int      @id @default(autoincrement())
+  text        String
+  is_correct  Boolean
+  question_id Int
+  question    Question @relation(fields: [question_id], references: [question_id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model Quiz {
+  quiz_id        Int            @id @default(autoincrement())
+  name           String
+  description    String?
+  quiz_questions QuizQuestion[]
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+}
+
+model QuizQuestion {
+  quiz_question_id      Int                  @id @default(autoincrement())
+  question_id           Int
+  question              Question             @relation(fields: [question_id], references: [question_id])
+  quiz_id               Int
+  quiz                  Quiz                 @relation(fields: [quiz_id], references: [quiz_id])
+  quiz_question_answers QuizQuestionAnswer[]
+  created_at            DateTime             @default(now())
+  updated_at            DateTime             @updatedAt
+
+  @@unique([question_id, quiz_id])
+}
+
+model QuizQuestionAnswer {
+  quiz_question_answer_id Int          @id @default(autoincrement())
+  correct_answer          Int
+  quiz_question_id        Int
+  quiz_question           QuizQuestion @relation(fields: [quiz_question_id], references: [quiz_question_id])
+  user_id                 Int
+  user                    User         @relation(fields: [user_id], references: [user_id])
+  created_at              DateTime     @default(now())
+  updated_at              DateTime     @updatedAt
+
+  @@unique([quiz_question_id, user_id])
 }
