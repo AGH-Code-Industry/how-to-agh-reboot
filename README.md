@@ -3,12 +3,13 @@
 ### Prerequisites
 1. Node JS 20, version 20.9.0 or later
 2. pnpm package manager ([installation guide](https://pnpm.io/installation))
+   1. For people of restiance `npm install -g pnpm@latest-10`
 
 ### Installing the dependencies
 Run `pnpm install` to install all the necessary dependencies for the project
 
 ### Setting up env vars
-Create a new file that is not tracked by git, `.env` in the root of the project. Make sure to populate it will all the required environmental variables (example of those with corresponding values can be seen in [`.env.example`](./.env.example)).
+Create a new file that is not tracked by git, `.env` in the root of the project. Make sure to populate it will all the required environmental variables (example of those with corresponding values can be seen in [`.env.example`](./.env.example)). (yes, you can just copy it)
 
 If you add a new env var to the application, please describe it in [`.env.example`](./.env.example) file as well
 
