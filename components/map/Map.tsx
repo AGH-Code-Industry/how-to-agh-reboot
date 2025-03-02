@@ -2,8 +2,14 @@
 import { GeolocateControl, Map as MapLibre, Marker } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRef } from 'react';
+import { AGHEvent } from '@/types/Map/AGHEvent';
+import AGHEvents from '@/components/map/AGHEvents';
 
-export default function Map() {
+type Props = {
+  eventList: AGHEvent[];
+};
+
+export default function Map(props: Props) {
   const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
 
   const handleMapLoad = () => {
@@ -35,9 +41,7 @@ export default function Map() {
         trackUserLocation={true}
         ref={geoControlRef}
       />
-      {/* Znaczniki testowe więc style inline */}
-      <Marker longitude={19.904866064457725} latitude={50.06811457654741} color="red" />
-      {/* Może być też zdjęcie jak poniżej */}
+      <AGHEvents eventList={props.eventList} />
       <Marker longitude={19.907866664457725} latitude={50.06811457654741}>
         <img
           style={{ width: '100%' }}
