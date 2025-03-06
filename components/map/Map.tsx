@@ -1,13 +1,51 @@
 'use client';
-import { GeolocateControl, Map as MapLibre, Marker } from 'react-map-gl/maplibre';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import { useRef } from 'react';
+import { GeolocateControl, Map as MapLibre, MapRef, Marker } from 'react-map-gl/maplibre';
 
-export default function Map() {
+import type { GeolocateResultEvent } from 'react-map-gl/maplibre';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { useRef, useState } from 'react';
+import type { Source } from 'maplibre-gl';
+import { polygon, point, booleanPointInPolygon } from '@turf/turf';
+
+interface MapProps {
+  onAGHLeaveOrEnter: (isOnAGH: boolean) => void;
+}
+
+export default function Map({ onAGHLeaveOrEnter }: MapProps) {
   const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
+  const mapRef = useRef<MapRef>(null);
+
+  const aghBoundsPolygonRef = useRef<ReturnType<typeof polygon>>(null);
+
+  const [isOnAGH, setIsOnAGH] = useState<boolean>();
 
   const handleMapLoad = () => {
+    // Centrowanie kamery na pozycji użytkownika przy załadowaniu mapy
     geoControlRef.current?.trigger();
+
+    // Stworzenie wielokąta wyznaczającego granice miasteczka
+    const aghSource: (Source & { _data: { geometry: { coordinates: number[][][] } } }) | undefined =
+      mapRef.current?.getSource('agh');
+
+    if (aghSource && aghSource._data.geometry.coordinates[0]) {
+      aghBoundsPolygonRef.current = polygon(aghSource._data.geometry.coordinates);
+    }
+  };
+
+  const handleGeolocate = (e: GeolocateResultEvent) => {
+    if (!aghBoundsPolygonRef.current) {
+      return;
+    }
+
+    // Sprawdzanie, czy pozycja użytkownika znajduje się w wielokącie opisującym miasteczko
+    const currentPosition = point([e.coords.longitude, e.coords.latitude]);
+
+    const isCurrentlyOnAGH = booleanPointInPolygon(currentPosition, aghBoundsPolygonRef.current);
+
+    if (isCurrentlyOnAGH !== isOnAGH) {
+      onAGHLeaveOrEnter(isCurrentlyOnAGH);
+      setIsOnAGH(isCurrentlyOnAGH);
+    }
   };
 
   return (
@@ -27,6 +65,7 @@ export default function Map() {
       // Styl mapy można edytować np przy użyciu tego https://maputnik.github.io/
       mapStyle={'/map-tiles.json'}
       onLoad={handleMapLoad}
+      ref={mapRef}
     >
       <GeolocateControl
         positionOptions={{
@@ -34,6 +73,7 @@ export default function Map() {
         }}
         trackUserLocation={true}
         ref={geoControlRef}
+        onGeolocate={handleGeolocate}
       />
       {/* Znaczniki testowe więc style inline */}
       <Marker longitude={19.904866064457725} latitude={50.06811457654741} color="red" />

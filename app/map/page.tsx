@@ -1,5 +1,9 @@
+'use client';
 import Map from '@/components/map/Map';
+import { useCallback } from 'react';
 
 export default function Page() {
-  return <Map />;
+  const onAGHLeave = useCallback((isOnAGH: boolean) => console.log(isOnAGH), []);
+
+  return <Map onAGHLeaveOrEnter={onAGHLeave} />;
 }
