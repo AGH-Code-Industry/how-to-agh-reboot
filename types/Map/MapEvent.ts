@@ -1,4 +1,4 @@
-export type AGHEvent = {
+export type MapEvent = {
   name: string;
   description: string;
   startTime: string;

@@ -1,12 +1,13 @@
-import { AGHEvent } from '@/types/Map/AGHEvent';
+import { MapEvent } from '@/types/Map/MapEvent';
 import { Marker } from 'react-map-gl/maplibre';
 import { LngLat, Offset, Popup as Popup2 } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-import './AGHEvents.css';
+import './MapEvents.css';
+import { renderToString } from 'react-dom/server';
 
 type Props = {
-  eventList: AGHEvent[];
+  eventList: MapEvent[];
 };
 
 const markerHeight = 50,
@@ -25,24 +26,32 @@ const popupOffsets = {
   right: [-markerRadius, (markerHeight - markerRadius) * -1],
 } satisfies Offset;
 
-function getHTML(event: AGHEvent) {
-  return `
-  <div>
-    <h1 class="text-lg text-center">${event.name}</h1>
-    <p class="mt-3"><b>Czas:</b> ${event.startTime} - ${event.endTime}</p>
-    <p><b>Typ:</b> ${event.type}</p>
-    <p><b>Temat:</b> ${event.topic}</p>
-    <p><b>Wydział:</b> ${event.faculty}</p>
-    <p class="mt-3">${event.description}</p>
-  </div>
-`;
+function getHTML(event: MapEvent) {
+  return renderToString(
+    <div>
+      <h1 className="text-center text-lg">{event.name}</h1>
+      <p className="mt-3">
+        <b>Czas:</b> {event.startTime} - {event.endTime}
+      </p>
+      <p>
+        <b>Typ:</b> {event.type}
+      </p>
+      <p>
+        <b>Temat:</b> {event.topic}
+      </p>
+      <p>
+        <b>Wydział:</b> {event.faculty}
+      </p>
+      <p className="mt-3">{event.description}</p>
+    </div>
+  );
 }
 
 /**
  * TODO: W przyszłości może zmienić na pobieranie z bazy
  */
 
-export default function AGHEvents(props: Props) {
+export default function MapEvents(props: Props) {
   return (
     <>
       {props.eventList.map((event) => {
