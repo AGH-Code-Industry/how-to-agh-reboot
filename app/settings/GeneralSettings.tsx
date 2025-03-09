@@ -1,7 +1,7 @@
 import { ThemeToggleButton } from '@/app/settings/ChangeTheme';
-import { Button } from '@/components/ui/button';
 import { PageSectionTitle } from '@/components/layout/PageLayout';
 import AboutApplicationButton from '@/components/settings/AboutApplicationButton';
+import AboutUsButton from '@/components/settings/AboutUsButton';
 
 export default function GeneralSettings() {
   return (
@@ -11,7 +11,7 @@ export default function GeneralSettings() {
         <ThemeToggleButton />
         <div className="grid grid-cols-2 gap-4">
           <AboutApplicationButton />
-          <Button disabled>Ponów samouczek</Button>
+          <AboutUsButton />
         </div>
       </div>
     </>

@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import { welcomeSteps } from '@/data/welcomeStepsData';
 import { WelcomeStep } from '@/data/welcomeStepsData';
 import ImageWithPlaceholder from './ImageWithPlaceholder';
+import ScreenOverlay from './ScreenOverlay';
 
 type WelcomeOverlayProps = {
   forceOpen?: boolean;
@@ -16,7 +17,7 @@ type WelcomeOverlayProps = {
 
 export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOverlayProps) {
   const [visible, setVisible] = useState(false);
-  const [currStepId, setCurrStepId] = useState(welcomeSteps[0]?.id ?? 1); // Start od pierwszego ID
+  const [currStepId, setCurrStepId] = useState(welcomeSteps[0]?.id ?? 1);
 
   useEffect(() => {
     if (forceOpen) {
@@ -41,7 +42,7 @@ export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOv
   const prevStep = welcomeSteps[currentIndex - 1];
 
   return (
-    <div className="fixed inset-0 z-50 mb-16 flex items-start justify-center bg-background/50 p-4 backdrop-blur-md">
+    <ScreenOverlay>
       <Card className="relative flex size-full flex-col gap-y-4 p-6">
         <CardHeader className="m-0 p-0">
           <div className="flex justify-end">
@@ -53,7 +54,7 @@ export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOv
         <CardContent className="flex grow flex-col items-center justify-center gap-y-12 p-1 text-center">
           {currentStep && (
             <>
-              <h2 className="mb-2 text-2xl font-bold">{currentStep.title}</h2>
+              <h2 className="text-2xl font-bold">{currentStep.title}</h2>
               {currentStep?.image && (
                 <ImageWithPlaceholder
                   src={currentStep.image.src}
@@ -96,6 +97,6 @@ export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOv
           </div>
         </CardFooter>
       </Card>
-    </div>
+    </ScreenOverlay>
   );
 }
