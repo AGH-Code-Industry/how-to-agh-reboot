@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -21,7 +22,7 @@ async function main(): Promise<void> {
 
     // Seed entities with dependencies
     const fieldOfStudies = await seedFieldOfStudies(faculties);
-    const buildingEntries = await seedBuildingEntries(buildings);
+    await seedBuildingEntries(buildings);
     const occurrences = await seedOccurrences();
 
     // Seed events
@@ -43,7 +44,7 @@ async function main(): Promise<void> {
 
     // Seed quizzes and questions
     const questions = await seedQuestions(questionTypes);
-    const answers = await seedAnswers(questions);
+    await seedAnswers(questions);
     const quizzes = await seedQuizzes();
     const quizQuestions = await seedQuizQuestions(quizzes, questions);
 
@@ -61,14 +62,17 @@ async function main(): Promise<void> {
  * Clear all data from the database
  */
 async function clearDatabase(): Promise<void> {
-  const tablenames = await prisma.$queryRaw<
-    Array<{ name: string }>
-  >`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_prisma_migrations'`;
+  const tablenames = await prisma.$queryRaw<Array<{ name: string }>>`SELECT name
+                                                                     FROM sqlite_master
+                                                                     WHERE type = 'table'
+                                                                       AND name NOT LIKE 'sqlite_%'
+                                                                       AND name NOT LIKE '_prisma_migrations'`;
 
   for (const { name } of tablenames) {
     try {
-      await prisma.$executeRawUnsafe(`DELETE FROM "${name}"`);
-    } catch (error) {
+      await prisma.$executeRawUnsafe(`DELETE
+                                      FROM "${name}"`);
+    } catch {
       console.log(`Failed to clear table ${name}`);
     }
   }
