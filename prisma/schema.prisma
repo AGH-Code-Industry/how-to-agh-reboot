@@ -167,6 +167,7 @@ model User {
   quiz_question_answers QuizQuestionAnswer[]
   created_at            DateTime             @default(now())
   updated_at            DateTime             @updatedAt
+  QuizResult            QuizResult[]
 }
 
 model EventVisit {
@@ -220,6 +221,7 @@ model Quiz {
   quiz_questions QuizQuestion[]
   created_at     DateTime       @default(now())
   updated_at     DateTime       @updatedAt
+  QuizResult     QuizResult[]
 }
 
 model QuizQuestion {
@@ -246,4 +248,17 @@ model QuizQuestionAnswer {
   updated_at              DateTime     @updatedAt
 
   @@unique([quiz_question_id, user_id])
+}
+
+model QuizResult {
+  quiz_result_id Int      @id @default(autoincrement())
+  quiz_id        Int
+  user_id        Int
+  score          Int
+  created_at     DateTime @default(now())
+
+  quiz Quiz @relation(fields: [quiz_id], references: [quiz_id])
+  user User @relation(fields: [user_id], references: [user_id])
+
+  @@unique([quiz_id, user_id])
 }
