@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -9,7 +10,7 @@ async function main(): Promise<void> {
   try {
     // Clear existing data
     await clearDatabase();
-    
+
     // Seed independent entities first
     const questionTypes = await seedQuestionTypes();
     const faculties = await seedFaculties();
@@ -18,38 +19,38 @@ async function main(): Promise<void> {
     const eventTypes = await seedEventTypes();
     const buildings = await seedBuildings();
     const qrs = await seedQRs();
-    
+
     // Seed entities with dependencies
     const fieldOfStudies = await seedFieldOfStudies(faculties);
-    const buildingEntries = await seedBuildingEntries(buildings);
+    await seedBuildingEntries(buildings);
     const occurrences = await seedOccurrences();
-    
+
     // Seed events
     const events = await seedEvents(eventTypes, buildings, qrs, owners);
-    
+
     // Seed event relationships
     await seedEventThemes(events, themes);
     await seedEventFieldOfStudies(events, fieldOfStudies);
-    
+
     // Seed tours and event occurrences
     const tours = await seedTours(owners);
     await seedEventOccurrences(tours, occurrences, events);
-    
+
     // Seed users
     const users = await seedUsers();
-    
+
     // Seed event visits
     await seedEventVisits(events, users);
-    
+
     // Seed quizzes and questions
     const questions = await seedQuestions(questionTypes);
-    const answers = await seedAnswers(questions);
+    await seedAnswers(questions);
     const quizzes = await seedQuizzes();
     const quizQuestions = await seedQuizQuestions(quizzes, questions);
-    
+
     // Seed quiz question answers
     await seedQuizQuestionAnswers(quizQuestions, users);
-    
+
     console.log('Database seeded successfully');
   } catch (error) {
     console.error('Error seeding database:', error);
@@ -61,14 +62,17 @@ async function main(): Promise<void> {
  * Clear all data from the database
  */
 async function clearDatabase(): Promise<void> {
-  const tablenames = await prisma.$queryRaw<
-    Array<{ name: string }>
-  >`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_prisma_migrations'`;
+  const tablenames = await prisma.$queryRaw<Array<{ name: string }>>`SELECT name
+                                                                     FROM sqlite_master
+                                                                     WHERE type = 'table'
+                                                                       AND name NOT LIKE 'sqlite_%'
+                                                                       AND name NOT LIKE '_prisma_migrations'`;
 
   for (const { name } of tablenames) {
     try {
-      await prisma.$executeRawUnsafe(`DELETE FROM "${name}"`);
-    } catch (error) {
+      await prisma.$executeRawUnsafe(`DELETE
+                                      FROM "${name}"`);
+    } catch {
       console.log(`Failed to clear table ${name}`);
     }
   }
@@ -82,7 +86,7 @@ async function seedQuestionTypes() {
     { name: 'Single choice' },
     { name: 'Multiple choice' },
     { name: 'True/False' },
-    { name: 'Text input' }
+    { name: 'Text input' },
   ];
 
   const createdQuestionTypes = [];
@@ -102,7 +106,7 @@ async function seedFaculties() {
     { name: 'Faculty of Computer Science, Electronics and Telecommunications' },
     { name: 'Faculty of Electrical Engineering, Automatics, IT and Biomedical Engineering' },
     { name: 'Faculty of Mechanical Engineering and Robotics' },
-    { name: 'Faculty of Materials Science and Ceramics' }
+    { name: 'Faculty of Materials Science and Ceramics' },
   ];
 
   const createdFaculties = [];
@@ -123,7 +127,7 @@ async function seedThemes() {
     { name: 'Science' },
     { name: 'Engineering' },
     { name: 'Art' },
-    { name: 'Mathematics' }
+    { name: 'Mathematics' },
   ];
 
   const createdThemes = [];
@@ -143,7 +147,7 @@ async function seedOwners() {
     { name: 'Department of Computer Science' },
     { name: 'Department of Electronics' },
     { name: 'Department of Automatics' },
-    { name: 'Student Scientific Association' }
+    { name: 'Student Scientific Association' },
   ];
 
   const createdOwners = [];
@@ -164,7 +168,7 @@ async function seedEventTypes() {
     { name: 'Workshop' },
     { name: 'Exhibition' },
     { name: 'Lab tour' },
-    { name: 'Discussion panel' }
+    { name: 'Discussion panel' },
   ];
 
   const createdEventTypes = [];
@@ -180,12 +184,7 @@ async function seedEventTypes() {
  * Seed Building entities
  */
 async function seedBuildings() {
-  const buildings = [
-    { name: 'D-17' },
-    { name: 'B-1' },
-    { name: 'C-1' },
-    { name: 'D-1' }
-  ];
+  const buildings = [{ name: 'D-17' }, { name: 'B-1' }, { name: 'C-1' }, { name: 'D-1' }];
 
   const createdBuildings = [];
   for (const building of buildings) {
@@ -205,7 +204,7 @@ async function seedQRs() {
     { code: 'QR789012' },
     { code: 'QR345678' },
     { code: 'QR901234' },
-    { code: 'QR567890' }
+    { code: 'QR567890' },
   ];
 
   const createdQRs = [];
@@ -226,7 +225,7 @@ async function seedFieldOfStudies(faculties: any[]) {
     { name: 'Electronics', faculty_id: faculties[0].faculty_id },
     { name: 'Automatics and Robotics', faculty_id: faculties[1].faculty_id },
     { name: 'Mechanical Engineering', faculty_id: faculties[2].faculty_id },
-    { name: 'Materials Science', faculty_id: faculties[3].faculty_id }
+    { name: 'Materials Science', faculty_id: faculties[3].faculty_id },
   ];
 
   const createdFieldOfStudies = [];
@@ -244,9 +243,9 @@ async function seedFieldOfStudies(faculties: any[]) {
 async function seedBuildingEntries(buildings: any[]) {
   const buildingEntries = [
     { map_longitude: 19.9137, map_latitude: 50.0684, building_id: buildings[0].building_id },
-    { map_longitude: 19.9120, map_latitude: 50.0670, building_id: buildings[1].building_id },
+    { map_longitude: 19.912, map_latitude: 50.067, building_id: buildings[1].building_id },
     { map_longitude: 19.9145, map_latitude: 50.0665, building_id: buildings[2].building_id },
-    { map_longitude: 19.9150, map_latitude: 50.0675, building_id: buildings[3].building_id }
+    { map_longitude: 19.915, map_latitude: 50.0675, building_id: buildings[3].building_id },
   ];
 
   const createdBuildingEntries = [];
@@ -264,17 +263,17 @@ async function seedBuildingEntries(buildings: any[]) {
 async function seedOccurrences() {
   const now = new Date();
   const occurrences = [
-    { 
+    {
       start_time: new Date(now.getTime() + 3600000), // Now + 1 hour
-      end_time: new Date(now.getTime() + 7200000)    // Now + 2 hours
+      end_time: new Date(now.getTime() + 7200000), // Now + 2 hours
     },
-    { 
-      start_time: new Date(now.getTime() + 86400000),      // Now + 1 day
-      end_time: new Date(now.getTime() + 86400000 + 3600000) // Now + 1 day and 1 hour
+    {
+      start_time: new Date(now.getTime() + 86400000), // Now + 1 day
+      end_time: new Date(now.getTime() + 86400000 + 3600000), // Now + 1 day and 1 hour
     },
-    { 
-      start_time: new Date(now.getTime() + 172800000),      // Now + 2 days
-      end_time: new Date(now.getTime() + 172800000 + 7200000) // Now + 2 days and 2 hours
+    {
+      start_time: new Date(now.getTime() + 172800000), // Now + 2 days
+      end_time: new Date(now.getTime() + 172800000 + 7200000), // Now + 2 days and 2 hours
     },
   ];
 
@@ -301,18 +300,18 @@ async function seedEvents(eventTypes: any[], buildings: any[], qrs: any[], owner
       event_type_id: eventTypes[0].event_type_id,
       building_id: buildings[0].building_id,
       qr_id: qrs[0].qr_id,
-      owner_id: owners[0].owner_id
+      owner_id: owners[0].owner_id,
     },
     {
       name: 'Electronics Workshop',
       description: 'Hands-on workshop with microcontrollers and electronic circuits',
       should_be_displayed: true,
-      location_longitude: 19.9120,
-      location_latitude: 50.0670,
+      location_longitude: 19.912,
+      location_latitude: 50.067,
       event_type_id: eventTypes[1].event_type_id,
       building_id: buildings[1].building_id,
       qr_id: qrs[1].qr_id,
-      owner_id: owners[1].owner_id
+      owner_id: owners[1].owner_id,
     },
     {
       name: 'Robotics Showcase',
@@ -323,19 +322,19 @@ async function seedEvents(eventTypes: any[], buildings: any[], qrs: any[], owner
       event_type_id: eventTypes[2].event_type_id,
       building_id: buildings[2].building_id,
       qr_id: qrs[2].qr_id,
-      owner_id: owners[2].owner_id
+      owner_id: owners[2].owner_id,
     },
     {
       name: 'Future of Computing Panel',
       description: 'Discussion about future trends in computing and technology',
       should_be_displayed: true,
-      location_longitude: 19.9150,
+      location_longitude: 19.915,
       location_latitude: 50.0675,
       event_type_id: eventTypes[4].event_type_id,
       building_id: buildings[3].building_id,
       qr_id: qrs[3].qr_id,
-      owner_id: owners[3].owner_id
-    }
+      owner_id: owners[3].owner_id,
+    },
   ];
 
   const createdEvents = [];
@@ -358,7 +357,7 @@ async function seedEventThemes(events: any[], themes: any[]) {
     { event_id: events[2].event_id, theme_id: themes[2].theme_id },
     { event_id: events[2].event_id, theme_id: themes[0].theme_id },
     { event_id: events[3].event_id, theme_id: themes[0].theme_id },
-    { event_id: events[3].event_id, theme_id: themes[4].theme_id }
+    { event_id: events[3].event_id, theme_id: themes[4].theme_id },
   ];
 
   for (const eventTheme of eventThemes) {
@@ -375,7 +374,7 @@ async function seedEventFieldOfStudies(events: any[], fieldOfStudies: any[]) {
     { event_id: events[0].event_id, field_of_study_id: fieldOfStudies[1].field_of_study_id },
     { event_id: events[1].event_id, field_of_study_id: fieldOfStudies[1].field_of_study_id },
     { event_id: events[2].event_id, field_of_study_id: fieldOfStudies[2].field_of_study_id },
-    { event_id: events[3].event_id, field_of_study_id: fieldOfStudies[0].field_of_study_id }
+    { event_id: events[3].event_id, field_of_study_id: fieldOfStudies[0].field_of_study_id },
   ];
 
   for (const eventFieldOfStudy of eventFieldsOfStudy) {
@@ -391,18 +390,18 @@ async function seedTours(owners: any[]) {
     {
       name: 'Computer Science Tour',
       description: 'Tour of the computer science department and labs',
-      owner_id: owners[0].owner_id
+      owner_id: owners[0].owner_id,
     },
     {
       name: 'Electronics Tour',
       description: 'Tour of the electronics department and labs',
-      owner_id: owners[1].owner_id
+      owner_id: owners[1].owner_id,
     },
     {
       name: 'Full Faculty Tour',
       description: 'Comprehensive tour of the entire faculty',
-      owner_id: owners[3].owner_id
-    }
+      owner_id: owners[3].owner_id,
+    },
   ];
 
   const createdTours = [];
@@ -419,26 +418,26 @@ async function seedTours(owners: any[]) {
  */
 async function seedEventOccurrences(tours: any[], occurrences: any[], events: any[]) {
   const eventOccurrences = [
-    { 
-      tour_id: tours[0].tour_id, 
-      occurrence_id: occurrences[0].occurrence_id, 
-      event_id: events[0].event_id 
+    {
+      tour_id: tours[0].tour_id,
+      occurrence_id: occurrences[0].occurrence_id,
+      event_id: events[0].event_id,
     },
-    { 
-      tour_id: tours[0].tour_id, 
-      occurrence_id: occurrences[1].occurrence_id, 
-      event_id: events[3].event_id 
+    {
+      tour_id: tours[0].tour_id,
+      occurrence_id: occurrences[1].occurrence_id,
+      event_id: events[3].event_id,
     },
-    { 
-      tour_id: tours[1].tour_id, 
-      occurrence_id: occurrences[1].occurrence_id, 
-      event_id: events[1].event_id 
+    {
+      tour_id: tours[1].tour_id,
+      occurrence_id: occurrences[1].occurrence_id,
+      event_id: events[1].event_id,
     },
-    { 
-      tour_id: tours[2].tour_id, 
-      occurrence_id: occurrences[2].occurrence_id, 
-      event_id: events[2].event_id 
-    }
+    {
+      tour_id: tours[2].tour_id,
+      occurrence_id: occurrences[2].occurrence_id,
+      event_id: events[2].event_id,
+    },
   ];
 
   for (const eventOccurrence of eventOccurrences) {
@@ -455,7 +454,7 @@ async function seedUsers() {
     { first_name: 'Jan', last_name: 'Kowalski', password: 'hashedpassword1' },
     { first_name: 'Anna', last_name: 'Nowak', password: 'hashedpassword2' },
     { first_name: 'Piotr', last_name: 'Wiśniewski', password: 'hashedpassword3' },
-    { first_name: 'Marta', last_name: 'Dąbrowska', password: 'hashedpassword4' }
+    { first_name: 'Marta', last_name: 'Dąbrowska', password: 'hashedpassword4' },
   ];
 
   const createdUsers = [];
@@ -473,26 +472,26 @@ async function seedUsers() {
 async function seedEventVisits(events: any[], users: any[]) {
   const now = new Date();
   const eventVisits = [
-    { 
+    {
       time: new Date(now.getTime() - 86400000), // Yesterday
-      event_id: events[0].event_id, 
-      user_id: users[0].user_id 
+      event_id: events[0].event_id,
+      user_id: users[0].user_id,
     },
-    { 
+    {
       time: new Date(now.getTime() - 43200000), // 12 hours ago
-      event_id: events[1].event_id, 
-      user_id: users[0].user_id 
+      event_id: events[1].event_id,
+      user_id: users[0].user_id,
     },
-    { 
+    {
       time: new Date(now.getTime() - 86400000), // Yesterday
-      event_id: events[1].event_id, 
-      user_id: users[1].user_id 
+      event_id: events[1].event_id,
+      user_id: users[1].user_id,
     },
-    { 
+    {
       time: new Date(now.getTime() - 172800000), // 2 days ago
-      event_id: events[2].event_id, 
-      user_id: users[2].user_id 
-    }
+      event_id: events[2].event_id,
+      user_id: users[2].user_id,
+    },
   ];
 
   for (const eventVisit of eventVisits) {
@@ -508,23 +507,23 @@ async function seedQuestions(questionTypes: any[]) {
     {
       title: 'What is the primary function of a CPU?',
       description: 'Choose the most accurate description',
-      question_type_id: questionTypes[0].question_type_id
+      question_type_id: questionTypes[0].question_type_id,
     },
     {
       title: 'Which of the following are input devices?',
       description: 'Select all that apply',
-      question_type_id: questionTypes[1].question_type_id
+      question_type_id: questionTypes[1].question_type_id,
     },
     {
       title: 'C++ is a compiled language.',
       description: null,
-      question_type_id: questionTypes[2].question_type_id
+      question_type_id: questionTypes[2].question_type_id,
     },
     {
       title: 'Explain the concept of polymorphism in OOP',
       description: 'Provide a brief explanation',
-      question_type_id: questionTypes[3].question_type_id
-    }
+      question_type_id: questionTypes[3].question_type_id,
+    },
   ];
 
   const createdQuestions = [];
@@ -542,21 +541,37 @@ async function seedQuestions(questionTypes: any[]) {
 async function seedAnswers(questions: any[]) {
   const answers = [
     // Answers for the CPU question
-    { text: 'Processing data and executing instructions', is_correct: true, question_id: questions[0].question_id },
-    { text: 'Storing large amounts of data', is_correct: false, question_id: questions[0].question_id },
-    { text: 'Displaying output to the user', is_correct: false, question_id: questions[0].question_id },
-    { text: 'Managing network connectivity', is_correct: false, question_id: questions[0].question_id },
-    
+    {
+      text: 'Processing data and executing instructions',
+      is_correct: true,
+      question_id: questions[0].question_id,
+    },
+    {
+      text: 'Storing large amounts of data',
+      is_correct: false,
+      question_id: questions[0].question_id,
+    },
+    {
+      text: 'Displaying output to the user',
+      is_correct: false,
+      question_id: questions[0].question_id,
+    },
+    {
+      text: 'Managing network connectivity',
+      is_correct: false,
+      question_id: questions[0].question_id,
+    },
+
     // Answers for the input devices question
     { text: 'Keyboard', is_correct: true, question_id: questions[1].question_id },
     { text: 'Mouse', is_correct: true, question_id: questions[1].question_id },
     { text: 'Monitor', is_correct: false, question_id: questions[1].question_id },
     { text: 'Printer', is_correct: false, question_id: questions[1].question_id },
-    
+
     // Answers for the C++ question
     { text: 'True', is_correct: true, question_id: questions[2].question_id },
     { text: 'False', is_correct: false, question_id: questions[2].question_id },
-    
+
     // No answers for the open-ended question about polymorphism
   ];
 
@@ -574,14 +589,14 @@ async function seedAnswers(questions: any[]) {
  */
 async function seedQuizzes() {
   const quizzes = [
-    { 
+    {
       name: 'Computer Science Basics',
-      description: 'Test your knowledge of fundamental computer science concepts'
+      description: 'Test your knowledge of fundamental computer science concepts',
     },
-    { 
+    {
       name: 'Programming Concepts',
-      description: 'Questions about programming paradigms and techniques'
-    }
+      description: 'Questions about programming paradigms and techniques',
+    },
   ];
 
   const createdQuizzes = [];
@@ -601,7 +616,7 @@ async function seedQuizQuestions(quizzes: any[], questions: any[]) {
     { quiz_id: quizzes[0].quiz_id, question_id: questions[0].question_id },
     { quiz_id: quizzes[0].quiz_id, question_id: questions[1].question_id },
     { quiz_id: quizzes[1].quiz_id, question_id: questions[2].question_id },
-    { quiz_id: quizzes[1].quiz_id, question_id: questions[3].question_id }
+    { quiz_id: quizzes[1].quiz_id, question_id: questions[3].question_id },
   ];
 
   const createdQuizQuestions = [];
@@ -618,26 +633,26 @@ async function seedQuizQuestions(quizzes: any[], questions: any[]) {
  */
 async function seedQuizQuestionAnswers(quizQuestions: any[], users: any[]) {
   const quizQuestionAnswers = [
-    { 
+    {
       correct_answer: 1, // Assuming 1 is the ID of the correct answer
       quiz_question_id: quizQuestions[0].quiz_question_id,
-      user_id: users[0].user_id
+      user_id: users[0].user_id,
     },
-    { 
+    {
       correct_answer: 0, // Assuming 0 means incorrect answer
       quiz_question_id: quizQuestions[1].quiz_question_id,
-      user_id: users[0].user_id
+      user_id: users[0].user_id,
     },
-    { 
-      correct_answer: 1, 
+    {
+      correct_answer: 1,
       quiz_question_id: quizQuestions[0].quiz_question_id,
-      user_id: users[1].user_id
+      user_id: users[1].user_id,
     },
-    { 
-      correct_answer: 1, 
+    {
+      correct_answer: 1,
       quiz_question_id: quizQuestions[2].quiz_question_id,
-      user_id: users[2].user_id
-    }
+      user_id: users[2].user_id,
+    },
   ];
 
   for (const answer of quizQuestionAnswers) {
