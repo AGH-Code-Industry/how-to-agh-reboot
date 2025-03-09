@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { procedure, router } from '../init';
+import { procedure, router } from '../../init';
 
 export const exampleRouter = router({
   getExampleData: procedure.query(() => {
