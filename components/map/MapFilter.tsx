@@ -98,7 +98,7 @@ export default function MapFilter({ eventList, onFilterChange }: MapFilterProps)
                 onChange={(e) => setSearch(e.target.value)}
               />
               <Select value={selectedType || undefined} onValueChange={setSelectedType}>
-                <SelectTrigger>Wybierz typ wydarzenia</SelectTrigger>
+                <SelectTrigger>Typ</SelectTrigger>
                 <SelectContent>
                   {eventTypes.map((type) => (
                     <SelectItem key={type} value={type}>
