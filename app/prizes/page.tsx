@@ -19,9 +19,8 @@ export default function Prizes() {
   return (
     <PageLayout>
       <PageTitle>Nagrody</PageTitle>
-      <PageSectionTitle className="text-base font-normal m-4 text-center">
-        Wykonuj zadania w zamian za nagrody!
-        Odbiór nagród - namiot WRSS
+      <PageSectionTitle className="m-4 text-center text-base font-normal">
+        Wykonuj zadania w zamian za nagrody! Odbiór nagród - namiot WRSS
       </PageSectionTitle>
       <div className="flex flex-col gap-4">
         <Reward {...tempNagroda} />
