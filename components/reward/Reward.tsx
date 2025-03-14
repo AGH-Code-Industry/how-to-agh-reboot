@@ -4,21 +4,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 type RewardProps = {
   reward: string;
   requirement: string;
-  completion: number;
+  completed: number;
+  required: number;
 };
 
-export default function Reward({ reward, requirement, completion }: RewardProps) {
+export default function Reward({ reward, requirement, completed = 1, required = 2}: RewardProps) {
   return (
     <>
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>{reward}</CardTitle>
+          <CardTitle>{completed < required ? "" : "✅ "}{reward}</CardTitle>
           <CardDescription>
-            {completion < 1 ? requirement : <i>Odbiór nagrody w namiocie wrss</i>}
+            {completed < required ? requirement : <i>Odbiór nagrody w namiocie wrss</i>}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Progress value={completion * 100}></Progress>
+        <div className= 'font-semibold'>{completed < required ? completed + " / " + required : 'Ukończono'}</div>
+          <Progress className='h-4' value={completed / required * 100}></Progress>
         </CardContent>
       </Card>
     </>

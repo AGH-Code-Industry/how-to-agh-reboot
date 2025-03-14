@@ -1,22 +1,28 @@
-import { PageLayout, PageTitle } from '@/components/layout/PageLayout';
+import { PageLayout, PageSectionTitle, PageTitle } from '@/components/layout/PageLayout';
 import Reward from '@/components/reward/Reward';
 
 export default function Prizes() {
   const tempNagroda = {
     reward: 'Kubek z Uśmieszkiem',
     requirement: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
-    completion: 0.33,
+    completed: 3,
+    required: 8,
   };
 
   const tempNagrodaFull = {
     reward: 'Kubek z Uśmieszkiem',
     requirement: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
-    completion: 1,
+    completed: 8,
+    required: 8,
   };
 
   return (
     <PageLayout>
       <PageTitle>Nagrody</PageTitle>
+      <PageSectionTitle className="text-base font-normal m-4 text-center">
+        Wykonuj zadania w zamian za nagrody!
+        Odbiór nagród - namiot WRSS
+      </PageSectionTitle>
       <div className="flex flex-col gap-4">
         <Reward {...tempNagroda} />
         <Reward {...tempNagroda} />
