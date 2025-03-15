@@ -1,18 +1,12 @@
 'use client';
 
-import { useState } from "react";
-import {
-  Scanner,
-  useDevices,
-  outline,
-  boundingBox,
-  centerText,
-} from "@yudiel/react-qr-scanner";
+import { useState } from 'react';
+import { Scanner, useDevices, outline, boundingBox, centerText } from '@yudiel/react-qr-scanner';
 
 const styles = {
   container: {
     width: 400,
-    margin: "auto",
+    margin: 'auto',
   },
   controls: {
     marginBottom: 8,
@@ -22,18 +16,18 @@ const styles = {
 export default function QRScanner() {
   // return <div>Skaner</div>
   const [deviceId, setDeviceId] = useState<string | undefined>(undefined);
-  const [tracker, setTracker] = useState<string | undefined>("outline");
+  const [tracker, setTracker] = useState<string | undefined>('outline');
   const [pause, setPause] = useState(false);
 
   const devices = useDevices();
 
   function getTracker() {
     switch (tracker) {
-      case "outline":
+      case 'outline':
         return outline;
-      case "boundingBox":
+      case 'boundingBox':
         return boundingBox;
-      case "centerText":
+      case 'centerText':
         return centerText;
       default:
         return undefined;
@@ -62,7 +56,7 @@ export default function QRScanner() {
   };
 
   return (
-    <div style={{margin: 'auto', width: '400px', textAlign: 'center'}}>
+    <div style={{ margin: 'auto', width: '400px', textAlign: 'center' }}>
       <div style={styles.controls}>
         <select onChange={(e) => setDeviceId(e.target.value)}>
           <option value={undefined}>Select a device</option>
@@ -72,10 +66,7 @@ export default function QRScanner() {
             </option>
           ))}
         </select>
-        <select
-          style={{ marginLeft: 5 }}
-          onChange={(e) => setTracker(e.target.value)}
-        >
+        <select style={{ marginLeft: 5 }} onChange={(e) => setTracker(e.target.value)}>
           <option value="centerText">Center Text</option>
           <option value="outline">Outline</option>
           <option value="boundingBox">Bounding Box</option>
@@ -84,27 +75,27 @@ export default function QRScanner() {
       </div>
       <Scanner
         formats={[
-          "qr_code",
-          "micro_qr_code",
-          "rm_qr_code",
-          "maxi_code",
-          "pdf417",
-          "aztec",
-          "data_matrix",
-          "matrix_codes",
-          "dx_film_edge",
-          "databar",
-          "databar_expanded",
-          "codabar",
-          "code_39",
-          "code_93",
-          "code_128",
-          "ean_8",
-          "ean_13",
-          "itf",
-          "linear_codes",
-          "upc_a",
-          "upc_e",
+          'qr_code',
+          'micro_qr_code',
+          'rm_qr_code',
+          'maxi_code',
+          'pdf417',
+          'aztec',
+          'data_matrix',
+          'matrix_codes',
+          'dx_film_edge',
+          'databar',
+          'databar_expanded',
+          'codabar',
+          'code_39',
+          'code_93',
+          'code_128',
+          'ean_8',
+          'ean_13',
+          'itf',
+          'linear_codes',
+          'upc_a',
+          'upc_e',
         ]}
         constraints={{
           deviceId: deviceId,
