@@ -3,15 +3,15 @@ import Reward from '@/components/reward/Reward';
 
 export default function Prizes() {
   const tempNagroda = {
-    reward: 'Kubek z Uśmieszkiem',
-    requirement: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
+    title: 'Kubek z Uśmieszkiem',
+    description: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
     completed: 3,
     required: 8,
   };
 
   const tempNagrodaFull = {
-    reward: 'Kubek z Uśmieszkiem',
-    requirement: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
+    title: 'Kubek z Uśmieszkiem',
+    description: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
     completed: 8,
     required: 8,
   };

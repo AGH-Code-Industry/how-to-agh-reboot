@@ -2,23 +2,23 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 type RewardProps = {
-  reward: string;
-  requirement: string;
+  title: string;
+  description: string;
   completed: number;
   required: number;
 };
 
-export default function Reward({ reward, requirement, completed = 1, required = 2 }: RewardProps) {
+export default function Reward({ title, description, completed = 1, required = 2 }: RewardProps) {
   return (
     <>
       <Card className="w-full">
         <CardHeader>
           <CardTitle>
             {completed < required ? '' : '✅ '}
-            {reward}
+            {title}
           </CardTitle>
           <CardDescription>
-            {completed < required ? requirement : <i>Odbiór nagrody w namiocie wrss</i>}
+            {completed < required ? description : <i>Odbiór nagrody w namiocie wrss</i>}
           </CardDescription>
         </CardHeader>
         <CardContent>
