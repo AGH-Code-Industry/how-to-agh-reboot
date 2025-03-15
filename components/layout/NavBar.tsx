@@ -11,7 +11,7 @@ export default function NavBar() {
       <NavBarLink text="Zadania" url="/tasks">
         <ClipboardListIcon className="size-6" />
       </NavBarLink>
-      <NavBarLink text="Skaner" url="/scanner">
+      <NavBarLink text="Skaner" url="/qrscanner">
         <QrCodeIcon className="size-6" />
       </NavBarLink>
       <NavBarLink text="Nagrody" url="/prizes">
