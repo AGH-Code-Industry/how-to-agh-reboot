@@ -44,7 +44,7 @@ export default function MapFilter({ eventList, onFilterChange }: MapFilterProps)
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [showPastEvents, setShowPastEvents] = useState(true);
-
+  console.log(filteredEvents);
   useEffect(() => {
     if (originalEvents.length === 0) {
       setOriginalEvents(eventList);
