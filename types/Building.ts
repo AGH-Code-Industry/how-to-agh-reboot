@@ -2,14 +2,17 @@ import { Building, BuildingEntry } from '@prisma/client';
 
 export type BuildingDO = Building & { building_entries: BuildingEntry[] };
 
+export type BuildingEntryDO = BuildingEntry;
+
 export type BuildingEntryDTO = {
-  id: BuildingEntry['building_entry_id'];
-  longitude: BuildingEntry['map_longitude'];
-  latitude: BuildingEntry['map_latitude'];
-  createdAt: BuildingEntry['created_at'];
-  updatedAt: BuildingEntry['updated_at'];
+  id: BuildingEntryDO['building_entry_id'];
+  longitude: BuildingEntryDO['map_longitude'];
+  latitude: BuildingEntryDO['map_latitude'];
+  createdAt: BuildingEntryDO['created_at'];
+  updatedAt: BuildingEntryDO['updated_at'];
 };
-export const buildingEntryDOtoDTO = (entry: BuildingEntry): BuildingEntryDTO => ({
+
+export const buildingEntryDOtoDTO = (entry: BuildingEntryDO): BuildingEntryDTO => ({
   id: entry.building_entry_id,
   longitude: entry.map_longitude,
   latitude: entry.map_latitude,
