@@ -19,7 +19,11 @@ export type BuildingDO = Building & { building_entries: BuildingEntry[] };
 export type BuildingDTO = {
   id: BuildingDO['building_id'];
   name: BuildingDO['name'];
-  entries: BuildingEntryDTO[];
+  entries: {
+    id: BuildingDO['building_entries'][number]['building_entry_id'];
+    longitude: BuildingDO['building_entries'][number]['map_longitude'];
+    latitude: BuildingDO['building_entries'][number]['map_latitude'];
+  }[];
   createdAt: BuildingDO['created_at'];
   updatedAt: BuildingDO['updated_at'];
 };
@@ -27,7 +31,11 @@ export type BuildingDTO = {
 export const buildingDOtoDTO = (building: BuildingDO): BuildingDTO => ({
   id: building.building_id,
   name: building.name,
-  entries: building.building_entries.map(buildingEntryDOtoDTO),
+  entries: building.building_entries.map((entry) => ({
+    id: entry.building_entry_id,
+    longitude: entry.map_longitude,
+    latitude: entry.map_latitude,
+  })),
   createdAt: building.created_at,
   updatedAt: building.updated_at,
 });
