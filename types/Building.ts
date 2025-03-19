@@ -24,8 +24,6 @@ export type BuildingDTO = {
     longitude: BuildingDO['building_entries'][number]['map_longitude'];
     latitude: BuildingDO['building_entries'][number]['map_latitude'];
   }[];
-  createdAt: BuildingDO['created_at'];
-  updatedAt: BuildingDO['updated_at'];
 };
 
 export const buildingDOtoDTO = (building: BuildingDO): BuildingDTO => ({
@@ -36,6 +34,4 @@ export const buildingDOtoDTO = (building: BuildingDO): BuildingDTO => ({
     longitude: entry.map_longitude,
     latitude: entry.map_latitude,
   })),
-  createdAt: building.created_at,
-  updatedAt: building.updated_at,
 });
