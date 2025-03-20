@@ -18,13 +18,6 @@ export const buildingsRouter = router({
         include: { building_entries: true },
       });
 
-      if (input.buildingId) {
-        if (buildings.length === 0) {
-          return [];
-        }
-        return buildingDOtoDTO(buildings[0]);
-      }
-
       return buildings.map(buildingDOtoDTO);
     }),
 });
