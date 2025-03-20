@@ -20,7 +20,7 @@ export const buildingsRouter = router({
 
       if (input.buildingId) {
         if (buildings.length === 0) {
-          throw new Error('Building not found');
+          return [];
         }
         return buildingDOtoDTO(buildings[0]);
       }
