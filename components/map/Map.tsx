@@ -4,10 +4,11 @@ import { GeolocateControl, Map as MapLibre, MapRef, Marker } from 'react-map-gl/
 import type { GeolocateResultEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRef, useState } from 'react';
-import type { Source } from 'maplibre-gl';
+import type { Source as SourceType, Map as MapLibreNative } from 'maplibre-gl';
 import { MapEvent } from '@/types/Map/MapEvent';
 import MapEvents from '@/components/map/MapEvents';
 import { polygon, point, booleanPointInPolygon } from '@turf/turf';
+import TourLine from './TourLine';
 
 type Props = {
   eventList: MapEvent[];
@@ -17,6 +18,7 @@ type Props = {
 export default function Map(props: Props) {
   const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
   const mapRef = useRef<MapRef>(null);
+  const [mapNative, setMapNative] = useState<MapLibreNative>();
 
   const aghBoundsPolygonRef = useRef<ReturnType<typeof polygon>>(null);
 
@@ -27,12 +29,15 @@ export default function Map(props: Props) {
     geoControlRef.current?.trigger();
 
     // Stworzenie wielokąta wyznaczającego granice miasteczka
-    const aghSource: (Source & { _data: { geometry: { coordinates: number[][][] } } }) | undefined =
-      mapRef.current?.getSource('agh');
+    const aghSource:
+      | (SourceType & { _data: { geometry: { coordinates: number[][][] } } })
+      | undefined = mapRef.current?.getSource('agh');
 
     if (aghSource && aghSource._data.geometry.coordinates[0]) {
       aghBoundsPolygonRef.current = polygon(aghSource._data.geometry.coordinates);
     }
+
+    setMapNative(mapRef.current?.getMap());
   };
 
   const handleGeolocate = (e: GeolocateResultEvent) => {
@@ -72,6 +77,8 @@ export default function Map(props: Props) {
       onLoad={handleMapLoad}
       ref={mapRef}
     >
+      <TourLine map={mapNative} events={props.eventList} color="blue" />
+      <TourLine map={mapNative} events={[props.eventList[2], props.eventList[0]]} color="red" />
       <GeolocateControl
         positionOptions={{
           enableHighAccuracy: true,
