@@ -10,8 +10,8 @@ import { loginSchema } from '@/lib/validation';
 import { Label } from '../ui/label';
 import type * as z from 'zod';
 import { useState } from 'react';
-import { MESSAGE_STYLES } from '@/lib/constants/message-styles';
 import { ServerMessage } from '@/types/Auth';
+import { cn } from '@/lib/utils';
 
 type LoginFormProps = {
   className?: string;
@@ -53,7 +53,12 @@ export default function LoginForm({ className }: LoginFormProps) {
           <form onSubmit={handleSubmit(onSubmit)}>
             {serverMessage && (
               <div
-                className={`mb-4 rounded border px-4 py-2 ${MESSAGE_STYLES[serverMessage.type]}`}
+                className={cn(
+                  `mb-4 rounded border px-4 py-2`,
+                  serverMessage.type == 'success'
+                    ? `bg-successAlert text-successAlert-foreground`
+                    : `bg-errorAlert text-errorAlert-foreground`
+                )}
                 role="alert"
               >
                 <span className="block text-sm font-semibold sm:inline">
@@ -65,7 +70,9 @@ export default function LoginForm({ className }: LoginFormProps) {
               <div className="flex flex-col gap-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input {...register('email')} placeholder="name@example.com" />
-                {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-sm text-errorAlert-foreground">{errors.email.message}</p>
+                )}
               </div>
               <div className="flex flex-col gap-y-2">
                 <div className="flex justify-between">
@@ -80,7 +87,7 @@ export default function LoginForm({ className }: LoginFormProps) {
                 </div>
                 <Input type="password" {...register('password')} />
                 {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password.message}</p>
+                  <p className="text-sm text-errorAlert-foreground">{errors.password.message}</p>
                 )}
               </div>
             </div>

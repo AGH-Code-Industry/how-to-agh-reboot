@@ -5,13 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { MESSAGE_STYLES } from '@/lib/constants/message-styles';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { ServerMessage } from '@/types/Auth';
 import { useState } from 'react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 type ResetFormProps = {
   className?: string;
@@ -53,7 +53,12 @@ export default function ResetForm({ className }: ResetFormProps) {
           <form onSubmit={handleSubmit(onSubmit)}>
             {serverMessage && (
               <div
-                className={`mb-4 rounded border px-4 py-2 ${MESSAGE_STYLES[serverMessage.type]}`}
+                className={cn(
+                  `mb-4 rounded border px-4 py-2`,
+                  serverMessage.type == 'success'
+                    ? `bg-successAlert text-successAlert-foreground`
+                    : `bg-errorAlert text-errorAlert-foreground`
+                )}
                 role="alert"
               >
                 <span className="block text-sm font-semibold sm:inline">
@@ -65,7 +70,9 @@ export default function ResetForm({ className }: ResetFormProps) {
               <div className="flex flex-col gap-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input {...register('email')} placeholder="name@example.com" />
-                {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-sm text-errorAlert-foreground">{errors.email.message}</p>
+                )}
               </div>
             </div>
             <Button type="submit" className="mt-4 w-full">

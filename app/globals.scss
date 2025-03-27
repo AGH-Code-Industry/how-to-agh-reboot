@@ -1,6 +1,6 @@
-@use "tailwindcss/base";
-@use "tailwindcss/components";
-@use "tailwindcss/utilities";
+@use 'tailwindcss/base';
+@use 'tailwindcss/components';
+@use 'tailwindcss/utilities';
 
 @layer base {
   :root {
@@ -14,6 +14,10 @@
     --input: 0 0% 89.8%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
+    --error-alert: 360 88% 97%;
+    --error-alert-foreground: 357.18 100% 45%;
+    --success-alert: 138.46 77% 97%;
+    --success-alert-foreground: 142.31 100% 33%;
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
@@ -39,6 +43,10 @@
     --input: 0 0% 14.9%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
+    --error-alert: 358.8 69% 30%/0.3;
+    --error-alert-foreground: 358.75 100% 70%;
+    --success-alert: 145.73 73% 19%/0.3;
+    --success-alert-foreground: 150.06 96% 45%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
     --secondary: 0 0% 14.9%;
