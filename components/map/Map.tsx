@@ -1,5 +1,5 @@
 'use client';
-import { GeolocateControl, Map as MapLibre, MapRef, Marker } from 'react-map-gl/maplibre';
+import { GeolocateControl, Map as MapLibre, MapRef } from 'react-map-gl/maplibre';
 
 import type { GeolocateResultEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -22,17 +22,24 @@ export default function Map(props: Props) {
 
   const [isOnAGH, setIsOnAGH] = useState<boolean>();
 
-  const handleMapLoad = () => {
+  const handleMapLoad = async () => {
     // Centrowanie kamery na pozycji użytkownika przy załadowaniu mapy
     geoControlRef.current?.trigger();
 
+    if (!mapRef.current) {
+      return;
+    }
+
     // Stworzenie wielokąta wyznaczającego granice miasteczka
     const aghSource: (Source & { _data: { geometry: { coordinates: number[][][] } } }) | undefined =
-      mapRef.current?.getSource('agh');
+      mapRef.current.getSource('agh');
 
     if (aghSource && aghSource._data.geometry.coordinates[0]) {
       aghBoundsPolygonRef.current = polygon(aghSource._data.geometry.coordinates);
     }
+
+    const logoImage = await mapRef.current.loadImage('./images/logo.webp');
+    mapRef.current.addImage('coin', logoImage.data);
   };
 
   const handleGeolocate = (e: GeolocateResultEvent) => {
@@ -81,13 +88,6 @@ export default function Map(props: Props) {
         onGeolocate={handleGeolocate}
       />
       <MapEvents eventList={props.eventList} />
-      <Marker longitude={19.907866664457725} latitude={50.06811457654741}>
-        <img
-          style={{ width: '100%' }}
-          src="https://coin.agh.edu.pl/_next/image?url=%2Flogo.png&w=48&q=75"
-          alt="coin-logo"
-        />
-      </Marker>
     </MapLibre>
   );
 }

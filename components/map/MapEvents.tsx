@@ -1,78 +1,108 @@
-import { MapEvent } from '@/types/Map/MapEvent';
-import { Marker } from 'react-map-gl/maplibre';
-import { LngLat, Offset, Popup as Popup2 } from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
-
 import './MapEvents.css';
+
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { renderToString } from 'react-dom/server';
+
+import { Source, Layer, useMap } from 'react-map-gl/maplibre';
+import { Popup } from 'maplibre-gl';
+
+import { layer1, layer2, layer3 } from './layerConfig';
+import MapPopup from './MapPopup';
+
+import type { MapEvent } from '@/types/Map/MapEvent';
+import type { FeatureCollection, Point } from 'geojson';
+import type MapLibreGl from 'maplibre-gl';
 
 type Props = {
   eventList: MapEvent[];
 };
 
-const markerHeight = 50,
-  markerRadius = 20,
-  linearOffset = 25;
+export default function MapEvents({ eventList }: Props) {
+  const { current: mapRef } = useMap();
+  const [popup, setPopup] = useState<Popup | null>(null);
 
-const popupOffsets = {
-  center: [0, 0],
-  top: [0, 0],
-  'top-left': [0, 0],
-  'top-right': [0, 0],
-  bottom: [0, -markerHeight],
-  'bottom-left': [linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
-  'bottom-right': [-linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
-  left: [markerRadius, (markerHeight - markerRadius) * -1],
-  right: [-markerRadius, (markerHeight - markerRadius) * -1],
-} satisfies Offset;
-
-function getHTML(event: MapEvent) {
-  return renderToString(
-    <div>
-      <h1 className="text-center text-lg">{event.name}</h1>
-      <p className="mt-3">
-        <b>Czas:</b> {event.startTime} - {event.endTime}
-      </p>
-      <p>
-        <b>Typ:</b> {event.type}
-      </p>
-      <p>
-        <b>Temat:</b> {event.topic}
-      </p>
-      <p>
-        <b>Wydział:</b> {event.faculty}
-      </p>
-      <p className="mt-3">{event.description}</p>
-    </div>
+  const geoJsonData = useMemo<FeatureCollection>(
+    () => ({
+      type: 'FeatureCollection',
+      features: eventList.map((event) => ({
+        type: 'Feature',
+        properties: {
+          cluster: false,
+          ...event,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [event.lng, event.ltd],
+        },
+      })),
+    }),
+    [eventList]
   );
-}
 
-/**
- * TODO: W przyszłości może zmienić na pobieranie z bazy
- */
+  const handleClick = useCallback(
+    async (e: MapLibreGl.MapMouseEvent) => {
+      const map = mapRef?.getMap();
+      if (!map) return;
 
-export default function MapEvents(props: Props) {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: [layer1.id, layer2.id],
+      });
+
+      if (!features.length) return;
+
+      const feature = features[0];
+      const coordinates = (feature.geometry as Point).coordinates as [number, number];
+
+      popup?.remove();
+
+      if (feature.properties?.cluster) {
+        const clusterId = feature.properties.cluster_id;
+        const source = map.getSource('events') as MapLibreGl.GeoJSONSource;
+
+        const zoom = await source.getClusterExpansionZoom(clusterId);
+
+        map.easeTo({
+          center: coordinates,
+          zoom,
+          duration: 500,
+        });
+      } else {
+        const props = feature.properties;
+        const html = renderToString(<MapPopup event={props as MapEvent} />);
+
+        const newPopup = new Popup({ closeOnClick: true })
+          .setLngLat(coordinates)
+          .setHTML(html)
+          .addTo(map);
+        setPopup(newPopup);
+      }
+    },
+    [popup, mapRef]
+  );
+
+  useEffect(() => {
+    const map = mapRef?.getMap();
+
+    if (!map) return;
+
+    map.on('click', handleClick);
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [handleClick, mapRef]);
+
   return (
-    <>
-      {props.eventList.map((event) => {
-        const popup = new Popup2({
-          offset: popupOffsets,
-          className: 'text-black',
-        })
-          .setLngLat(new LngLat(event.lng, event.ltd))
-          .setHTML(getHTML(event))
-          .setMaxWidth('300px');
-
-        return (
-          <Marker
-            key={event.name}
-            longitude={event.lng}
-            latitude={event.ltd}
-            color="red"
-            popup={popup}
-          />
-        );
-      })}
-    </>
+    <Source
+      id="events"
+      type="geojson"
+      data={geoJsonData}
+      cluster={true}
+      clusterMaxZoom={14}
+      clusterRadius={50}
+    >
+      <Layer {...layer1} />
+      <Layer {...layer2} />
+      <Layer {...layer3} />
+    </Source>
   );
 }
