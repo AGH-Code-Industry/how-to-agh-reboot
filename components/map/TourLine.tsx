@@ -22,14 +22,16 @@ const getLayerConfig = (
   },
 });
 
-const getSourceConfig = (events: MapEvent[]): GeoJSONSourceSpecification => ({
+const getSourceConfig = (
+  events: { latitude: number; longitude: number }[]
+): GeoJSONSourceSpecification => ({
   type: 'geojson',
   data: {
     type: 'Feature',
     properties: {},
     geometry: {
       type: 'LineString',
-      coordinates: events.map((event) => [event.lng, event.ltd]),
+      coordinates: events.map((event) => [event.longitude, event.latitude]),
     },
   },
 });
@@ -42,7 +44,7 @@ function TourLine({
   opacity = 0.5,
 }: {
   map?: Map;
-  events: MapEvent[];
+  events: { latitude: number; longitude: number }[];
   color?: string;
   lineWidth?: number;
   opacity?: number;
@@ -91,7 +93,7 @@ function TourLine({
       return;
     }
 
-    const coordinates = events.map((event) => [event.lng, event.ltd]);
+    const coordinates = events.map((event) => [event.longitude, event.latitude]);
 
     const source: GeoJSONSource | undefined = map?.getSource(sourceId);
     if (!source) {

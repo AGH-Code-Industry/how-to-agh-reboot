@@ -9,10 +9,12 @@ import { MapEvent } from '@/types/Map/MapEvent';
 import MapEvents from '@/components/map/MapEvents';
 import { polygon, point, booleanPointInPolygon } from '@turf/turf';
 import TourLine from './TourLine';
+import { trpc } from '@/trpc/client';
 
 type Props = {
   eventList: MapEvent[];
   onAGHLeaveOrEnter: (isOnAGH: boolean) => void;
+  tours: Record<string, MapEvent[]>;
 };
 
 export default function Map(props: Props) {
@@ -77,8 +79,12 @@ export default function Map(props: Props) {
       onLoad={handleMapLoad}
       ref={mapRef}
     >
-      <TourLine map={mapNative} events={props.eventList} color="blue" />
-      <TourLine map={mapNative} events={[props.eventList[2], props.eventList[0]]} color="red" />
+      {tours &&
+        Object.entries(tours).map(([key, value]) => (
+          <TourLine key={key} map={mapNative} events={value} color="blue" />
+        ))}
+      {/* <TourLine map={mapNative} events={props.eventList} color="blue" />
+      <TourLine map={mapNative} events={[props.eventList[2], props.eventList[0]]} color="red" /> */}
       <GeolocateControl
         positionOptions={{
           enableHighAccuracy: true,
