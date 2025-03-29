@@ -87,7 +87,7 @@ export default function Map(props: Props) {
         ref={geoControlRef}
         onGeolocate={handleGeolocate}
       />
-      <MapEvents eventList={props.eventList} />
+      <MapEvents />
       <Marker longitude={19.907866664457725} latitude={50.06811457654741}>
         <img
           style={{ width: '100%' }}
