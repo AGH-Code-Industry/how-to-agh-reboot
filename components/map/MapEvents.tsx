@@ -1,10 +1,10 @@
 import { Marker } from 'react-map-gl/maplibre';
 import { LngLat, Offset, Popup as Popup2 } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { trpc } from '@/trpc/client';
 
 import './MapEvents.css';
 import { renderToString } from 'react-dom/server';
+import { EventDTO } from '@/types/Event';
 
 const markerHeight = 50,
   markerRadius = 20,
@@ -22,6 +22,10 @@ const popupOffsets = {
   right: [-markerRadius, (markerHeight - markerRadius) * -1],
 } satisfies Offset;
 
+type Props = {
+  eventList: EventDTO[];
+};
+
 function getHTML(event: {
   longitude: number;
   latidute: number;
@@ -37,8 +41,7 @@ function getHTML(event: {
     <div>
       <h1 className="text-center text-lg">{event.name}</h1>
       <p className="mt-3">
-        <b>Czas:</b> {new Date(event.start).toLocaleString()} -{' '}
-        {new Date(event.end).toLocaleString()}
+        <b>Czas:</b> {event.start} - {event.end}
       </p>
       <p>
         <b>Typ:</b> {event.type}
@@ -54,18 +57,12 @@ function getHTML(event: {
   );
 }
 
-/**
- * TODO: W przyszłości może zmienić na pobieranie z bazy
- */
-
-export default function MapEvents() {
-  const events = trpc.events.getEvents.useQuery({}).data;
-
-  console.log(events);
+export default function MapEvents({ eventList }: Props) {
+  // const events = trpc.events.getEvents.useQuery({}).data;
 
   return (
     <>
-      {events?.map((event) => {
+      {eventList?.map((event) => {
         const popup = new Popup2({
           offset: popupOffsets,
           className: 'text-black',
@@ -76,8 +73,14 @@ export default function MapEvents() {
               longitude: event.longitude,
               latidute: event.latidute,
               name: event.name,
-              start: event.occurrences[0]?.start,
-              end: event.occurrences[0]?.end,
+              start: new Date(event.occurrences[0].start).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+              end: new Date(event.occurrences[0].end).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
               description: event.description,
               type: event.eventType,
               topic: event.fieldOfStudy[0]?.name,

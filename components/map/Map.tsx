@@ -9,10 +9,10 @@ import { MapEvent } from '@/types/Map/MapEvent';
 import MapEvents from '@/components/map/MapEvents';
 import { polygon, point, booleanPointInPolygon } from '@turf/turf';
 import TourLine from './TourLine';
-import { trpc } from '@/trpc/client';
+import { EventDTO } from '@/types/Event';
 
 type Props = {
-  eventList: MapEvent[];
+  eventList: EventDTO[];
   onAGHLeaveOrEnter: (isOnAGH: boolean) => void;
   tours: Record<string, MapEvent[]>;
 };
@@ -79,8 +79,8 @@ export default function Map(props: Props) {
       onLoad={handleMapLoad}
       ref={mapRef}
     >
-      {tours &&
-        Object.entries(tours).map(([key, value]) => (
+      {props.tours &&
+        Object.entries(props.tours).map(([key, value]) => (
           <TourLine key={key} map={mapNative} events={value} color="blue" />
         ))}
       {/* <TourLine map={mapNative} events={props.eventList} color="blue" />
@@ -93,7 +93,7 @@ export default function Map(props: Props) {
         ref={geoControlRef}
         onGeolocate={handleGeolocate}
       />
-      <MapEvents />
+      <MapEvents eventList={props.eventList} />
       <Marker longitude={19.907866664457725} latitude={50.06811457654741}>
         <img
           style={{ width: '100%' }}
