@@ -6,7 +6,9 @@ const getLayerConfig = (
   sourceId: string,
   color: string,
   lineWidth: number,
-  opacity: number
+  opacity: number,
+  minZoom: number = 15,
+  maxZoom: number = 0
 ): LayerSpecification => ({
   id: `${sourceId}-layer`,
   type: 'line',
@@ -20,6 +22,8 @@ const getLayerConfig = (
     'line-width': lineWidth,
     'line-opacity': opacity,
   },
+  minzoom: minZoom,
+  maxzoom: maxZoom,
 });
 
 const getSourceConfig = (events: MapEvent[]): GeoJSONSourceSpecification => ({
@@ -71,7 +75,7 @@ function TourLine({
 
     map.addSource(newSourceId, getSourceConfig(events));
 
-    map.addLayer(getLayerConfig(newSourceId, color, lineWidth, opacity));
+    map.addLayer(getLayerConfig(newSourceId, color, lineWidth, opacity), 'clusters');
 
     return cleanUp(map, sourceId);
   }, [map]);

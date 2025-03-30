@@ -2,10 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { PageSectionTitle } from '@/components/layout/PageLayout';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AccountSettings() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const router = useRouter();
+  const loggedIn = false; // todo w przyszlosci
 
   return (
     <>
@@ -16,15 +17,15 @@ export default function AccountSettings() {
             Zalogowano jako Imię Nazwisko
           </span>
           <Button disabled>Reset hasła</Button>
-          <Button onClick={() => setLoggedIn(false)}>Wyloguj</Button>
+          <Button onClick={() => console.log('Wylogowanie')}>Wyloguj</Button>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
           <span className="col-span-full text-center text-sm text-muted-foreground">
             Nie zalogowano. Niektóre funkcje mogą nie być dostępne.
           </span>
-          <Button disabled>Utwórz konto</Button>
-          <Button onClick={() => setLoggedIn(true)}>Zaloguj</Button>
+          <Button onClick={() => router.push('/auth/register')}>Utwórz konto</Button>
+          <Button onClick={() => router.push('/auth/login')}>Zaloguj</Button>
         </div>
       )}
     </>

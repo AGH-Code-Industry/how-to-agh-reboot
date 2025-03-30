@@ -1,104 +1,112 @@
-import { Marker } from 'react-map-gl/maplibre';
-import { LngLat, Offset, Popup as Popup2 } from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
-
 import './MapEvents.css';
+
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { renderToString } from 'react-dom/server';
+
+import { Source, Layer, useMap } from 'react-map-gl/maplibre';
+import { Popup } from 'maplibre-gl';
+
+import { layer1, layer2, layer3 } from './layerConfig';
+import MapPopup from './MapPopup';
+
+import type { FeatureCollection, Point } from 'geojson';
+import type MapLibreGl from 'maplibre-gl';
 import { EventDTO } from '@/types/Event';
-
-const markerHeight = 50,
-  markerRadius = 20,
-  linearOffset = 25;
-
-const popupOffsets = {
-  center: [0, 0],
-  top: [0, 0],
-  'top-left': [0, 0],
-  'top-right': [0, 0],
-  bottom: [0, -markerHeight],
-  'bottom-left': [linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
-  'bottom-right': [-linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
-  left: [markerRadius, (markerHeight - markerRadius) * -1],
-  right: [-markerRadius, (markerHeight - markerRadius) * -1],
-} satisfies Offset;
 
 type Props = {
   eventList: EventDTO[];
 };
 
-function getHTML(event: {
-  longitude: number;
-  latidute: number;
-  name: string;
-  start: string;
-  end: string;
-  description: string | null;
-  type: string;
-  topic?: string;
-  faculty?: string;
-}) {
-  return renderToString(
-    <div>
-      <h1 className="text-center text-lg">{event.name}</h1>
-      <p className="mt-3">
-        <b>Czas:</b> {event.start} - {event.end}
-      </p>
-      <p>
-        <b>Typ:</b> {event.type}
-      </p>
-      <p>
-        <b>Temat:</b> {event.topic}
-      </p>
-      <p>
-        <b>Wydział:</b> {event.faculty}
-      </p>
-      {event.description && <p className="mt-3">{event.description}</p>}
-    </div>
-  );
-}
-
 export default function MapEvents({ eventList }: Props) {
-  // const events = trpc.events.getEvents.useQuery({}).data;
+  const { current: mapRef } = useMap();
+  const [popup, setPopup] = useState<Popup | null>(null);
+
+  const geoJsonData = useMemo<FeatureCollection>(
+    () => ({
+      type: 'FeatureCollection',
+      features: eventList.map((event) => ({
+        type: 'Feature',
+        properties: {
+          cluster: false,
+          ...event,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [event.longitude, event.latidute],
+        },
+      })),
+    }),
+    [eventList]
+  );
+
+  const handleClick = useCallback(
+    async (e: MapLibreGl.MapMouseEvent) => {
+      const map = mapRef?.getMap();
+      if (!map) return;
+
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: [layer1.id, layer2.id],
+      });
+
+      if (!features.length) return;
+
+      const feature = features[0];
+      const coordinates = (feature.geometry as Point).coordinates as [number, number];
+
+      popup?.remove();
+
+      if (feature.properties?.cluster) {
+        const clusterId = feature.properties.cluster_id;
+        const source = map.getSource('events') as MapLibreGl.GeoJSONSource;
+
+        const zoom = await source.getClusterExpansionZoom(clusterId);
+
+        map.easeTo({
+          center: coordinates,
+          zoom,
+          duration: 500,
+        });
+      } else {
+        const props = feature.properties as EventDTO;
+        props.building = JSON.parse(props.building as unknown as string);
+        props.fieldOfStudy = JSON.parse(props.fieldOfStudy as unknown as string);
+        props.occurrences = JSON.parse(props.occurrences as unknown as string);
+
+        const html = renderToString(<MapPopup event={props} />);
+
+        const newPopup = new Popup({ closeOnClick: true })
+          .setLngLat(coordinates)
+          .setHTML(html)
+          .addTo(map);
+        setPopup(newPopup);
+      }
+    },
+    [popup, mapRef]
+  );
+
+  useEffect(() => {
+    const map = mapRef?.getMap();
+
+    if (!map) return;
+
+    map.on('click', handleClick);
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [handleClick, mapRef]);
 
   return (
-    <>
-      {eventList?.map((event) => {
-        const popup = new Popup2({
-          offset: popupOffsets,
-          className: 'text-black',
-        })
-          .setLngLat(new LngLat(event.longitude, event.latidute))
-          .setHTML(
-            getHTML({
-              longitude: event.longitude,
-              latidute: event.latidute,
-              name: event.name,
-              start: new Date(event.occurrences[0].start).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              }),
-              end: new Date(event.occurrences[0].end).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              }),
-              description: event.description,
-              type: event.eventType,
-              topic: event.fieldOfStudy[0]?.name,
-              faculty: event.fieldOfStudy[0]?.faculty.name,
-            })
-          )
-          .setMaxWidth('300px');
-
-        return (
-          <Marker
-            key={event.id}
-            longitude={event.longitude}
-            latitude={event.latidute}
-            color="red"
-            popup={popup}
-          />
-        );
-      })}
-    </>
+    <Source
+      id="events"
+      type="geojson"
+      data={geoJsonData}
+      cluster={true}
+      clusterMaxZoom={14}
+      clusterRadius={50}
+    >
+      <Layer {...layer1} />
+      <Layer {...layer2} />
+      <Layer {...layer3} />
+    </Source>
   );
 }
