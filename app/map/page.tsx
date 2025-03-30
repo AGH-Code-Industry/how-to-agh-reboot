@@ -107,11 +107,35 @@ export default function Page() {
   ]);
 
   const onAGHLeave = useCallback((isOnAGH: boolean) => console.log(isOnAGH), []);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   return (
-    <div className="size-full">
-      <MapFilter eventList={filteredEvents} onFilterChange={setFilteredEvents} />
-      <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} />
+    <div className="relative flex h-screen">
+      {/* Panel z filtrem */}
+      <div
+        className={`fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white shadow-lg transition-all duration-300 ${
+          isFilterOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {isFilterOpen && (
+          <MapFilter
+            eventList={filteredEvents}
+            onFilterChange={setFilteredEvents}
+            onClose={() => setIsFilterOpen(false)}
+          />
+        )}
+      </div>
+
+      {/* Mapa zajmuje resztę miejsca */}
+      <div className={`flex-1 transition-all ${isFilterOpen ? 'opacity-50' : ''}`}>
+        <button
+          onClick={() => setIsFilterOpen(true)}
+          className="absolute left-4 top-4 z-40 rounded-md bg-white/80 px-4 py-2 text-black shadow-md backdrop-blur-md hover:bg-white"
+        >
+          Filtruj wydarzenia
+        </button>
+        <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} />
+      </div>
     </div>
   );
 }

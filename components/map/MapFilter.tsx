@@ -7,14 +7,6 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CustomDatePicker } from '@/components/ui/DataPicker';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
 
 interface Event {
   name: string;
@@ -31,9 +23,10 @@ interface Event {
 interface MapFilterProps {
   eventList: Event[];
   onFilterChange: (filteredEvents: Event[]) => void;
+  onClose: () => void;
 }
 
-export default function MapFilter({ eventList, onFilterChange }: MapFilterProps) {
+export default function MapFilter({ eventList, onFilterChange, onClose }: MapFilterProps) {
   const [originalEvents, setOriginalEvents] = useState<Event[]>(eventList);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(eventList);
   const [search, setSearch] = useState('');
@@ -44,7 +37,7 @@ export default function MapFilter({ eventList, onFilterChange }: MapFilterProps)
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [showPastEvents, setShowPastEvents] = useState(true);
-  console.log(filteredEvents);
+
   useEffect(() => {
     if (originalEvents.length === 0) {
       setOriginalEvents(eventList);
@@ -52,21 +45,21 @@ export default function MapFilter({ eventList, onFilterChange }: MapFilterProps)
   }, [eventList]);
 
   const eventTypes = [...new Set(originalEvents.map((event) => event.type))];
-  const routes = ['Trasa A', 'Trasa B', 'Trasa C']; // Przykładowe trasy
+  const routes = ['Trasa A', 'Trasa B', 'Trasa C'];
 
   const applyFilters = () => {
     const now = new Date();
     const filtered = originalEvents.filter((event) => {
-      const eventDate = new Date(`2023-01-01T${event.startTime}`); // Zakładamy format daty
+      const eventDate = new Date(`2023-01-01T${event.startTime}`);
       return (
         (search === '' || event.name.includes(search) || event.description.includes(search)) &&
         (!selectedType || event.type === selectedType) &&
         (!selectedRoute || event.faculty === selectedRoute) &&
-        (!startDate || eventDate >= startDate) &&
-        (!endDate || eventDate <= endDate) &&
+        (!startDate || eventDate.getTime() >= startDate.getTime()) &&
+        (!endDate || eventDate.getTime() <= endDate.getTime()) &&
         (!startTime || event.startTime >= startTime) &&
         (!endTime || event.endTime <= endTime) &&
-        (showPastEvents || eventDate >= now)
+        (showPastEvents || eventDate.getTime() >= now.getTime())
       );
     });
     setFilteredEvents(filtered);
@@ -74,29 +67,43 @@ export default function MapFilter({ eventList, onFilterChange }: MapFilterProps)
   };
 
   const resetFilters = () => {
+    setSearch('');
+    setSelectedType(null);
+    setSelectedRoute(null);
+    setStartDate(null);
+    setEndDate(null);
+    setStartTime('');
+    setEndTime('');
+    setShowPastEvents(true);
     setFilteredEvents(originalEvents);
     onFilterChange(originalEvents);
   };
 
   return (
-    <div className="relative">
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button className="absolute left-4 top-4 z-50 rounded-md bg-white/80 px-4 py-2 text-black shadow-md backdrop-blur-md hover:bg-white">
-            Filtruj wydarzenia
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Filtruj wydarzenia</DialogTitle>
-          </DialogHeader>
-          <Card className="p-4">
-            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="flex size-full flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white">
+      {/* Nagłówek */}
+      <div className="mb-4 flex shrink-0 items-center justify-between">
+        <h2 className="text-xl font-bold">Filtruj wydarzenia</h2>
+        <button onClick={onClose} className="text-2xl text-white">
+          ×
+        </button>
+      </div>
+
+      {/* Przewijalna zawartość */}
+      <div className="flex-1 overflow-y-auto pr-2">
+        <Card className="border-none bg-transparent shadow-none">
+          <CardContent className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium">Wyszukaj:</label>
               <Input
                 placeholder="Szukaj wydarzeń..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Typ:</label>
               <Select value={selectedType || undefined} onValueChange={setSelectedType}>
                 <SelectTrigger>Typ</SelectTrigger>
                 <SelectContent>
@@ -107,6 +114,10 @@ export default function MapFilter({ eventList, onFilterChange }: MapFilterProps)
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Trasa:</label>
               <Select value={selectedRoute || undefined} onValueChange={setSelectedRoute}>
                 <SelectTrigger>Wybierz trasę</SelectTrigger>
                 <SelectContent>
@@ -117,45 +128,54 @@ export default function MapFilter({ eventList, onFilterChange }: MapFilterProps)
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Data początkowa:</label>
               <CustomDatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
                 placeholderText="Od daty"
               />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Godzina początkowa:</label>
+              <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Data końcowa:</label>
               <CustomDatePicker
                 selected={endDate}
                 onChange={(date) => setEndDate(date)}
                 placeholderText="Do daty"
               />
-              <Input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                placeholder="Od godziny"
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Godzina końcowa:</label>
+              <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+            </div>
+
+            <div className="mt-2 flex items-center gap-2">
+              <Checkbox
+                checked={showPastEvents}
+                onCheckedChange={(checked) => setShowPastEvents(checked as boolean)}
               />
-              <Input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                placeholder="Do godziny"
-              />
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={showPastEvents}
-                  onCheckedChange={(checked) => setShowPastEvents(checked as boolean)}
-                />
-                <span>Pokaż zakończone wydarzenia</span>
-              </div>
-            </CardContent>
-          </Card>
-          <DialogFooter>
-            <Button onClick={applyFilters}>Zastosuj filtry</Button>
-            <Button onClick={resetFilters} className="ml-2 bg-gray-300 hover:bg-gray-400">
-              Pokaż wszystkie wydarzenia
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <span>Pokaż zakończone wydarzenia</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Przyciski */}
+      <div className="mt-4 flex shrink-0 gap-2">
+        <Button onClick={applyFilters}>Zastosuj filtry</Button>
+        <Button onClick={resetFilters} className="bg-gray-300 text-black hover:bg-gray-400">
+          Pokaż wszystkie wydarzenia
+        </Button>
+      </div>
     </div>
   );
 }
