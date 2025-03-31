@@ -28,10 +28,11 @@ interface MapFilterProps {
 
 export default function MapFilter({ eventList, onFilterChange, onClose }: MapFilterProps) {
   const [originalEvents, setOriginalEvents] = useState<Event[]>(eventList);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(eventList);
   const [search, setSearch] = useState('');
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string | undefined>();
+  const [selectedRoute, setSelectedRoute] = useState<string | undefined>();
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState('');
@@ -42,7 +43,7 @@ export default function MapFilter({ eventList, onFilterChange, onClose }: MapFil
     if (originalEvents.length === 0) {
       setOriginalEvents(eventList);
     }
-  }, [eventList]);
+  }, [eventList, originalEvents]);
 
   const eventTypes = [...new Set(originalEvents.map((event) => event.type))];
   const routes = ['Trasa A', 'Trasa B', 'Trasa C'];
@@ -64,12 +65,13 @@ export default function MapFilter({ eventList, onFilterChange, onClose }: MapFil
     });
     setFilteredEvents(filtered);
     onFilterChange(filtered);
+    onClose();
   };
 
   const resetFilters = () => {
     setSearch('');
-    setSelectedType(null);
-    setSelectedRoute(null);
+    setSelectedType(undefined);
+    setSelectedRoute(undefined);
     setStartDate(null);
     setEndDate(null);
     setStartTime('');
@@ -77,6 +79,7 @@ export default function MapFilter({ eventList, onFilterChange, onClose }: MapFil
     setShowPastEvents(true);
     setFilteredEvents(originalEvents);
     onFilterChange(originalEvents);
+    onClose();
   };
 
   return (
@@ -104,8 +107,8 @@ export default function MapFilter({ eventList, onFilterChange, onClose }: MapFil
 
             <div>
               <label className="mb-1 block text-sm font-medium">Typ:</label>
-              <Select value={selectedType || undefined} onValueChange={setSelectedType}>
-                <SelectTrigger>Typ</SelectTrigger>
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger>{selectedType ?? '-'}</SelectTrigger>
                 <SelectContent>
                   {eventTypes.map((type) => (
                     <SelectItem key={type} value={type}>
@@ -118,8 +121,8 @@ export default function MapFilter({ eventList, onFilterChange, onClose }: MapFil
 
             <div>
               <label className="mb-1 block text-sm font-medium">Trasa:</label>
-              <Select value={selectedRoute || undefined} onValueChange={setSelectedRoute}>
-                <SelectTrigger>Wybierz trasę</SelectTrigger>
+              <Select value={selectedRoute} onValueChange={setSelectedRoute}>
+                <SelectTrigger>{selectedRoute ?? '-'}</SelectTrigger>
                 <SelectContent>
                   {routes.map((route) => (
                     <SelectItem key={route} value={route}>

@@ -110,10 +110,10 @@ export default function Page() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   return (
-    <div className="relative flex h-screen">
+    <div className="relative flex h-full">
       {/* Panel z filtrem */}
       <div
-        className={`fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white shadow-lg transition-all duration-300 ${
+        className={`fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] max-w-[100vw] flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white shadow-lg transition-all duration-300 ${
           isFilterOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -134,8 +134,8 @@ export default function Page() {
         >
           Filtruj wydarzenia
         </button>
-        <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} />
       </div>
+      <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} />
     </div>
   );
 }
