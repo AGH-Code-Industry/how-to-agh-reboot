@@ -44,12 +44,14 @@ function TourLine({
   color = '#000000',
   lineWidth = 18,
   opacity = 0.5,
+  tourId,
 }: {
   map?: Map;
   events: MapEvent[];
   color?: string;
   lineWidth?: number;
   opacity?: number;
+  tourId: string;
 }) {
   const [sourceId, setSourceId] = useState<string>();
 
@@ -70,7 +72,7 @@ function TourLine({
       cleanUp(map, sourceId)();
     }
 
-    const newSourceId = `line-${Date.now()}`;
+    const newSourceId = `line-${tourId}}`;
     setSourceId(newSourceId);
 
     map.addSource(newSourceId, getSourceConfig(events));

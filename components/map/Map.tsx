@@ -87,7 +87,7 @@ export default function Map(props: Props) {
     >
       {props.tours &&
         Object.entries(props.tours).map(([key, value]) => (
-          <TourLine key={key} map={mapNative} events={value} color="blue" />
+          <TourLine key={key} map={mapNative} events={value} color="blue" tourId={key} />
         ))}
       {/* <TourLine map={mapNative} events={props.eventList} color="blue" />
       <TourLine map={mapNative} events={[props.eventList[2], props.eventList[0]]} color="red" /> */}
