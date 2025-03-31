@@ -14,7 +14,7 @@ export function CustomDatePicker({ selected, onChange, placeholderText }: DatePi
       selected={selected}
       onChange={onChange}
       placeholderText={placeholderText || "Wybierz datę"}
-      className="w-full rounded-md border border-gray-300 p-2 bg-black"
+      className="w-full rounded-md border border-gray-300 bg-black p-2"
       showTimeSelect
       timeIntervals={15}
     />

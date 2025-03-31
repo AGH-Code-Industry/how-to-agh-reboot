@@ -67,8 +67,9 @@ export default function Page() {
     <div className="relative flex h-full">
       {/* Panel z filtrem */}
       <div
-        className={`fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] max-w-[100vw] flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white shadow-lg transition-all duration-300 ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        className={`fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] max-w-[100vw] flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white shadow-lg transition-all duration-300 ${
+          isFilterOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         <MapFilter
           originalEvents={originalEvents}
