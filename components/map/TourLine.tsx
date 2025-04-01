@@ -56,12 +56,12 @@ function TourLine({
   const [sourceId, setSourceId] = useState<string>();
 
   useEffect(() => {
-    const cleanUp = (map: Map, sourceId?: string) => () => {
-      if (!sourceId) {
+    const cleanUp = () => {
+      if (!map) {
         return;
       }
-      map.removeLayer(`${sourceId}-layer`);
-      map.removeSource(sourceId);
+      map.removeLayer(`${newSourceId}-layer`);
+      map.removeSource(newSourceId);
     };
 
     if (!map) {
@@ -69,7 +69,7 @@ function TourLine({
     }
 
     if (sourceId) {
-      cleanUp(map, sourceId)();
+      cleanUp();
     }
 
     const newSourceId = `line-${tourId}}`;
@@ -79,7 +79,7 @@ function TourLine({
 
     map.addLayer(getLayerConfig(newSourceId, color, lineWidth, opacity), 'clusters');
 
-    return cleanUp(map, sourceId);
+    return cleanUp;
   }, [map]);
 
   useEffect(() => {

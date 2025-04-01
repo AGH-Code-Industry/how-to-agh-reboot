@@ -23,7 +23,7 @@ export default function Page() {
   }, [preFilteredEvents.length]); // syf
 
   const tours = useMemo(() => {
-    const tours = originalEvents.reduce((acc: Record<number, MapEvent[]>, event) => {
+    const tours = filteredEvents.reduce((acc: Record<number, MapEvent[]>, event) => {
       event.occurrences.forEach((occurrence) => {
         const tourId = occurrence.tourId;
 
@@ -57,7 +57,7 @@ export default function Page() {
     }
 
     return tours;
-  }, [originalEvents]);
+  }, [filteredEvents]);
 
   const onAGHLeave = useCallback((isOnAGH: boolean) => console.log(isOnAGH), []);
 
