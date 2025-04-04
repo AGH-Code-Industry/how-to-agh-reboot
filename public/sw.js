@@ -1,21 +1,3 @@
-// self.addEventListener('push', function (event) {
-//   console.log('push event', event);
-//
-//   if (event.data) {
-//     const data = event.data.json();
-//     const options = {
-//       body: data.body,
-//       icon: data.icon || '/icon.png',
-//       badge: '/badge.png',
-//       vibrate: [100, 50, 100],
-//       data: {
-//         url: data.url, // Add the URL to the notification data
-//       },
-//     };
-//     event.waitUntil(self.registration.showNotification(data.title, options));
-//   }
-// });
-
 self.addEventListener('notificationclick', function (event) {
   console.log('notificationclick event', event);
   event.notification.close();
