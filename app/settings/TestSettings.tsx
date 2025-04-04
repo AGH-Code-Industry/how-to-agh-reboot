@@ -1,5 +1,10 @@
 import { ThemeResetButton } from '@/app/settings/ChangeTheme';
 import { PageSectionTitle } from '@/components/layout/PageLayout';
+import {
+  LocalNotificationButton,
+  ScheduleNotificationButton,
+} from '@/components/tests/NotificationButton';
+import ToastButton from '@/components/tests/ToastButton';
 
 export default function TestSettings() {
   return (
@@ -10,6 +15,9 @@ export default function TestSettings() {
           Tymczasowe funkcje przydatne podczas testów
         </span>
         <ThemeResetButton />
+        <LocalNotificationButton />
+        <ScheduleNotificationButton />
+        <ToastButton />
       </div>
     </>
   );
