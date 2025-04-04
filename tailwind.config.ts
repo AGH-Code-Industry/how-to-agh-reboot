@@ -45,6 +45,14 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        errorAlert: {
+          DEFAULT: 'hsl(var(--error-alert))',
+          foreground: 'hsl(var(--error-alert-foreground))',
+        },
+        successAlert: {
+          DEFAULT: 'hsl(var(--success-alert))',
+          foreground: 'hsl(var(--success-alert-foreground))',
+        },
         success: {
           DEFAULT: 'hsl(var(--success))',
           foreground: 'hsl(var(--success-foreground))',
@@ -54,6 +62,15 @@ export default {
         lg: `var(--radius)`,
         md: `calc(var(--radius) - 2px)`,
         sm: 'calc(var(--radius) - 4px)',
+      },
+      animation: {
+        shimmer: 'shimmer 4s infinite linear',
+      },
+      keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '300% 0' },
+          '100%': { backgroundPosition: '-300% 0' },
+        },
       },
     },
   },
