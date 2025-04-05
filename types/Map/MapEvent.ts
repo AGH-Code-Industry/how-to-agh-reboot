@@ -1,8 +1,8 @@
 export type MapEvent = {
   name: string;
   description: string;
-  startTime: string;
-  endTime: string;
+  start: Date;
+  end: Date;
   type: string;
   topic: string;
   faculty: string;
