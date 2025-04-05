@@ -5,6 +5,7 @@ import { TRPCProvider } from '@/trpc/client';
 import { ThemeProvider } from '@/components/theme-provider';
 import NavBar from '@/components/layout/NavBar';
 import React from 'react';
+import WelcomeOverlay from '@/components/global/WelcomeOverlay';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,6 +39,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TRPCProvider>
+            <WelcomeOverlay />
             <main className="grow overflow-y-auto">{children}</main>
             <NavBar />
           </TRPCProvider>
