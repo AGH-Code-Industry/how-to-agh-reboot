@@ -66,6 +66,8 @@ export default function Map(props: Props) {
     }
   };
 
+  const toursEntries = Object.entries(props.tours);
+
   return (
     <MapLibre
       // Komponent nie przyjmuje className
@@ -85,8 +87,8 @@ export default function Map(props: Props) {
       onLoad={handleMapLoad}
       ref={mapRef}
     >
-      {props.tours &&
-        Object.entries(props.tours).map(([key, value]) => (
+      {toursEntries.length == 1 &&
+        toursEntries.map(([key, value]) => (
           <TourLine key={key} map={mapNative} events={value} color="blue" tourId={key} />
         ))}
       {/* <TourLine map={mapNative} events={props.eventList} color="blue" />

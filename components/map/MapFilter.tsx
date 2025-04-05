@@ -17,8 +17,8 @@ interface MapFilterProps {
 
 export default function MapFilter({ originalEvents, onFilterChange, onClose }: MapFilterProps) {
   const [search, setSearch] = useState('');
-  const [selectedType, setSelectedType] = useState<string | undefined>();
-  const [selectedRoute, setSelectedRoute] = useState<number | undefined>();
+  const [selectedType, setSelectedType] = useState<string>('-');
+  const [selectedRoute, setSelectedRoute] = useState<string>('-');
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
   const [showPastEvents, setShowPastEvents] = useState(true);
@@ -64,7 +64,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
             (!startDate || occStartHour.getTime() >= startDate.getTime()) &&
             (!endDate || occEndHour.getTime() <= endDate.getTime()) &&
             (showPastEvents || occEndHour.getTime() >= now.getTime()) &&
-            (!selectedRoute || occurrence.tourId === selectedRoute)
+            (selectedRoute === '-' || occurrence.tourId === Number(selectedRoute))
           ) {
             dateCheck = true;
             break;
@@ -80,7 +80,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
             event.name.toLowerCase().includes(search.toLowerCase()) ||
             (event.description &&
               event.description.toLowerCase().includes(search.toLowerCase()))) &&
-          (!selectedType || event.eventType === selectedType) &&
+          (selectedType === '-' || event.eventType === selectedType) &&
           dateCheck
         );
       });
@@ -90,8 +90,8 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
 
   const resetFilters = () => {
     setSearch('');
-    setSelectedType(undefined);
-    setSelectedRoute(undefined);
+    setSelectedType('-');
+    setSelectedRoute('-');
     setStartTime('');
     setEndTime('');
     setShowPastEvents(true);
@@ -127,9 +127,10 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
               <label className="mb-1 block text-sm font-medium">Typ:</label>
               <Select value={selectedType} onValueChange={setSelectedType}>
                 <SelectTrigger className="rounded-md border border-gray-300 bg-black p-2">
-                  {selectedType ?? '-'}
+                  {selectedType}
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value={'-'}>-</SelectItem>
                   {eventTypes.map((type) => (
                     <SelectItem key={type} value={type}>
                       {type}
@@ -143,12 +144,13 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
               <label className="mb-1 block text-sm font-medium">Trasa:</label>
               <Select
                 value={selectedRoute?.toString()}
-                onValueChange={(val) => setSelectedRoute(parseInt(val))}
+                onValueChange={(val) => setSelectedRoute(val)}
               >
                 <SelectTrigger className="rounded-md border border-gray-300 bg-black p-2">
-                  {selectedRoute ?? '-'}
+                  {selectedRoute}
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value={'-'}>-</SelectItem>
                   {routes.map((route) => (
                     <SelectItem key={route} value={route.toString()}>
                       {route}
@@ -160,12 +162,22 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
 
             <div>
               <label className="mb-1 block text-sm font-medium">Godzina początkowa:</label>
-              <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+              <Input
+                type="time"
+                className="rounded-md border border-gray-300 bg-black p-2"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
             </div>
 
             <div>
               <label className="mb-1 block text-sm font-medium">Godzina końcowa:</label>
-              <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+              <Input
+                type="time"
+                className="rounded-md border border-gray-300 bg-black p-2"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
             </div>
 
             <div className="mt-2 flex items-center gap-2">

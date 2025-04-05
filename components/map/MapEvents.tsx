@@ -74,7 +74,7 @@ export default function MapEvents({ eventList }: Props) {
 
         const html = renderToString(<MapPopup event={props} />);
 
-        const newPopup = new Popup({ closeOnClick: true })
+        const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
           .setLngLat(coordinates)
           .setHTML(html)
           .addTo(map);

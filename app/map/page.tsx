@@ -88,7 +88,6 @@ export default function Page() {
           Filtruj wydarzenia
         </button>
       </div>
-      {/* <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} /> */}
       <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} tours={tours} />
     </div>
   );
