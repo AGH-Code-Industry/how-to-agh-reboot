@@ -7,6 +7,7 @@ import NavBar from '@/components/layout/NavBar';
 import React from 'react';
 import WelcomeOverlay from '@/components/global/WelcomeOverlay';
 import { Toaster } from '@/components/ui/sonner';
+import ServiceWorkerRegister from '@/components/layout/ServiceWorkerRegister';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,8 +29,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  registerServiceWorker();
-
   return (
     <html lang="en">
       <body
@@ -46,15 +45,10 @@ export default function RootLayout({
             <main className="grow overflow-y-auto">{children}</main>
             <NavBar />
             <Toaster position="top-center" />
+            <ServiceWorkerRegister />
           </TRPCProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
-
-const registerServiceWorker = () => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(console.error);
-  }
-};
