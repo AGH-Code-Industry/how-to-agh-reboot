@@ -10,6 +10,7 @@ import MapEvents from '@/components/map/MapEvents';
 import { polygon, point, booleanPointInPolygon } from '@turf/turf';
 import TourLine from './TourLine';
 import { EventDTO } from '@/types/Event';
+import CampMarker from './CampMarker';
 
 type Props = {
   eventList: EventDTO[];
@@ -101,6 +102,7 @@ export default function Map(props: Props) {
         ref={geoControlRef}
         onGeolocate={handleGeolocate}
       />
+      <CampMarker />
       <MapEvents eventList={props.eventList} />
     </MapLibre>
   );
