@@ -34,6 +34,7 @@ export const quizesRouter = router({
       filter.quiz_id = input.quizId;
 
       const quizDetailsDO = await prisma.quiz.findFirst({
+        where: filter,
         include: {
           quiz_questions: {
             include: {
