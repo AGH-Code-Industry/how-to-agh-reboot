@@ -1,0 +1,16 @@
+.maplibregl-popup-content {
+    @apply text-foreground;
+    @apply bg-background;
+}
+
+.maplibregl-popup-close-button {
+    @apply w-5;
+    @apply h-5;
+    @apply text-foreground;
+    @apply bg-background;
+}
+
+.maplibregl-popup-tip {
+    @apply text-background;
+    @apply border-t-background !important;
+}
