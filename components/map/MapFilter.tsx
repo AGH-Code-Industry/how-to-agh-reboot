@@ -7,6 +7,8 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EventDTO } from '@/types/Event';
+import { trpc } from '@/trpc/client';
+import { Drawer } from 'vaul';
 
 interface MapFilterProps {
   originalEvents: EventDTO[];
@@ -24,9 +26,8 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
   const [showPastEvents, setShowPastEvents] = useState(true);
 
   const eventTypes = [...new Set(originalEvents.map((event) => event.eventType))];
-  const routes = [
-    ...new Set(originalEvents.flatMap((event) => event.occurrences.map((el) => el.tourId))),
-  ];
+
+  const routes = trpc.tours.getTours.useQuery({}).data ?? [];
 
   const applyFilters = () => {
     const now = new Date();
@@ -100,24 +101,24 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
   };
 
   return (
-    <div className="flex size-full flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white">
+    <div className="flex size-full flex-col bg-background p-4 text-foreground">
       {/* Nagłówek */}
-      <div className="mb-4 flex shrink-0 items-center justify-between">
-        <h2 className="text-xl font-bold">Filtruj wydarzenia</h2>
-        <button onClick={onClose} className="text-2xl text-white">
+      <Drawer.Title className="mb-4 flex shrink-0 items-center justify-between">
+        <span className="text-xl font-bold">Filtruj wydarzenia</span>
+        <button onClick={onClose} className="text-2xl ">
           ×
         </button>
-      </div>
+      </Drawer.Title>
 
       {/* Przewijalna zawartość */}
       <div className="flex-1 overflow-y-auto pr-2">
         <Card className="border-none bg-transparent shadow-none">
-          <CardContent className="grid grid-cols-1 gap-4">
+          <CardContent className="grid grid-cols-1 gap-4 p-0">
             <div>
               <label className="mb-1 block text-sm font-medium">Wyszukaj:</label>
               <Input
                 placeholder="Szukaj wydarzeń..."
-                className="rounded-md border border-gray-300 bg-black p-2"
+                className="rounded-md border p-2"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -126,9 +127,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
             <div>
               <label className="mb-1 block text-sm font-medium">Typ:</label>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="rounded-md border border-gray-300 bg-black p-2">
-                  {selectedType}
-                </SelectTrigger>
+                <SelectTrigger className="rounded-md border p-2">{selectedType}</SelectTrigger>
                 <SelectContent>
                   <SelectItem value={'-'}>-</SelectItem>
                   {eventTypes.map((type) => (
@@ -146,14 +145,16 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
                 value={selectedRoute?.toString()}
                 onValueChange={(val) => setSelectedRoute(val)}
               >
-                <SelectTrigger className="rounded-md border border-gray-300 bg-black p-2">
-                  {selectedRoute}
+                <SelectTrigger className="rounded-md border p-2">
+                  {selectedRoute == '-'
+                    ? '-'
+                    : (routes.find((el) => el.id == Number(selectedRoute))?.name ?? '-')}
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={'-'}>-</SelectItem>
                   {routes.map((route) => (
-                    <SelectItem key={route} value={route.toString()}>
-                      {route}
+                    <SelectItem key={route.id} value={route.id.toString()}>
+                      {route.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -164,7 +165,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
               <label className="mb-1 block text-sm font-medium">Godzina początkowa:</label>
               <Input
                 type="time"
-                className="rounded-md border border-gray-300 bg-black p-2"
+                className="rounded-md border p-2"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
@@ -174,7 +175,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
               <label className="mb-1 block text-sm font-medium">Godzina końcowa:</label>
               <Input
                 type="time"
-                className="rounded-md border border-gray-300 bg-black p-2"
+                className="rounded-md border p-2"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
@@ -194,8 +195,8 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
       {/* Przyciski */}
       <div className="mt-4 flex shrink-0 gap-2">
         <Button onClick={applyFilters}>Zastosuj filtry</Button>
-        <Button onClick={resetFilters} className="bg-gray-300 text-black hover:bg-gray-400">
-          Pokaż wszystkie wydarzenia
+        <Button onClick={resetFilters} className="">
+          Reset
         </Button>
       </div>
     </div>

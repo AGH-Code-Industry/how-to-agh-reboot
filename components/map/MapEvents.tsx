@@ -1,4 +1,4 @@
-import './MapEvents.css';
+import './MapEvents.scss';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { renderToString } from 'react-dom/server';

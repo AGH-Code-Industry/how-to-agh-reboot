@@ -57,9 +57,10 @@ function TourLine({
 
   useEffect(() => {
     const cleanUp = () => {
-      if (!map) {
+      if (!map || !map.style) {
         return;
       }
+
       map.removeLayer(`${newSourceId}-layer`);
       map.removeSource(newSourceId);
     };
