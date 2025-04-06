@@ -1,6 +1,11 @@
 import { ThemeResetButton } from '@/app/settings/ChangeTheme';
 import { PageSectionTitle } from '@/components/layout/PageLayout';
 import ResetCookiesButton from '@/components/settings/ResetCookiesButton';
+import {
+  LocalNotificationButton,
+  ScheduleNotificationButton,
+} from '@/components/tests/NotificationButton';
+import ToastButton from '@/components/tests/ToastButton';
 
 export default function TestSettings() {
   return (
@@ -12,6 +17,9 @@ export default function TestSettings() {
         </span>
         <ThemeResetButton />
         <ResetCookiesButton />
+        <LocalNotificationButton />
+        <ScheduleNotificationButton />
+        <ToastButton />
       </div>
     </>
   );
