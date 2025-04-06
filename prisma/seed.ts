@@ -62,18 +62,15 @@ async function main(): Promise<void> {
  * Clear all data from the database
  */
 async function clearDatabase(): Promise<void> {
-  const tablenames = await prisma.$queryRaw<Array<{ name: string }>>`SELECT name
-                                                                     FROM sqlite_master
-                                                                     WHERE type = 'table'
-                                                                       AND name NOT LIKE 'sqlite_%'
-                                                                       AND name NOT LIKE '_prisma_migrations'`;
+  const tableNames = await prisma.$queryRaw<
+    { tablename: string }[]
+  >`SELECT tablename FROM pg_tables WHERE schemaname='public' and tablename NOT LIKE '_prisma_migrations'`;
 
-  for (const { name } of tablenames) {
+  for (const { tablename } of tableNames) {
     try {
-      await prisma.$executeRawUnsafe(`DELETE
-                                      FROM "${name}"`);
-    } catch {
-      console.log(`Failed to clear table ${name}`);
+      await prisma.$executeRawUnsafe(`TRUNCATE TABLE "${tablename}" RESTART IDENTITY CASCADE;`);
+    } catch (error) {
+      console.error(`Error truncating table ${tablename}:`, error);
     }
   }
 }

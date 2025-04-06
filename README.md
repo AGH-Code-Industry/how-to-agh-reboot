@@ -18,7 +18,7 @@ Run `pnpm run dev` to start a developer server at http://localhost:3000
 
 ## Working with Database
 
-Project is using an SQLite database by default, which will be located in the root of the project. If the `dev.db` file is not present or you suspect it's "behind" the current version of the database schema, it is advised to run `pnpm run reset` to apply the migrations and generate files for the client module.
+Project is using a PostgreSQL database. [`./.docker/postgresql.yaml`](./.docker/postgresql.yaml) contains an example docker-compose file for running the database locally. If you are using VSCode you can also launch a task called `Next.JS: Dev`, which sets up the database and launches the app in development mode.
 
 ### Modifying the schema
 

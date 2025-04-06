@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: postgres16_db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: howtoagh
+      POSTGRES_PASSWORD: howtoagh
+      POSTGRES_DB: howtoagh
+    volumes:
+      - db_data:/var/lib/howtoagh/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U howtoagh -d howtoagh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
