@@ -12,5 +12,31 @@
 
 .maplibregl-popup-tip {
     @apply text-background;
+}
+
+.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+    @apply border-r-background !important;
+}
+
+.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+    @apply border-l-background !important;
+}
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
     @apply border-t-background !important;
+}
+.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+    @apply border-b-background !important;
+}
+.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {
+    @apply border-t-background !important;
+}
+.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+    @apply border-t-background !important;
+}
+
+.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {
+    @apply border-b-background !important;
+}
+.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+    @apply border-b-background !important;
 }
