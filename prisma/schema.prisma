@@ -158,24 +158,12 @@ model EventOccurrence {
   @@unique([tour_id, occurrence_id, event_id])
 }
 
-model User {
-  user_id               Int                  @id @default(autoincrement())
-  first_name            String
-  last_name             String
-  password              String
-  event_visits          EventVisit[]
-  quiz_question_answers QuizQuestionAnswer[]
-  created_at            DateTime             @default(now())
-  updated_at            DateTime             @updatedAt
-}
-
 model EventVisit {
   event_visit_id Int      @id @default(autoincrement())
-  time           DateTime
+  time           DateTime @default(now())
   event_id       Int
   event          Event    @relation(fields: [event_id], references: [event_id])
-  user_id        Int
-  user           User     @relation(fields: [user_id], references: [user_id])
+  user_id        String
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
@@ -240,10 +228,18 @@ model QuizQuestionAnswer {
   correct_answer          Int
   quiz_question_id        Int
   quiz_question           QuizQuestion @relation(fields: [quiz_question_id], references: [quiz_question_id])
-  user_id                 Int
-  user                    User         @relation(fields: [user_id], references: [user_id])
+  user_id                 String
   created_at              DateTime     @default(now())
   updated_at              DateTime     @updatedAt
 
   @@unique([quiz_question_id, user_id])
+}
+
+model Prize {
+  prize_id          Int @id @default(autoincrement())
+  prize_title       String
+  prize_description String
+  required_visits   Int
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
 }
