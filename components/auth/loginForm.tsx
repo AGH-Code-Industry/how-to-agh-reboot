@@ -12,13 +12,21 @@ import type * as z from 'zod';
 import { useState } from 'react';
 import { ServerMessage } from '@/types/Auth';
 import { cn } from '@/lib/utils';
+import SocialLoginButtons from './socialLoginButtons';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/supabase/client';
 
 type LoginFormProps = {
   className?: string;
 };
 
 export default function LoginForm({ className }: LoginFormProps) {
+  const supabase = createClient();
+  const router = useRouter();
+
   const [serverMessage, setServerMessage] = useState<ServerMessage | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -28,18 +36,26 @@ export default function LoginForm({ className }: LoginFormProps) {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof loginSchema>) => {
-    if (data.password === 'test123') {
-      setServerMessage({
-        type: 'success',
-        message: 'Zalogowano pomyślnie',
-      });
-    } else {
-      setServerMessage({
-        type: 'error',
-        message: 'Niepoprawne dane logowania',
-      });
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    setLoading(true);
+    setServerMessage(null);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setServerMessage({ type: 'error', message: error.message });
+      return;
     }
+
+    setServerMessage({ type: 'success', message: 'Zalogowano pomyślnie, przekierowywanie...' });
+
+    router.push('/');
+    router.refresh();
   };
 
   return (
@@ -75,32 +91,26 @@ export default function LoginForm({ className }: LoginFormProps) {
                 )}
               </div>
               <div className="flex flex-col gap-y-2">
-                <div className="flex justify-between">
-                  <Label htmlFor="password">Hasło</Label>
-                  <Link
-                    href="/auth/reset"
-                    className="inline-block text-sm underline-offset-4 hover:underline"
-                    tabIndex={-1}
-                  >
-                    Zapomniałeś hasła?
-                  </Link>
-                </div>
+                <Label htmlFor="password">Hasło</Label>
                 <Input type="password" {...register('password')} />
                 {errors.password && (
                   <p className="text-sm text-errorAlert-foreground">{errors.password.message}</p>
                 )}
               </div>
             </div>
-            <Button type="submit" className="mt-4 w-full">
+            <Button type="submit" className="mt-4 w-full" disabled={loading}>
+              {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
               Zaloguj się
             </Button>
           </form>
+
           <div className="mt-4 text-center text-sm">
             Nie masz konta?{' '}
             <Link href="/auth/register" className="mt-3  underline underline-offset-4">
               Zarejestruj się
             </Link>
           </div>
+          <SocialLoginButtons />
         </CardContent>
       </Card>
     </div>

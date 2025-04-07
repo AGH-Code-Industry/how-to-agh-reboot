@@ -12,13 +12,21 @@ import type * as z from 'zod';
 import { useState } from 'react';
 import { ServerMessage } from '@/types/Auth';
 import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import SocialLoginButtons from './socialLoginButtons';
+import { createClient } from '@/supabase/client';
 
 type RegisterFormProps = {
   className?: string;
 };
 
 export default function RegisterForm({ className }: RegisterFormProps) {
+  const supabase = createClient();
+  const router = useRouter();
+
   const [serverMessage, setServerMessage] = useState<ServerMessage | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -28,16 +36,41 @@ export default function RegisterForm({ className }: RegisterFormProps) {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof registerSchema>) => {
-    if (data.password === 'test123') {
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    setLoading(true);
+
+    const { data: loginInfo, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setServerMessage({ type: 'error', message: error.message });
+      return;
+    }
+
+    if (loginInfo.user && !loginInfo.session) {
+      // This means email confirmation is REQUIRED
       setServerMessage({
         type: 'success',
-        message: 'Zarejestrowano pomyślnie',
+        message:
+          'Zarejestrowano pomyślnie! Sprawdź swoją skrynkę pocztową w celu potwierdzenia konta.',
       });
+    } else if (loginInfo.user && loginInfo.session) {
+      // This means email confirmation is DISABLED - user is signed up and logged in
+      setServerMessage({
+        type: 'success',
+        message: 'Zarejestrowano pomyślnie! Przekierowywanie...',
+      });
+
+      router.push('/');
+      router.refresh();
     } else {
       setServerMessage({
         type: 'error',
-        message: 'Taki użytkownik już istnieje',
+        message: 'Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.',
       });
     }
   };
@@ -92,15 +125,18 @@ export default function RegisterForm({ className }: RegisterFormProps) {
               </div>
             </div>
             <Button type="submit" className="mt-4 w-full">
+              {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
               Zarejestruj się
             </Button>
           </form>
+
           <div className="mt-4 text-center text-sm">
             Masz już konto?{' '}
             <Link href="/auth/login" className="mt-3  underline underline-offset-4">
               Zaloguj się
             </Link>
           </div>
+          <SocialLoginButtons />
         </CardContent>
       </Card>
     </div>

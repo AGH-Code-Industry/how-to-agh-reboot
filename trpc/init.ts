@@ -1,15 +1,8 @@
-import { initTRPC } from '@trpc/server';
-import { cache } from 'react';
+import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
+import { Context } from './context';
 
-export const createTRPCContext = cache(async () => {
-  /**
-   * @see: https://trpc.io/docs/server/context
-   */
-  return {};
-});
-
-const t = initTRPC.create({
+const t = initTRPC.context<Context>().create({
   /**
    * @see https://trpc.io/docs/server/data-transformers
    */
@@ -19,3 +12,17 @@ const t = initTRPC.create({
 export const router = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const procedure = t.procedure;
+export const protectedProcedure = t.procedure.use(async (opts) => {
+  const { ctx } = opts;
+
+  if (!ctx.auth) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  return opts.next({
+    ctx: {
+      auth: ctx.auth,
+      user: ctx.user,
+    },
+  });
+});
