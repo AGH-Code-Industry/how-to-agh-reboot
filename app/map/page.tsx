@@ -3,11 +3,14 @@ import Map from '@/components/map/Map';
 import { trpc } from '@/trpc/client';
 import { EventDTO } from '@/types/Event';
 import { MapEvent } from '@/types/Map/MapEvent';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import MapFilter from '@/components/map/MapFilter';
+import AGHLeaveIndicator from '@/components/map/AGHLeaveIndicator';
 
 export default function Page() {
+  const [isOnAGH, setIsOnAGH] = useState<boolean>(true);
+
   const originalEvents = (
     (trpc.events.getEvents.useQuery({}).data ?? []) as unknown as EventDTO[]
   ).filter((event) => event.occurrences.length > 0);
@@ -59,8 +62,6 @@ export default function Page() {
     return tours;
   }, [filteredEvents]);
 
-  const onAGHLeave = useCallback((isOnAGH: boolean) => console.log(isOnAGH), []);
-
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   return (
@@ -88,7 +89,8 @@ export default function Page() {
           Filtruj wydarzenia
         </button>
       </div>
-      <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} tours={tours} />
+      <Map onAGHLeaveOrEnter={setIsOnAGH} eventList={filteredEvents} tours={tours} />
+      {!isOnAGH && <AGHLeaveIndicator />}
     </div>
   );
 }
