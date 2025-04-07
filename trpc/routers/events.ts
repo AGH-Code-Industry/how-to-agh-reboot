@@ -1,11 +1,11 @@
-import { procedure, router } from '../init';
+import { procedure, protectedProcedure, router } from '../init';
 import { prisma } from '@/prisma/prisma';
 import { eventDOtoDTO, eventTypeDOtoDTO } from '@/types/Event';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 export const eventsRouter = router({
-  getEvents: procedure
+  getEvents: protectedProcedure
     .input(
       z.object({
         eventTypeId: z.number().positive().optional(),
@@ -13,7 +13,7 @@ export const eventsRouter = router({
       })
     )
     .query(async (opts) => {
-      const { input } = opts;
+      const { input, ctx } = opts;
       const filter: Prisma.EventWhereInput = {};
 
       if (input.eventTypeId) {
@@ -47,6 +47,11 @@ export const eventsRouter = router({
                     faculty: true,
                   },
                 },
+              },
+            },
+            event_visits: {
+              where: {
+                user_id: ctx.user.id,
               },
             },
           },

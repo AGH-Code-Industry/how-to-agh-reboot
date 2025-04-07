@@ -8,9 +8,12 @@ import {
   Occurrence,
   Tour,
   Event,
+  EventVisit,
 } from '@prisma/client';
 
 export type EventDO = Event & { building: Building } & { event_type: EventType } & {
+  event_visits: EventVisit[];
+} & {
   event_occurrences: (EventOccurrence & { occurrence: Occurrence } & { tour: Tour })[];
 } & {
   event_field_of_studies: (EventFieldOfStudy & {
@@ -42,6 +45,7 @@ export type EventDTO = {
       name: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['name'];
     };
   }[];
+  visited: boolean;
 };
 
 export const eventDOtoDTO = (data: EventDO): EventDTO => ({
@@ -68,6 +72,7 @@ export const eventDOtoDTO = (data: EventDO): EventDTO => ({
       name: fos.field_of_study.faculty.name,
     },
   })),
+  visited: data.event_visits.length > 0,
 });
 
 export type EventTypeDO = EventType;

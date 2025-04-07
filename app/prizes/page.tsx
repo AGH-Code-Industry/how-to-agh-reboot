@@ -1,20 +1,9 @@
 import { PageLayout, PageSectionTitle, PageTitle } from '@/components/layout/PageLayout';
 import Reward from '@/components/reward/Reward';
+import { trpc } from '@/trpc/server';
 
-export default function Prizes() {
-  const tempNagroda = {
-    title: 'Kubek z Uśmieszkiem',
-    description: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
-    completed: 3,
-    required: 8,
-  };
-
-  const tempNagrodaFull = {
-    title: 'Kubek z Uśmieszkiem',
-    description: 'Wykonaj 5 zadań rangi średniej lub trudnej.',
-    completed: 8,
-    required: 8,
-  };
+export default async function Prizes() {
+  const prizes = await trpc.prizes.getPrizes();
 
   return (
     <PageLayout>
@@ -23,12 +12,15 @@ export default function Prizes() {
         Wykonuj zadania w zamian za nagrody! Odbiór nagród - namiot WRSS
       </PageSectionTitle>
       <div className="flex flex-col gap-4">
-        <Reward {...tempNagroda} />
-        <Reward {...tempNagroda} />
-        <Reward {...tempNagrodaFull} />
-        <Reward {...tempNagrodaFull} />
-        <Reward {...tempNagroda} />
-        <Reward {...tempNagroda} />
+        {prizes.map((prize) => (
+          <Reward
+            key={prize.id}
+            title={prize.title}
+            description={prize.description}
+            required={prize.requirement}
+            completed={prize.progress}
+          />
+        ))}
       </div>
     </PageLayout>
   );
