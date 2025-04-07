@@ -28,7 +28,11 @@ export type EventDTO = {
   display: EventDO['should_be_displayed'];
   latidute: EventDO['location_latitude'];
   longitude: EventDO['location_longitude'];
-  eventType: EventDO['event_type']['name'];
+  eventType: {
+    id: EventDO['event_type']['event_type_id'];
+    name: EventDO['event_type']['name'];
+    color: EventDO['event_type']['color'];
+  };
   building: {
     id: EventDO['building']['building_id'];
     name: EventDO['building']['name'];
@@ -38,14 +42,17 @@ export type EventDTO = {
     end: EventDO['event_occurrences'][0]['occurrence']['end_time'];
     tourId: EventDO['event_occurrences'][0]['tour_id'];
   }[];
-  fieldOfStudy: {
-    name: EventDO['event_field_of_studies'][0]['field_of_study']['name'];
-    faculty: {
-      id: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['faculty_id'];
-      name: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['name'];
-    };
-  }[];
+  fieldOfStudy: FieldOfStudyDTO[];
   visited: boolean;
+};
+
+export type FieldOfStudyDTO = {
+  id: EventDO['event_field_of_studies'][0]['field_of_study']['field_of_study_id'];
+  name: EventDO['event_field_of_studies'][0]['field_of_study']['name'];
+  faculty: {
+    id: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['faculty_id'];
+    name: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['name'];
+  };
 };
 
 export const eventDOtoDTO = (data: EventDO): EventDTO => ({
@@ -55,7 +62,7 @@ export const eventDOtoDTO = (data: EventDO): EventDTO => ({
   display: data.should_be_displayed,
   latidute: data.location_latitude,
   longitude: data.location_longitude,
-  eventType: data.event_type.name,
+  eventType: eventTypeDOtoDTO(data.event_type),
   building: {
     id: data.building.building_id,
     name: data.building.name,
@@ -65,13 +72,16 @@ export const eventDOtoDTO = (data: EventDO): EventDTO => ({
     end: eo.occurrence.end_time,
     tourId: eo.tour_id,
   })),
-  fieldOfStudy: data.event_field_of_studies.map((fos) => ({
-    name: fos.field_of_study.name,
-    faculty: {
-      id: fos.field_of_study.faculty_id,
-      name: fos.field_of_study.faculty.name,
-    },
-  })),
+  fieldOfStudy: data.event_field_of_studies.map(
+    (fos): FieldOfStudyDTO => ({
+      id: fos.field_of_study.field_of_study_id,
+      name: fos.field_of_study.name,
+      faculty: {
+        id: fos.field_of_study.faculty_id,
+        name: fos.field_of_study.faculty.name,
+      },
+    })
+  ),
   visited: data.event_visits.length > 0,
 });
 
@@ -80,9 +90,11 @@ export type EventTypeDO = EventType;
 export type EventTypeDTO = {
   id: EventTypeDO['event_type_id'];
   name: EventTypeDO['name'];
+  color: EventTypeDO['color'];
 };
 
 export const eventTypeDOtoDTO = (data: EventTypeDO): EventTypeDTO => ({
   id: data.event_type_id,
   name: data.name,
+  color: data.color,
 });

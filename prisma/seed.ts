@@ -159,11 +159,11 @@ async function seedOwners() {
  */
 async function seedEventTypes() {
   const eventTypes = [
-    { name: 'Lecture' },
-    { name: 'Workshop' },
-    { name: 'Exhibition' },
-    { name: 'Lab tour' },
-    { name: 'Discussion panel' },
+    { name: 'Lecture', color: '#22c55e' },
+    { name: 'Workshop', color: '#f97316' },
+    { name: 'Exhibition', color: '#06b6d4' },
+    { name: 'Lab tour', color: '#8b5cf6' },
+    { name: 'Discussion panel', color: '#f43f5e' },
   ];
 
   const createdEventTypes = [];
