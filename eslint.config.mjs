@@ -26,29 +26,30 @@ const eslintConfig = [
     parserOptions: {
       project: './tsconfig.json',
       tsconfigRootDir: '.',
-    }
+    },
   }),
   {
     ignores: [
       'node_modules',
-      ".next",
-      ".husky",
-      "coverage",
-      ".prettierignore",
-      ".stylelintignore",
-      ".eslintignore",
-      "stories",
-      "storybook-static",
-      "*.log",
-      "playwright-report",
-      ".nyc_output",
-      "test-results",
-      "junit.xml",
-      "docs",
-      "eslint.config.mjs",
-      "*.db"
-    ]
-  }
+      '.next',
+      '.husky',
+      'coverage',
+      '.prettierignore',
+      '.stylelintignore',
+      '.eslintignore',
+      'stories',
+      'storybook-static',
+      '*.log',
+      'playwright-report',
+      '.nyc_output',
+      'test-results',
+      'junit.xml',
+      'docs',
+      'eslint.config.mjs',
+      '*.db',
+      'components/ui',
+    ],
+  },
 ];
 
 export default eslintConfig;

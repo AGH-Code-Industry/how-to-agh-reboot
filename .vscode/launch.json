@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "Next.js: Dev",
+      "command": "pnpm dev",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Docker Compose Up (Postgres)",
+      "postDebugTask": "Docker Compose Down (Postgres)"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Next.js + Docker Compose (Postgres)",
+      "configurations": [
+        "Docker Compose Up (Postgres)",
+        "Next.js: Dev"
+      ],
+      "preLaunchTask": "Docker Compose Up (Postgres)",
+      "postDebugTask": "Docker Compose Down (Postgres)"
+    }
+  ]
+}
