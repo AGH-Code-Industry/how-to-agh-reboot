@@ -8,6 +8,7 @@ import React from 'react';
 import WelcomeOverlay from '@/components/global/WelcomeOverlay';
 import { Toaster } from '@/components/ui/sonner';
 import ServiceWorkerRegister from '@/components/layout/ServiceWorkerRegister';
+import { AuthProvider } from '@/components/auth/AuthContext';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -41,11 +42,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TRPCProvider>
-            <WelcomeOverlay />
-            <main className="grow overflow-y-auto">{children}</main>
-            <NavBar />
-            <Toaster position="top-center" />
-            <ServiceWorkerRegister />
+            <AuthProvider>
+              <WelcomeOverlay />
+              <main className="grow overflow-y-auto">{children}</main>
+              <NavBar />
+              <Toaster position="top-center" />
+              <ServiceWorkerRegister />
+            </AuthProvider>
           </TRPCProvider>
         </ThemeProvider>
       </body>

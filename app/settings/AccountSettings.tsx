@@ -1,31 +1,33 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
 import { PageSectionTitle } from '@/components/layout/PageLayout';
-import { useRouter } from 'next/navigation';
+import { createClient } from '@/supabase/server';
+import { AuthButton } from '@/components/auth/AuthButton';
 
-export default function AccountSettings() {
-  const router = useRouter();
-  const loggedIn = false; // todo w przyszlosci
+export default async function AccountSettings() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const loggedIn = user !== null && user.is_anonymous === false;
 
   return (
     <>
       <PageSectionTitle>Konto</PageSectionTitle>
       {loggedIn ? (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <span className="col-span-full text-center text-sm text-muted-foreground">
-            Zalogowano jako Imię Nazwisko
+            Zalogowano jako <span className="text-foreground">{user.email}</span>
           </span>
-          <Button disabled>Reset hasła</Button>
-          <Button onClick={() => console.log('Wylogowanie')}>Wyloguj</Button>
+          <AuthButton path="/auth/logout" text="Wyloguj" />
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
           <span className="col-span-full text-center text-sm text-muted-foreground">
-            Nie zalogowano. Niektóre funkcje mogą nie być dostępne.
+            Nie zalogowano. Postęp może zostać utracony.
           </span>
-          <Button onClick={() => router.push('/auth/register')}>Utwórz konto</Button>
-          <Button onClick={() => router.push('/auth/login')}>Zaloguj</Button>
+          <AuthButton path="/auth/register" text="Utwórz konto" />
+          <AuthButton path="/auth/login" text="Zaloguj się" />
         </div>
       )}
     </>
