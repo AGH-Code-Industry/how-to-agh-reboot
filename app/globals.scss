@@ -1,6 +1,6 @@
-@use 'tailwindcss/base';
-@use 'tailwindcss/components';
-@use 'tailwindcss/utilities';
+@use "tailwindcss/base";
+@use "tailwindcss/components";
+@use "tailwindcss/utilities";
 
 @layer base {
   :root {
@@ -30,6 +30,7 @@
     --radius: 0.5rem;
     --success: 142.1 70.6% 45.3%;
     --success-foreground: 0 0% 98%;
+    --info: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -58,6 +59,7 @@
     --ring: 0 0% 83.1%;
     --success: 142.1 70.6% 45.3%;
     --success-foreground: 0 0% 98%;
+    --info: 217.2 91.2% 59.8%;
   }
 }
 
