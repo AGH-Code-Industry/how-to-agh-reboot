@@ -6,5 +6,9 @@ type Props = {
 };
 
 export default function EventTypeBadge({ eventType }: Props) {
-  return <Badge style={{ backgroundColor: eventType.color }}>{eventType.name}</Badge>;
+  return (
+    <Badge style={{ backgroundColor: eventType.color }} className="w-fit">
+      {eventType.name}
+    </Badge>
+  );
 }

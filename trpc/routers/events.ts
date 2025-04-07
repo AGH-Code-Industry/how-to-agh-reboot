@@ -61,14 +61,14 @@ export const eventsRouter = router({
 
       return events;
     }),
-  getEvent: procedure
+  getEvent: protectedProcedure
     .input(
       z.object({
         id: z.number().positive(),
       })
     )
     .query(async (opts) => {
-      const { input } = opts;
+      const { input, ctx } = opts;
 
       const event = await prisma.event.findUnique({
         where: { event_id: input.id },
@@ -88,6 +88,11 @@ export const eventsRouter = router({
                   faculty: true,
                 },
               },
+            },
+          },
+          event_visits: {
+            where: {
+              user_id: ctx.user.id,
             },
           },
         },
