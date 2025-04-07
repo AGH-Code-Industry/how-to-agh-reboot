@@ -13,7 +13,9 @@
     "reset": "prisma migrate reset",
     "migrate:new": "prisma migrate dev --name",
     "seed": "prisma db seed",
-    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('pnpm') === -1) throw new Error('You must use PNPM to install')\""
+    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('pnpm') === -1) throw new Error('You must use PNPM to install')\"",
+    "postgres:up": "docker-compose -f .docker/postgresql.yaml up -d",
+    "postgres:down": "docker-compose -f .docker/postgresql.yaml stop"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
