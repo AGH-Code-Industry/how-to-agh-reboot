@@ -20,7 +20,7 @@ export default function MapPopup({ event }: { event: EventDTO }) {
         <b>Czasy:</b> {tableOfHours.join(', ')}
       </p>
       <p>
-        <b>Typ:</b> {event.eventType}
+        <b>Typ:</b> {event.eventType.name}
       </p>
       <p>
         <b>Budynek:</b> {event.building.name}

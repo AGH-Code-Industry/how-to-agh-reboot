@@ -3,6 +3,7 @@ import { prisma } from '@/prisma/prisma';
 import { eventDOtoDTO, eventTypeDOtoDTO } from '@/types/Event';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
 
 export const eventsRouter = router({
   getEvents: protectedProcedure
@@ -59,6 +60,52 @@ export const eventsRouter = router({
       ).map(eventDOtoDTO);
 
       return events;
+    }),
+  getEvent: protectedProcedure
+    .input(
+      z.object({
+        id: z.number().positive(),
+      })
+    )
+    .query(async (opts) => {
+      const { input, ctx } = opts;
+
+      const event = await prisma.event.findUnique({
+        where: { event_id: input.id },
+        include: {
+          building: true,
+          event_type: true,
+          event_occurrences: {
+            include: {
+              occurrence: true,
+              tour: true,
+            },
+          },
+          event_field_of_studies: {
+            include: {
+              field_of_study: {
+                include: {
+                  faculty: true,
+                },
+              },
+            },
+          },
+          event_visits: {
+            where: {
+              user_id: ctx.user.id,
+            },
+          },
+        },
+      });
+
+      if (!event) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Event not found',
+        });
+      }
+
+      return eventDOtoDTO(event);
     }),
   getEventTypes: procedure.query(async () => {
     const eventTypes = (await prisma.eventType.findMany({})).map(eventTypeDOtoDTO);
