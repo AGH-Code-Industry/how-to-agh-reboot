@@ -47,7 +47,7 @@ export default function Page() {
           start: new Date(occurrence.start),
           end: new Date(occurrence.end),
           description: event.description ?? '',
-          type: event.eventType,
+          type: event.eventType.name,
           topic: event.fieldOfStudy.reduce((acc, fieldOfStudy) => {
             return acc + fieldOfStudy.name + ', ';
           }, ''),
