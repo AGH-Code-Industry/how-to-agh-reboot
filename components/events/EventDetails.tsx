@@ -2,9 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { trpc } from '@/trpc/server';
 import EventTypeBadge from '@/components/events/EventTypeBadge';
 import FieldOfStudyBadge from '@/components/events/FieldOfStudyBadge';
-import { Bell, MapPin, QrCode } from 'lucide-react';
+import { MapPin, QrCode } from 'lucide-react';
 import Link from 'next/link';
-import { Toggle } from '@/components/ui/toggle';
+import EventOccurrence from './EventOccurrence';
 
 type Props = {
   id: number;
@@ -38,18 +38,7 @@ export default async function Event({ id }: Props) {
             <p>Czas trwania:</p>
             <div className="mt-1 flex flex-col gap-1">
               {event.occurrences.map((o) => (
-                <>
-                  <div
-                    key={o.start.toString()}
-                    className="flex items-center gap-2 text-muted-foreground"
-                  >
-                    {o.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
-                    {o.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    <Toggle keepSvgStyle={true} size="sm">
-                      <Bell size={20} />
-                    </Toggle>
-                  </div>
-                </>
+                <EventOccurrence key={o.start.toString()} occurrence={o} />
               ))}
             </div>
           </div>

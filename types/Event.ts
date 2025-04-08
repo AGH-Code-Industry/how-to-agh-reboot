@@ -1,14 +1,14 @@
 import {
   Building,
+  Event,
   EventFieldOfStudy,
   EventOccurrence,
   EventType,
+  EventVisit,
   Faculty,
   FieldOfStudy,
   Occurrence,
   Tour,
-  Event,
-  EventVisit,
 } from '@prisma/client';
 
 export type EventDO = Event & { building: Building } & { event_type: EventType } & {
@@ -28,20 +28,12 @@ export type EventDTO = {
   display: EventDO['should_be_displayed'];
   latidute: EventDO['location_latitude'];
   longitude: EventDO['location_longitude'];
-  eventType: {
-    id: EventDO['event_type']['event_type_id'];
-    name: EventDO['event_type']['name'];
-    color: EventDO['event_type']['color'];
-  };
+  eventType: EventTypeDTO;
   building: {
     id: EventDO['building']['building_id'];
     name: EventDO['building']['name'];
   };
-  occurrences: {
-    start: EventDO['event_occurrences'][0]['occurrence']['start_time'];
-    end: EventDO['event_occurrences'][0]['occurrence']['end_time'];
-    tourId: EventDO['event_occurrences'][0]['tour_id'];
-  }[];
+  occurrences: EventOccurrenceDTO[];
   fieldOfStudy: FieldOfStudyDTO[];
   visited: boolean;
 };
@@ -53,6 +45,12 @@ export type FieldOfStudyDTO = {
     id: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['faculty_id'];
     name: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['name'];
   };
+};
+
+export type EventOccurrenceDTO = {
+  start: EventDO['event_occurrences'][0]['occurrence']['start_time'];
+  end: EventDO['event_occurrences'][0]['occurrence']['end_time'];
+  tourId: EventDO['event_occurrences'][0]['tour_id'];
 };
 
 export const eventDOtoDTO = (data: EventDO): EventDTO => ({
