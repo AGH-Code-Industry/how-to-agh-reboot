@@ -26,7 +26,7 @@ export type EventDTO = {
   name: EventDO['name'];
   description: EventDO['description'];
   display: EventDO['should_be_displayed'];
-  latitude: EventDO['location_latitude'];
+  latidute: EventDO['location_latitude'];
   longitude: EventDO['location_longitude'];
   eventType: EventDO['event_type']['name'];
   building: {
@@ -53,7 +53,7 @@ export const eventDOtoDTO = (data: EventDO): EventDTO => ({
   name: data.name,
   description: data.description,
   display: data.should_be_displayed,
-  latitude: data.location_latitude,
+  latidute: data.location_latitude,
   longitude: data.location_longitude,
   eventType: data.event_type.name,
   building: {

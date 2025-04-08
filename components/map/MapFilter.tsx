@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
@@ -9,15 +9,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { EventDTO } from '@/types/Event';
 import { trpc } from '@/trpc/client';
 import { Drawer } from 'vaul';
+import { MapRef } from 'react-map-gl/maplibre';
 
 interface MapFilterProps {
+  mapRef: MapRef | undefined;
   originalEvents: EventDTO[];
   eventList: EventDTO[];
   onFilterChange: (filteredEvents: EventDTO[]) => void;
   onClose: () => void;
 }
 
-export default function MapFilter({ originalEvents, onFilterChange, onClose }: MapFilterProps) {
+export default function MapFilter({
+  originalEvents,
+  onFilterChange,
+  onClose,
+  mapRef,
+}: MapFilterProps) {
   const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState<string>('-');
   const [selectedRoute, setSelectedRoute] = useState<string>('-');
@@ -28,6 +35,59 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
   const eventTypes = [...new Set(originalEvents.map((event) => event.eventType))];
 
   const routes = trpc.tours.getTours.useQuery({}).data ?? [];
+
+  const zoomInToEvents = useCallback(
+    (eventList: EventDTO[]) => {
+      const map = mapRef?.getMap();
+      if (!map) return;
+
+      // Brak eventów – nie robimy nic
+      if (eventList.length === 0) return;
+
+      // Jeśli jest dokładnie jedno wydarzenie, przybliżamy się na nie
+      if (eventList.length === 1) {
+        const singleEvent = eventList[0];
+        map.easeTo({
+          center: [singleEvent.longitude, singleEvent.latidute],
+          zoom: 18, // lub inny docelowy zoom
+          duration: 600,
+        });
+        return;
+      }
+
+      // W innym wypadku (więcej niż 1 event) ustawiamy bounding box
+      const [minLng, minLat, maxLng, maxLat] = eventList.reduce(
+        ([minLng, minLat, maxLng, maxLat], event) => [
+          Math.min(minLng, event.longitude),
+          Math.min(minLat, event.latidute),
+          Math.max(maxLng, event.longitude),
+          Math.max(maxLat, event.latidute),
+        ],
+        [180, 90, -180, -90]
+      );
+
+      // Jeśli bounding box sprowadza się do jednego punktu (te same współrzędne)
+      if (minLng === maxLng && minLat === maxLat) {
+        map.easeTo({
+          center: [minLng, minLat],
+          zoom: 14,
+          duration: 600,
+        });
+      } else {
+        map.fitBounds(
+          [
+            [minLng, minLat],
+            [maxLng, maxLat],
+          ],
+          {
+            padding: 50,
+            duration: 600,
+          }
+        );
+      }
+    },
+    [mapRef]
+  );
 
   const applyFilters = () => {
     const now = new Date();
@@ -86,6 +146,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
         );
       });
     onFilterChange(filtered);
+    zoomInToEvents(filtered);
     onClose();
   };
 
@@ -96,6 +157,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
     setStartTime('');
     setEndTime('');
     setShowPastEvents(true);
+    zoomInToEvents(originalEvents);
     onFilterChange(originalEvents);
     onClose();
   };

@@ -90,6 +90,7 @@ export default function Page() {
               eventList={filteredEvents}
               onFilterChange={setFilteredEvents}
               onClose={() => setIsFilterOpen(false)}
+              mapRef={mapRef}
             />
           </Drawer.Content>
         </Drawer.Portal>

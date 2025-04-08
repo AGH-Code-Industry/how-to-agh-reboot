@@ -40,7 +40,7 @@ export default function MapEvents({ eventList }: Props) {
         },
         geometry: {
           type: 'Point',
-          coordinates: [event.longitude, event.latitude],
+          coordinates: [event.longitude, event.latidute],
         },
       })),
     }),
@@ -101,59 +101,6 @@ export default function MapEvents({ eventList }: Props) {
       map.off('click', handleClick);
     };
   }, [handleClick, mapRef]);
-
-  // ------------- NOWY useEffect - dopasowanie widoku do przefiltrowanych eventów -------------
-  useEffect(() => {
-    const map = mapRef?.getMap();
-    if (!map) return;
-
-    // Brak eventów – nie robimy nic
-    if (eventList.length === 0) return;
-
-    // Jeśli jest dokładnie jedno wydarzenie, przybliżamy się na nie
-    if (eventList.length === 1) {
-      const singleEvent = eventList[0];
-      map.easeTo({
-        center: [singleEvent.longitude, singleEvent.latitude],
-        zoom: 18, // lub inny docelowy zoom
-        duration: 600,
-      });
-      return;
-    }
-
-    // W innym wypadku (więcej niż 1 event) ustawiamy bounding box
-    const [minLng, minLat, maxLng, maxLat] = eventList.reduce(
-      ([minLng, minLat, maxLng, maxLat], event) => [
-        Math.min(minLng, event.longitude),
-        Math.min(minLat, event.latitude),
-        Math.max(maxLng, event.longitude),
-        Math.max(maxLat, event.latitude),
-      ],
-      [180, 90, -180, -90]
-    );
-
-    // Jeśli bounding box sprowadza się do jednego punktu (te same współrzędne)
-    if (minLng === maxLng && minLat === maxLat) {
-      map.easeTo({
-        center: [minLng, minLat],
-        zoom: 14,
-        duration: 600,
-      });
-    } else {
-      map.fitBounds(
-        [
-          [minLng, minLat],
-          [maxLng, maxLat],
-        ],
-        {
-          padding: 50,
-          duration: 600,
-        }
-      );
-    }
-  }, [eventList, mapRef]);
-
-  // ------------------------------------------------------------------------------------------
 
   return (
     <Source
