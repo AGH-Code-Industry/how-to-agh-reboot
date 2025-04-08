@@ -2,6 +2,13 @@ import { prisma } from '@/prisma/prisma';
 import { protectedProcedure, router } from '../init';
 import { z } from 'zod';
 
+export type SubmitQrResponseType = 'error' | 'info' | 'success';
+
+export type SubmitQrResponse = {
+  type: SubmitQrResponseType;
+  message: string;
+};
+
 export const qrRouter = router({
   submitQr: protectedProcedure.input(z.string()).mutation(async (opts) => {
     const { input, ctx } = opts;
@@ -15,7 +22,7 @@ export const qrRouter = router({
     });
 
     if (qr === null) {
-      return { error: true, message: 'Nieznany kod QR' };
+      return { type: 'error', message: 'Nieznany kod QR' } as SubmitQrResponse;
     }
 
     const event = await prisma.event.findFirst({
@@ -27,7 +34,7 @@ export const qrRouter = router({
     });
 
     if (event === null) {
-      return { error: true, message: 'Nieznany kod QR' };
+      return { type: 'error', message: 'Nieznany kod QR' } as SubmitQrResponse;
     }
 
     const eventVisit = await prisma.eventVisit.findFirst({
@@ -42,7 +49,10 @@ export const qrRouter = router({
     });
 
     if (eventVisit !== null) {
-      return { error: true, message: 'Ten kod został już zeskanowany' };
+      return {
+        type: 'info',
+        message: 'Ten kod został już wcześniej zeskanowany',
+      } as SubmitQrResponse;
     }
 
     await prisma.eventVisit.create({
@@ -52,6 +62,6 @@ export const qrRouter = router({
       },
     });
 
-    return { error: false, message: 'Kod pomyślnie zeskanowany' };
+    return { type: 'success', message: 'Kod pomyślnie zeskanowany' } as SubmitQrResponse;
   }),
 });
