@@ -94,7 +94,6 @@ export default function MapEvents({ eventList }: Props) {
 
   useEffect(() => {
     const map = mapRef?.getMap();
-
     if (!map) return;
 
     map.on('click', handleClick);
