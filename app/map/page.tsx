@@ -3,7 +3,7 @@ import Map from '@/components/map/Map';
 import { trpc } from '@/trpc/client';
 import { EventDTO } from '@/types/Event';
 import { MapEvent } from '@/types/Map/MapEvent';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import MapFilter from '@/components/map/MapFilter';
 import TourDetails from '@/components/map/tourDetails/TourDetails';
@@ -11,8 +11,11 @@ import { MapRef } from 'react-map-gl/maplibre';
 import { Drawer } from 'vaul';
 import { ListFilter, Route } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AGHLeaveIndicator from '@/components/map/AGHLeaveIndicator';
 
 export default function Page() {
+  const [isOnAGH, setIsOnAGH] = useState<boolean>(true);
+
   const originalEvents = (
     (trpc.events.getEvents.useQuery({}).data ?? []) as unknown as EventDTO[]
   ).filter((event) => event.occurrences.length > 0);
@@ -70,8 +73,6 @@ export default function Page() {
 
   const tourKeys = Object.keys(tours);
   const tour = trpc.tours.getTours.useQuery({ tourId: Number(tourKeys[0]) }).data ?? [];
-
-  const onAGHLeave = useCallback((isOnAGH: boolean) => console.log(isOnAGH), []);
 
   return (
     <div className="relative flex h-full">
@@ -135,11 +136,13 @@ export default function Page() {
       )}
 
       <Map
-        onAGHLeaveOrEnter={onAGHLeave}
+        onAGHLeaveOrEnter={setIsOnAGH}
         eventList={filteredEvents}
         tours={tours}
         ref={(mapRef) => setMapRef(mapRef)}
       />
+
+      {!isOnAGH && <AGHLeaveIndicator />}
     </div>
   );
 }

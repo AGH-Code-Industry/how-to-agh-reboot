@@ -57,6 +57,7 @@ export default {
           DEFAULT: 'hsl(var(--success))',
           foreground: 'hsl(var(--success-foreground))',
         },
+        info: 'hsl(var(--info))',
       },
       borderRadius: {
         lg: `var(--radius)`,
