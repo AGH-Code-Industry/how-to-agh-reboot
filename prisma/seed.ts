@@ -93,7 +93,7 @@ async function seedQuestionTypes() {
  */
 async function seedFaculties() {
   const faculties = [
-    { name: 'Wydział Elektrotechniki, Automatyki, Informatyki i Inzynierii Biomedycznej' },
+    { name: 'Wydział Elektrotechniki, Automatyki, Informatyki i Inżynierii Biomedycznej' },
   ];
 
   const createdFaculties = [];
@@ -824,7 +824,7 @@ async function seedPrizes() {
   const prizes: Prisma.PrizeCreateArgs['data'][] = [
     {
       prize_title: 'Nagroda 1',
-      prize_description: 'Odwiedź 2 miejscsa podczas Dni Otwartych AGH 2025',
+      prize_description: 'Odwiedź 2 miejsca podczas Dni Otwartych AGH 2025',
       required_visits: 2,
     },
     {
