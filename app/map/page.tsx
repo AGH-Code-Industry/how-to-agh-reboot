@@ -3,11 +3,19 @@ import Map from '@/components/map/Map';
 import { trpc } from '@/trpc/client';
 import { EventDTO } from '@/types/Event';
 import { MapEvent } from '@/types/Map/MapEvent';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import MapFilter from '@/components/map/MapFilter';
+import TourDetails from '@/components/map/tourDetails/TourDetails';
+import { MapRef } from 'react-map-gl/maplibre';
+import { Drawer } from 'vaul';
+import { ListFilter, Route } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import AGHLeaveIndicator from '@/components/map/AGHLeaveIndicator';
 
 export default function Page() {
+  const [isOnAGH, setIsOnAGH] = useState<boolean>(true);
+
   const originalEvents = (
     (trpc.events.getEvents.useQuery({}).data ?? []) as unknown as EventDTO[]
   ).filter((event) => event.occurrences.length > 0);
@@ -17,6 +25,10 @@ export default function Page() {
   ).filter((event) => event.occurrences.length > 0);
 
   const [filteredEvents, setFilteredEvents] = useState<EventDTO[]>([]);
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [areTourDetailsOpen, setAreTourDetailsOpen] = useState(false);
+  const [mapRef, setMapRef] = useState<MapRef | undefined>(undefined);
 
   useEffect(() => {
     setFilteredEvents(preFilteredEvents);
@@ -38,7 +50,7 @@ export default function Page() {
           start: new Date(occurrence.start),
           end: new Date(occurrence.end),
           description: event.description ?? '',
-          type: event.eventType,
+          type: event.eventType.name,
           topic: event.fieldOfStudy.reduce((acc, fieldOfStudy) => {
             return acc + fieldOfStudy.name + ', ';
           }, ''),
@@ -59,36 +71,79 @@ export default function Page() {
     return tours;
   }, [filteredEvents]);
 
-  const onAGHLeave = useCallback((isOnAGH: boolean) => console.log(isOnAGH), []);
-
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const tourKeys = Object.keys(tours);
+  const tour = trpc.tours.getTours.useQuery({ tourId: Number(tourKeys[0]) }).data ?? [];
 
   return (
     <div className="relative flex h-full">
       {/* Panel z filtrem */}
-      <div
-        className={`fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] max-w-[100vw] flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white shadow-lg transition-all duration-300 ${
-          isFilterOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+
+      <Drawer.Root
+        open={isFilterOpen}
+        onOpenChange={(open) => setIsFilterOpen(open)}
+        direction="left"
       >
-        <MapFilter
-          originalEvents={originalEvents}
-          eventList={filteredEvents}
-          onFilterChange={setFilteredEvents}
-          onClose={() => setIsFilterOpen(false)}
-        />
-      </div>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+          <Drawer.Content className="fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] max-w-[100vw] flex-col bg-background p-4 text-foreground shadow-lg">
+            <MapFilter
+              originalEvents={originalEvents}
+              eventList={filteredEvents}
+              onFilterChange={setFilteredEvents}
+              onClose={() => setIsFilterOpen(false)}
+              mapRef={mapRef}
+            />
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
 
       {/* Mapa zajmuje resztę miejsca */}
-      <div className={`flex-1 transition-all ${isFilterOpen ? 'opacity-50' : ''}`}>
-        <button
-          onClick={() => setIsFilterOpen(true)}
-          className="absolute left-4 top-4 z-40 rounded-md bg-white/80 px-4 py-2 text-black shadow-md backdrop-blur-md hover:bg-white"
+      <Button
+        onClick={() => setIsFilterOpen(true)}
+        className="absolute left-4 top-4 z-40"
+        variant="secondary"
+      >
+        {/* Filtruj wydarzenia */}
+        <ListFilter />
+      </Button>
+
+      <Drawer.Root
+        open={areTourDetailsOpen}
+        onOpenChange={(open) => setAreTourDetailsOpen(open)}
+        direction="left"
+      >
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+          <Drawer.Content className="fixed left-0 top-0 z-50 flex h-[calc(100vh-63px)] w-[440px] max-w-[100vw] flex-col bg-background p-4 text-foreground shadow-lg">
+            <TourDetails
+              tour={tour}
+              onClose={() => setAreTourDetailsOpen(false)}
+              map={mapRef}
+              tourEvents={filteredEvents}
+            />
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
+
+      {tourKeys.length == 1 && (
+        <Button
+          onClick={() => setAreTourDetailsOpen(true)}
+          className="absolute left-4 top-[70px] z-40"
+          variant="secondary"
         >
-          Filtruj wydarzenia
-        </button>
-      </div>
-      <Map onAGHLeaveOrEnter={onAGHLeave} eventList={filteredEvents} tours={tours} />
+          {/* Szczegóły wycieczki */}
+          <Route />
+        </Button>
+      )}
+
+      <Map
+        onAGHLeaveOrEnter={setIsOnAGH}
+        eventList={filteredEvents}
+        tours={tours}
+        ref={(mapRef) => setMapRef(mapRef)}
+      />
+
+      {!isOnAGH && <AGHLeaveIndicator />}
     </div>
   );
 }

@@ -1,21 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EventDTO } from '@/types/Event';
+import { trpc } from '@/trpc/client';
+import { Drawer } from 'vaul';
+import { MapRef } from 'react-map-gl/maplibre';
 
 interface MapFilterProps {
+  mapRef: MapRef | undefined;
   originalEvents: EventDTO[];
   eventList: EventDTO[];
   onFilterChange: (filteredEvents: EventDTO[]) => void;
   onClose: () => void;
 }
 
-export default function MapFilter({ originalEvents, onFilterChange, onClose }: MapFilterProps) {
+export default function MapFilter({
+  originalEvents,
+  onFilterChange,
+  onClose,
+  mapRef,
+}: MapFilterProps) {
   const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState<string>('-');
   const [selectedRoute, setSelectedRoute] = useState<string>('-');
@@ -24,9 +33,61 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
   const [showPastEvents, setShowPastEvents] = useState(true);
 
   const eventTypes = [...new Set(originalEvents.map((event) => event.eventType))];
-  const routes = [
-    ...new Set(originalEvents.flatMap((event) => event.occurrences.map((el) => el.tourId))),
-  ];
+
+  const routes = trpc.tours.getTours.useQuery({}).data ?? [];
+
+  const zoomInToEvents = useCallback(
+    (eventList: EventDTO[]) => {
+      const map = mapRef?.getMap();
+      if (!map) return;
+
+      // Brak eventów – nie robimy nic
+      if (eventList.length === 0) return;
+
+      // Jeśli jest dokładnie jedno wydarzenie, przybliżamy się na nie
+      if (eventList.length === 1) {
+        const singleEvent = eventList[0];
+        map.easeTo({
+          center: [singleEvent.longitude, singleEvent.latidute],
+          zoom: 18, // lub inny docelowy zoom
+          duration: 600,
+        });
+        return;
+      }
+
+      // W innym wypadku (więcej niż 1 event) ustawiamy bounding box
+      const [minLng, minLat, maxLng, maxLat] = eventList.reduce(
+        ([minLng, minLat, maxLng, maxLat], event) => [
+          Math.min(minLng, event.longitude),
+          Math.min(minLat, event.latidute),
+          Math.max(maxLng, event.longitude),
+          Math.max(maxLat, event.latidute),
+        ],
+        [180, 90, -180, -90]
+      );
+
+      // Jeśli bounding box sprowadza się do jednego punktu (te same współrzędne)
+      if (minLng === maxLng && minLat === maxLat) {
+        map.easeTo({
+          center: [minLng, minLat],
+          zoom: 14,
+          duration: 600,
+        });
+      } else {
+        map.fitBounds(
+          [
+            [minLng, minLat],
+            [maxLng, maxLat],
+          ],
+          {
+            padding: 50,
+            duration: 600,
+          }
+        );
+      }
+    },
+    [mapRef]
+  );
 
   const applyFilters = () => {
     const now = new Date();
@@ -80,11 +141,12 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
             event.name.toLowerCase().includes(search.toLowerCase()) ||
             (event.description &&
               event.description.toLowerCase().includes(search.toLowerCase()))) &&
-          (selectedType === '-' || event.eventType === selectedType) &&
+          (selectedType === '-' || event.eventType.name === selectedType) &&
           dateCheck
         );
       });
     onFilterChange(filtered);
+    zoomInToEvents(filtered);
     onClose();
   };
 
@@ -95,29 +157,30 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
     setStartTime('');
     setEndTime('');
     setShowPastEvents(true);
+    zoomInToEvents(originalEvents);
     onFilterChange(originalEvents);
     onClose();
   };
 
   return (
-    <div className="flex size-full flex-col bg-gradient-to-br from-green-800 via-black to-red-800 p-4 text-white">
+    <div className="flex size-full flex-col bg-background p-4 text-foreground">
       {/* Nagłówek */}
-      <div className="mb-4 flex shrink-0 items-center justify-between">
-        <h2 className="text-xl font-bold">Filtruj wydarzenia</h2>
-        <button onClick={onClose} className="text-2xl text-white">
+      <Drawer.Title className="mb-4 flex shrink-0 items-center justify-between">
+        <span className="text-xl font-bold">Filtruj wydarzenia</span>
+        <button onClick={onClose} className="text-2xl ">
           ×
         </button>
-      </div>
+      </Drawer.Title>
 
       {/* Przewijalna zawartość */}
       <div className="flex-1 overflow-y-auto pr-2">
         <Card className="border-none bg-transparent shadow-none">
-          <CardContent className="grid grid-cols-1 gap-4">
+          <CardContent className="grid grid-cols-1 gap-4 p-0">
             <div>
               <label className="mb-1 block text-sm font-medium">Wyszukaj:</label>
               <Input
                 placeholder="Szukaj wydarzeń..."
-                className="rounded-md border border-gray-300 bg-black p-2"
+                className="rounded-md border p-2"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -126,14 +189,12 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
             <div>
               <label className="mb-1 block text-sm font-medium">Typ:</label>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="rounded-md border border-gray-300 bg-black p-2">
-                  {selectedType}
-                </SelectTrigger>
+                <SelectTrigger className="rounded-md border p-2">{selectedType}</SelectTrigger>
                 <SelectContent>
                   <SelectItem value={'-'}>-</SelectItem>
                   {eventTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                    <SelectItem key={type.id} value={type.name}>
+                      {type.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -146,14 +207,16 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
                 value={selectedRoute?.toString()}
                 onValueChange={(val) => setSelectedRoute(val)}
               >
-                <SelectTrigger className="rounded-md border border-gray-300 bg-black p-2">
-                  {selectedRoute}
+                <SelectTrigger className="rounded-md border p-2">
+                  {selectedRoute == '-'
+                    ? '-'
+                    : (routes.find((el) => el.id == Number(selectedRoute))?.name ?? '-')}
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={'-'}>-</SelectItem>
                   {routes.map((route) => (
-                    <SelectItem key={route} value={route.toString()}>
-                      {route}
+                    <SelectItem key={route.id} value={route.id.toString()}>
+                      {route.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -164,7 +227,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
               <label className="mb-1 block text-sm font-medium">Godzina początkowa:</label>
               <Input
                 type="time"
-                className="rounded-md border border-gray-300 bg-black p-2"
+                className="rounded-md border p-2"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
@@ -174,7 +237,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
               <label className="mb-1 block text-sm font-medium">Godzina końcowa:</label>
               <Input
                 type="time"
-                className="rounded-md border border-gray-300 bg-black p-2"
+                className="rounded-md border p-2"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
@@ -194,8 +257,8 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
       {/* Przyciski */}
       <div className="mt-4 flex shrink-0 gap-2">
         <Button onClick={applyFilters}>Zastosuj filtry</Button>
-        <Button onClick={resetFilters} className="bg-gray-300 text-black hover:bg-gray-400">
-          Pokaż wszystkie wydarzenia
+        <Button onClick={resetFilters} className="">
+          Reset
         </Button>
       </div>
     </div>

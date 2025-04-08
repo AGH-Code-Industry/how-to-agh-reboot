@@ -8,7 +8,7 @@ export default function NavBar() {
       <NavBarLink text="Mapa" url="/map">
         <MapIcon className="size-6" />
       </NavBarLink>
-      <NavBarLink text="Zadania" url="/tasks">
+      <NavBarLink text="Wydarzenia" url="/events">
         <ClipboardListIcon className="size-6" />
       </NavBarLink>
       <NavBarLink text="Skaner" url="/scanner">

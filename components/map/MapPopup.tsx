@@ -14,13 +14,13 @@ export default function MapPopup({ event }: { event: EventDTO }) {
   });
 
   return (
-    <div className="min-w-36 text-black">
+    <div className="min-w-36 bg-background text-foreground">
       <h2 className="text-center text-base">{event.name}</h2>
       <p className="mt-3">
         <b>Czasy:</b> {tableOfHours.join(', ')}
       </p>
       <p>
-        <b>Typ:</b> {event.eventType}
+        <b>Typ:</b> {event.eventType.name}
       </p>
       <p>
         <b>Budynek:</b> {event.building.name}

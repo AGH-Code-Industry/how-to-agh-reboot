@@ -9,6 +9,15 @@
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Docker Compose Up (Postgres)",
       "postDebugTask": "Docker Compose Down (Postgres)"
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "Next.js: Dev (SSL)",
+      "command": "pnpm dev:ssl",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Docker Compose Up (Postgres)",
+      "postDebugTask": "Docker Compose Down (Postgres)"
     }
   ],
   "compounds": [
@@ -17,6 +26,15 @@
       "configurations": [
         "Docker Compose Up (Postgres)",
         "Next.js: Dev"
+      ],
+      "preLaunchTask": "Docker Compose Up (Postgres)",
+      "postDebugTask": "Docker Compose Down (Postgres)"
+    },
+    {
+      "name": "Next.js (SSL) + Docker Compose (Postgres)",
+      "configurations": [
+        "Docker Compose Up (Postgres)",
+        "Next.js: Dev (SSL)"
       ],
       "preLaunchTask": "Docker Compose Up (Postgres)",
       "postDebugTask": "Docker Compose Down (Postgres)"

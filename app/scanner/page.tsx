@@ -1,3 +1,5 @@
+import QRScanner from '@/components/scanner/QRScanner';
+
 export default function Scanner() {
-  return <div>Skaner</div>;
+  return <QRScanner />;
 }

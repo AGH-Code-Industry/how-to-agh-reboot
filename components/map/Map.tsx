@@ -3,7 +3,7 @@ import { GeolocateControl, Map as MapLibre, MapRef } from 'react-map-gl/maplibre
 
 import type { GeolocateResultEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Source as SourceType, Map as MapLibreNative } from 'maplibre-gl';
 import { MapEvent } from '@/types/Map/MapEvent';
 import MapEvents from '@/components/map/MapEvents';
@@ -16,6 +16,7 @@ type Props = {
   eventList: EventDTO[];
   onAGHLeaveOrEnter: (isOnAGH: boolean) => void;
   tours: Record<string, MapEvent[]>;
+  ref: (arg0: MapRef) => void;
 };
 
 export default function Map(props: Props) {
@@ -26,6 +27,12 @@ export default function Map(props: Props) {
   const aghBoundsPolygonRef = useRef<ReturnType<typeof polygon>>(null);
 
   const [isOnAGH, setIsOnAGH] = useState<boolean>();
+
+  useEffect(() => {
+    if (mapRef.current) {
+      props.ref(mapRef.current);
+    }
+  }, [mapRef.current]);
 
   const handleMapLoad = async () => {
     // Centrowanie kamery na pozycji użytkownika przy załadowaniu mapy

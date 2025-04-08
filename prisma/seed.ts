@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -19,6 +19,7 @@ async function main(): Promise<void> {
     const eventTypes = await seedEventTypes();
     const buildings = await seedBuildings();
     const qrs = await seedQRs();
+    await seedPrizes();
 
     // Seed entities with dependencies
     const fieldOfStudies = await seedFieldOfStudies(faculties);
@@ -36,11 +37,8 @@ async function main(): Promise<void> {
     const tours = await seedTours(owners);
     await seedEventOccurrences(tours, occurrences, events);
 
-    // Seed users
-    const users = await seedUsers();
-
     // Seed event visits
-    await seedEventVisits(events, users);
+    await seedEventVisits(events);
 
     // Seed quizzes and questions
     const questions = await seedQuestions(questionTypes);
@@ -49,7 +47,7 @@ async function main(): Promise<void> {
     const quizQuestions = await seedQuizQuestions(quizzes, questions);
 
     // Seed quiz question answers
-    await seedQuizQuestionAnswers(quizQuestions, users);
+    await seedQuizQuestionAnswers(quizQuestions);
 
     console.log('Database seeded successfully');
   } catch (error) {
@@ -161,11 +159,11 @@ async function seedOwners() {
  */
 async function seedEventTypes() {
   const eventTypes = [
-    { name: 'Lecture' },
-    { name: 'Workshop' },
-    { name: 'Exhibition' },
-    { name: 'Lab tour' },
-    { name: 'Discussion panel' },
+    { name: 'Lecture', color: '#22c55e' },
+    { name: 'Workshop', color: '#f97316' },
+    { name: 'Exhibition', color: '#06b6d4' },
+    { name: 'Lab tour', color: '#8b5cf6' },
+    { name: 'Discussion panel', color: '#f43f5e' },
   ];
 
   const createdEventTypes = [];
@@ -443,51 +441,30 @@ async function seedEventOccurrences(tours: any[], occurrences: any[], events: an
 }
 
 /**
- * Seed User entities
- */
-async function seedUsers() {
-  // Note: In a real application, these passwords should be hashed
-  const users = [
-    { first_name: 'Jan', last_name: 'Kowalski', password: 'hashedpassword1' },
-    { first_name: 'Anna', last_name: 'Nowak', password: 'hashedpassword2' },
-    { first_name: 'Piotr', last_name: 'Wiśniewski', password: 'hashedpassword3' },
-    { first_name: 'Marta', last_name: 'Dąbrowska', password: 'hashedpassword4' },
-  ];
-
-  const createdUsers = [];
-  for (const user of users) {
-    const created = await prisma.user.create({ data: user });
-    createdUsers.push(created);
-  }
-
-  return createdUsers;
-}
-
-/**
  * Seed EventVisit relationships
  */
-async function seedEventVisits(events: any[], users: any[]) {
+async function seedEventVisits(events: any[]) {
   const now = new Date();
   const eventVisits = [
     {
       time: new Date(now.getTime() - 86400000), // Yesterday
       event_id: events[0].event_id,
-      user_id: users[0].user_id,
+      user_id: 'test-id-1',
     },
     {
       time: new Date(now.getTime() - 43200000), // 12 hours ago
       event_id: events[1].event_id,
-      user_id: users[0].user_id,
+      user_id: 'test-id-3',
     },
     {
       time: new Date(now.getTime() - 86400000), // Yesterday
       event_id: events[1].event_id,
-      user_id: users[1].user_id,
+      user_id: 'test-id-1',
     },
     {
       time: new Date(now.getTime() - 172800000), // 2 days ago
       event_id: events[2].event_id,
-      user_id: users[2].user_id,
+      user_id: 'test-id-2',
     },
   ];
 
@@ -628,32 +605,61 @@ async function seedQuizQuestions(quizzes: any[], questions: any[]) {
 /**
  * Seed QuizQuestionAnswer entities
  */
-async function seedQuizQuestionAnswers(quizQuestions: any[], users: any[]) {
+async function seedQuizQuestionAnswers(quizQuestions: any[]) {
   const quizQuestionAnswers = [
     {
       correct_answer: 1, // Assuming 1 is the ID of the correct answer
       quiz_question_id: quizQuestions[0].quiz_question_id,
-      user_id: users[0].user_id,
+      user_id: 'test-id-1',
     },
     {
       correct_answer: 0, // Assuming 0 means incorrect answer
       quiz_question_id: quizQuestions[1].quiz_question_id,
-      user_id: users[0].user_id,
+      user_id: 'test-id-2',
     },
     {
       correct_answer: 1,
       quiz_question_id: quizQuestions[0].quiz_question_id,
-      user_id: users[1].user_id,
+      user_id: 'test-id-3',
     },
     {
       correct_answer: 1,
       quiz_question_id: quizQuestions[2].quiz_question_id,
-      user_id: users[2].user_id,
+      user_id: 'test-id-3',
     },
   ];
 
   for (const answer of quizQuestionAnswers) {
     await prisma.quizQuestionAnswer.create({ data: answer });
+  }
+}
+
+/**
+ * Seed QuizQuestion relationships
+ */
+async function seedPrizes() {
+  const prizes: Prisma.PrizeCreateArgs['data'][] = [
+    {
+      prize_title: 'Nagroda 1',
+      prize_description: 'Odwiedź 3 miejscsa podczas Dni Otwartych AGH 2025',
+      required_visits: 3,
+    },
+    {
+      prize_title: 'Nagroda 2',
+      prize_description: 'Odwiedź 5 miejsc podczas Dni Otwartych AGH 2025',
+      required_visits: 5,
+    },
+    {
+      prize_title: 'Nagroda 3',
+      prize_description: 'Odwiedź aż 8 miejscsa podczas Dni Otwartych AGH 2025',
+      required_visits: 8,
+    },
+  ];
+
+  const createdPrizes = [];
+  for (const prize of prizes) {
+    const created = await prisma.prize.create({ data: prize });
+    createdPrizes.push(created);
   }
 }
 

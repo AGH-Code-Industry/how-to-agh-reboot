@@ -36,3 +36,23 @@ export const layer3 = {
     'text-font': ['Noto Sans Regular'],
   },
 } satisfies LayerProps;
+
+export const layer4 = {
+  id: 'event-time',
+  type: 'symbol',
+  filter: ['all', ['has', 'start_time'], ['has', 'end_time']], // Added condition for both start_time and end_time
+  source: 'events',
+  layout: {
+    'text-field': '{start_time} - {end_time}', // Display both start and end times
+    'text-size': 12,
+    'text-font': ['Noto Sans Bold'], // Changed to bold for thicker text
+    'icon-allow-overlap': true,
+    'text-offset': [0, -1.7],
+  },
+  paint: {
+    'text-halo-color': '#000000',
+    'text-halo-width': 2, // Disable halo for rectangular background
+    'text-halo-blur': 0,
+    'text-color': '#ffffff',
+  },
+} satisfies LayerProps;
