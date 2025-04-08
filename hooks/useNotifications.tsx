@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { toast } from 'sonner';
 
 type SystemNotificationData = {
@@ -9,11 +9,13 @@ type SystemNotificationData = {
 
 type ToastNotificationData = {
   title: string;
-  description: string;
+  description?: string;
   button?: {
     title: string;
     action: () => void;
   };
+  vibrate?: number;
+  icon?: ReactNode;
 };
 
 const useNotifications = () => {
@@ -73,11 +75,19 @@ const useNotifications = () => {
             label: data.button!.title,
             onClick: () => {
               data.button!.action();
-              console.log('zewnątrz akcji');
             },
           }
         : null,
+      icon: data.icon,
     });
+
+    if (
+      data.vibrate !== undefined &&
+      'vibrate' in navigator &&
+      typeof navigator.vibrate === 'function'
+    ) {
+      navigator.vibrate(data.vibrate);
+    }
   };
 
   const scheduleNotification = async (data: SystemNotificationData, date: Date) => {
