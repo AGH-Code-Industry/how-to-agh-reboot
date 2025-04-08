@@ -56,7 +56,7 @@ export default function RegisterForm({ className }: RegisterFormProps) {
       setServerMessage({
         type: 'success',
         message:
-          'Zarejestrowano pomyślnie! Sprawdź swoją skrynkę pocztową w celu potwierdzenia konta.',
+          'Zarejestrowano pomyślnie! Sprawdź swoją skrzynkę pocztową w celu potwierdzenia konta.',
       });
     } else if (loginInfo.user && loginInfo.session) {
       // This means email confirmation is DISABLED - user is signed up and logged in

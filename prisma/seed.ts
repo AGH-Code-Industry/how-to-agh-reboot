@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Occurrence, Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     await seedEventOccurrences(tours, occurrences, events);
 
     // Seed event visits
-    await seedEventVisits(events);
+    await seedEventVisits();
 
     // Seed quizzes and questions
     const questions = await seedQuestions(questionTypes);
@@ -77,12 +77,7 @@ async function clearDatabase(): Promise<void> {
  * Seed QuestionType entities
  */
 async function seedQuestionTypes() {
-  const questionTypes = [
-    { name: 'Single choice' },
-    { name: 'Multiple choice' },
-    { name: 'True/False' },
-    { name: 'Text input' },
-  ];
+  const questionTypes = [{ name: 'Single choice' }];
 
   const createdQuestionTypes = [];
   for (const questionType of questionTypes) {
@@ -98,10 +93,7 @@ async function seedQuestionTypes() {
  */
 async function seedFaculties() {
   const faculties = [
-    { name: 'Faculty of Computer Science, Electronics and Telecommunications' },
-    { name: 'Faculty of Electrical Engineering, Automatics, IT and Biomedical Engineering' },
-    { name: 'Faculty of Mechanical Engineering and Robotics' },
-    { name: 'Faculty of Materials Science and Ceramics' },
+    { name: 'Wydział Elektrotechniki, Automatyki, Informatyki i Inżynierii Biomedycznej' },
   ];
 
   const createdFaculties = [];
@@ -117,13 +109,7 @@ async function seedFaculties() {
  * Seed Theme entities
  */
 async function seedThemes() {
-  const themes = [
-    { name: 'Technology' },
-    { name: 'Science' },
-    { name: 'Engineering' },
-    { name: 'Art' },
-    { name: 'Mathematics' },
-  ];
+  const themes = [{ name: 'AGH' }];
 
   const createdThemes = [];
   for (const theme of themes) {
@@ -138,12 +124,7 @@ async function seedThemes() {
  * Seed Owner entities
  */
 async function seedOwners() {
-  const owners = [
-    { name: 'Department of Computer Science' },
-    { name: 'Department of Electronics' },
-    { name: 'Department of Automatics' },
-    { name: 'Student Scientific Association' },
-  ];
+  const owners = [{ name: 'AGH' }];
 
   const createdOwners = [];
   for (const owner of owners) {
@@ -159,11 +140,10 @@ async function seedOwners() {
  */
 async function seedEventTypes() {
   const eventTypes = [
-    { name: 'Lecture', color: '#22c55e' },
-    { name: 'Workshop', color: '#f97316' },
-    { name: 'Exhibition', color: '#06b6d4' },
-    { name: 'Lab tour', color: '#8b5cf6' },
-    { name: 'Discussion panel', color: '#f43f5e' },
+    { name: 'Wykład', color: '#22c55e' },
+    { name: 'Laboratorium', color: '#f97316' },
+    { name: 'Wystawa', color: '#06b6d4' },
+    { name: 'Stoisko', color: '#06b6d4' },
   ];
 
   const createdEventTypes = [];
@@ -179,7 +159,14 @@ async function seedEventTypes() {
  * Seed Building entities
  */
 async function seedBuildings() {
-  const buildings = [{ name: 'D-17' }, { name: 'B-1' }, { name: 'C-1' }, { name: 'D-1' }];
+  const buildings = [
+    { name: 'A3-A4' },
+    { name: 'B-1' },
+    { name: 'C-1' },
+    { name: 'C-2' },
+    { name: 'C-3' },
+    { name: 'D-2' },
+  ];
 
   const createdBuildings = [];
   for (const building of buildings) {
@@ -195,11 +182,17 @@ async function seedBuildings() {
  */
 async function seedQRs() {
   const qrs = [
-    { code: 'QR123456' },
-    { code: 'QR789012' },
-    { code: 'QR345678' },
-    { code: 'QR901234' },
-    { code: 'QR567890' },
+    { code: '0000000000' },
+    { code: '1111111111' },
+    { code: '2222222222' },
+    { code: '3333333333' },
+    { code: '4444444444' },
+    { code: '5555555555' },
+    { code: '6666666666' },
+    { code: '7777777777' },
+    { code: '8888888888' },
+    { code: '9999999999' },
+    { code: 'AAAAAAAAAA' },
   ];
 
   const createdQRs = [];
@@ -214,13 +207,18 @@ async function seedQRs() {
 /**
  * Seed FieldOfStudy entities
  */
-async function seedFieldOfStudies(faculties: any[]) {
+async function seedFieldOfStudies(faculties: Awaited<ReturnType<typeof seedFaculties>>) {
+  const weaiiib = faculties[0];
+
   const fieldOfStudies = [
-    { name: 'Computer Science', faculty_id: faculties[0].faculty_id },
-    { name: 'Electronics', faculty_id: faculties[0].faculty_id },
-    { name: 'Automatics and Robotics', faculty_id: faculties[1].faculty_id },
-    { name: 'Mechanical Engineering', faculty_id: faculties[2].faculty_id },
-    { name: 'Materials Science', faculty_id: faculties[3].faculty_id },
+    { name: 'Automatyka i Robotyka', faculty_id: weaiiib.faculty_id },
+    { name: 'Computer Science', faculty_id: weaiiib.faculty_id },
+    { name: 'Elektrotechnika', faculty_id: weaiiib.faculty_id },
+    { name: 'Informatyka', faculty_id: weaiiib.faculty_id },
+    { name: 'Informatyka i Systemy Inteligentne', faculty_id: weaiiib.faculty_id },
+    { name: 'Inżynieria Biomedyczna', faculty_id: weaiiib.faculty_id },
+    { name: 'Mikroelektronika w Technice i Medycynie', faculty_id: weaiiib.faculty_id },
+    { name: 'Technologie Przemysłu 4.0', faculty_id: weaiiib.faculty_id },
   ];
 
   const createdFieldOfStudies = [];
@@ -256,26 +254,91 @@ async function seedBuildingEntries(buildings: any[]) {
  * Seed Occurrence entities
  */
 async function seedOccurrences() {
-  const now = new Date();
+  const tenAm = 1744358400 * 1000;
   const occurrences = [
-    {
-      start_time: new Date(now.getTime() + 3600000), // Now + 1 hour
-      end_time: new Date(now.getTime() + 7200000), // Now + 2 hours
-    },
-    {
-      start_time: new Date(now.getTime() + 86400000), // Now + 1 day
-      end_time: new Date(now.getTime() + 86400000 + 3600000), // Now + 1 day and 1 hour
-    },
-    {
-      start_time: new Date(now.getTime() + 172800000), // Now + 2 days
-      end_time: new Date(now.getTime() + 172800000 + 7200000), // Now + 2 days and 2 hours
-    },
+    // 1
+    [0, 30, 60, 90, 120, 150, 180, 210].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 2
+    [30, 90, 150, 210].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 3
+    [0, 60, 120, 180].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 4
+    [0, 60, 120, 180, 240].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 5
+    [0, 30, 60, 90, 120, 150, 180, 210].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 6
+    [90, 120, 150, 180, 210].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 6
+    [90, 120, 150, 180, 210].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 7
+    [150, 180, 210].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 8
+    [0, 60, 120, 180, 240].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 9
+    [0, 60, 120, 180, 240].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 10
+    [0, 30, 60, 90, 120, 150, 180, 210].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
+
+    // 11
+    [0, 60, 120, 180, 240].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000),
+      end_time: new Date(tenAm + (offset + 30) * 1000),
+    })),
   ];
 
-  const createdOccurrences = [];
-  for (const occurrence of occurrences) {
-    const created = await prisma.occurrence.create({ data: occurrence });
-    createdOccurrences.push(created);
+  const createdOccurrences: Occurrence[][] = [];
+
+  for (const occurrenceGroup of occurrences) {
+    const createdOccurrencesGroup: Occurrence[] = [];
+    createdOccurrences.push(createdOccurrencesGroup);
+
+    for (const occurrence of occurrenceGroup) {
+      const created = await prisma.occurrence.create({ data: occurrence });
+      createdOccurrencesGroup.push(created);
+    }
   }
 
   return createdOccurrences;
@@ -284,51 +347,189 @@ async function seedOccurrences() {
 /**
  * Seed Event entities
  */
-async function seedEvents(eventTypes: any[], buildings: any[], qrs: any[], owners: any[]) {
+
+// A3A4
+//              50.065443, 19.920426
+
+// B1
+//              50.065926, 19.919384
+//              50.066102, 19.919484
+//              50.066263, 19.919580
+
+// C1
+//              50.065402, 19.922691
+//              50.065652, 19.922777
+
+// C2
+//              50.065913, 19.922767
+//              50.066013, 19.922303
+
+// C3
+//              50.066113, 19.921882
+//              50.066197, 19.921512
+
+// D2
+//              50.065393, 19.918781
+
+async function seedEvents(
+  eventTypes: Awaited<ReturnType<typeof seedEventTypes>>,
+  buildings: Awaited<ReturnType<typeof seedBuildings>>,
+  qrs: Awaited<ReturnType<typeof seedQRs>>,
+  owners: Awaited<ReturnType<typeof seedOwners>>
+) {
+  const lecture = eventTypes.find((et) => et.name === 'Wykład');
+  const lab = eventTypes.find((et) => et.name === 'Laboratorium');
+  const exhib = eventTypes.find((et) => et.name === 'Wystawa');
+  const stand = eventTypes.find((et) => et.name === 'Stoisko');
+
+  if (!lecture || !lab || !exhib || !stand) {
+    throw new Error('Missing item');
+  }
+
+  const A3A4 = buildings.find((b) => b.name === 'A3-A4');
+  const B1 = buildings.find((b) => b.name === 'B-1');
+  const C1 = buildings.find((b) => b.name === 'C-1');
+  const C2 = buildings.find((b) => b.name === 'C-2');
+  const C3 = buildings.find((b) => b.name === 'C-3');
+  const D2 = buildings.find((b) => b.name === 'D-2');
+
+  if (!A3A4 || !B1 || !C1 || !C2 || !C3 || !D2) {
+    throw new Error('Missing item');
+  }
+
+  const AGH = owners[0];
+
   const events = [
     {
-      name: 'Introduction to AI',
-      description: 'Learn about the basics of artificial intelligence and machine learning',
+      name: 'Laboratorium Mikro-sieci i Jakości Energii Elektrycznej',
+      description:
+        'Laboratorium dysponuje mikro-siecią energetyczną, umożliwiającą testowanie inteligentnych sieci elektroenergetycznych (smart grid) oraz pracę wyspową z wykorzystaniem OZE i zasobników energii.',
       should_be_displayed: true,
-      location_longitude: 19.9137,
-      location_latitude: 50.0684,
-      event_type_id: eventTypes[0].event_type_id,
-      building_id: buildings[0].building_id,
+      location_longitude: 19.919384,
+      location_latitude: 50.065926,
+      event_type_id: lab.event_type_id,
+      building_id: B1.building_id,
       qr_id: qrs[0].qr_id,
-      owner_id: owners[0].owner_id,
+      owner_id: AGH.owner_id,
     },
     {
-      name: 'Electronics Workshop',
-      description: 'Hands-on workshop with microcontrollers and electronic circuits',
+      name: 'Laboratorium Wysokich Napięć',
+      description:
+        'Zobacz fascynujące pokazy wyładowań elektrycznych: iskrowych, powierzchniowych i łukowych. Na koniec czeka pokaz transformatora Tesli, generującego spektakularne iskry i grającego melodie!',
       should_be_displayed: true,
-      location_longitude: 19.912,
-      location_latitude: 50.067,
-      event_type_id: eventTypes[1].event_type_id,
-      building_id: buildings[1].building_id,
+      location_longitude: 19.919484,
+      location_latitude: 50.066102,
+      event_type_id: lab.event_type_id,
+      building_id: B1.building_id,
       qr_id: qrs[1].qr_id,
-      owner_id: owners[1].owner_id,
+      owner_id: AGH.owner_id,
     },
     {
-      name: 'Robotics Showcase',
-      description: 'See the latest robotics projects from our students',
+      name: 'Laboratorium Techniki Mikroprocesorowej oraz bezprzewodowej transmisji danych i energii',
+      description:
+        'Mikroelektronika w Technice i Medycynie (MTM) - zobacz, jak tworzymy przyszłość! Prezentacja laboratoriów, projektów i układów scalonych wykorzystywanych na całym świecie.',
       should_be_displayed: true,
-      location_longitude: 19.9145,
-      location_latitude: 50.0665,
-      event_type_id: eventTypes[2].event_type_id,
-      building_id: buildings[2].building_id,
+      location_longitude: 19.918781,
+      location_latitude: 50.065393,
+      event_type_id: lab.event_type_id,
+      building_id: D2.building_id,
       qr_id: qrs[2].qr_id,
-      owner_id: owners[2].owner_id,
+      owner_id: AGH.owner_id,
     },
     {
-      name: 'Future of Computing Panel',
-      description: 'Discussion about future trends in computing and technology',
+      name: 'Laboratorium Robotyki oraz Laboratorium Robotów Mobilnych',
+      description:
+        'Chcesz programować roboty? Zobacz stanowiska laboratoryjne, gdzie studenci tworzą sterowniki i algorytmy nawigacji dla robotów przemysłowych i mobilnych.',
       should_be_displayed: true,
-      location_longitude: 19.915,
-      location_latitude: 50.0675,
-      event_type_id: eventTypes[4].event_type_id,
-      building_id: buildings[3].building_id,
+      location_longitude: 19.921882,
+      location_latitude: 50.066113,
+      event_type_id: lab.event_type_id,
+      building_id: C3.building_id,
       qr_id: qrs[3].qr_id,
-      owner_id: owners[3].owner_id,
+      owner_id: AGH.owner_id,
+    },
+    {
+      name: 'Laboratorium Wbudowanych Systemów Wizyjnych, Arena Dronów',
+      description:
+        'Drony to przyszłość, która dzieje się teraz! Zobacz najnowsze badania i kierunki rozwoju technologii bezzałogowych statków powietrznych oraz drony wykorzystywane w naszym laboratorium.',
+      should_be_displayed: true,
+      location_longitude: 19.922767,
+      location_latitude: 50.065913,
+      event_type_id: lab.event_type_id,
+      building_id: C2.building_id,
+      qr_id: qrs[4].qr_id,
+      owner_id: AGH.owner_id,
+    },
+    {
+      name: 'Laboratorium Zastosowań AI w Medycznej Diagnostyce Obrazowej',
+      description:
+        'Sztuczna inteligencja widzi, co w tobie tkwi” - pokazy analizy obrazów medycznych z wykorzystaniem AI.',
+      should_be_displayed: true,
+      location_longitude: 19.920426,
+      location_latitude: 50.065443,
+      event_type_id: lab.event_type_id,
+      building_id: A3A4.building_id,
+      qr_id: qrs[5].qr_id,
+      owner_id: AGH.owner_id,
+    },
+    {
+      name: 'Laboratorium Sieci Komputerowych i Sieciowych Systemów Multimedialnych',
+      description:
+        'Poznaj technologie sieciowe, systemy multimedialne i interaktywne systemy wizyjne! Zobacz techniki programowania urządzeń sieciowych, sprzęt do budowy sieci i systemy telekonferencji.',
+      should_be_displayed: true,
+      location_longitude: 19.922303,
+      location_latitude: 50.066013,
+      event_type_id: lab.event_type_id,
+      building_id: C2.building_id,
+      qr_id: qrs[6].qr_id,
+      owner_id: AGH.owner_id,
+    },
+    {
+      name: 'Laboratorium Automatyki Budynkowej AutBudNet AGH',
+      description:
+        'Zobacz, jak działa inteligentny dom i budynek! Interaktywne sterowanie oświetleniem i prezentacja rozwiązań z obszaru smart home, smart building i efektywności energetycznej.',
+      should_be_displayed: true,
+      location_longitude: 19.922691,
+      location_latitude: 50.065402,
+      event_type_id: lab.event_type_id,
+      building_id: C1.building_id,
+      qr_id: qrs[7].qr_id,
+      owner_id: AGH.owner_id,
+    },
+    {
+      name: 'Koło Naukowe Elektrotermii',
+      description: 'Zobacz, jak działa i co realizuje KN Elektrotermii',
+      should_be_displayed: true,
+      location_longitude: 19.922777,
+      location_latitude: 50.065652,
+      event_type_id: exhib.event_type_id,
+      building_id: C1.building_id,
+      qr_id: qrs[8].qr_id,
+      owner_id: AGH.owner_id,
+    },
+    {
+      name: 'Koło Naukowe Promotor',
+      description:
+        'Zobacz hamownię silników do motocykli elektrycznych E-MOTO oraz stanowisko do badań prototypu maszyny PMCM, opracowanej we współpracy ze studentami!',
+      should_be_displayed: true,
+      location_longitude: 19.91958,
+      location_latitude: 50.066263,
+      event_type_id: exhib.event_type_id,
+      building_id: B1.building_id,
+      qr_id: qrs[9].qr_id,
+      owner_id: AGH.owner_id,
+    },
+    {
+      name: 'Koło Naukowe BioMedical Innovations',
+      description:
+        'Poznaj projekty Koła BioMedical Innovation: od rejestratora EKG po antropomorficzny manipulator do ewakuacji rannych (projekt ministerialny). Prezentacja w Laboratorium Systemów Wbudowanych i Internetu Rzeczy.',
+      should_be_displayed: true,
+      location_longitude: 19.921512,
+      location_latitude: 50.066197,
+      event_type_id: exhib.event_type_id,
+      building_id: C3.building_id,
+      qr_id: qrs[10].qr_id,
+      owner_id: AGH.owner_id,
     },
   ];
 
@@ -344,16 +545,11 @@ async function seedEvents(eventTypes: any[], buildings: any[], qrs: any[], owner
 /**
  * Seed EventTheme relationships
  */
-async function seedEventThemes(events: any[], themes: any[]) {
-  const eventThemes = [
-    { event_id: events[0].event_id, theme_id: themes[0].theme_id },
-    { event_id: events[0].event_id, theme_id: themes[1].theme_id },
-    { event_id: events[1].event_id, theme_id: themes[2].theme_id },
-    { event_id: events[2].event_id, theme_id: themes[2].theme_id },
-    { event_id: events[2].event_id, theme_id: themes[0].theme_id },
-    { event_id: events[3].event_id, theme_id: themes[0].theme_id },
-    { event_id: events[3].event_id, theme_id: themes[4].theme_id },
-  ];
+async function seedEventThemes(
+  events: Awaited<ReturnType<typeof seedEvents>>,
+  themes: Awaited<ReturnType<typeof seedThemes>>
+) {
+  const eventThemes = events.map((e) => ({ event_id: e.event_id, theme_id: themes[0].theme_id }));
 
   for (const eventTheme of eventThemes) {
     await prisma.eventTheme.create({ data: eventTheme });
@@ -363,41 +559,64 @@ async function seedEventThemes(events: any[], themes: any[]) {
 /**
  * Seed EventFieldOfStudy relationships
  */
-async function seedEventFieldOfStudies(events: any[], fieldOfStudies: any[]) {
-  const eventFieldsOfStudy = [
-    { event_id: events[0].event_id, field_of_study_id: fieldOfStudies[0].field_of_study_id },
-    { event_id: events[0].event_id, field_of_study_id: fieldOfStudies[1].field_of_study_id },
-    { event_id: events[1].event_id, field_of_study_id: fieldOfStudies[1].field_of_study_id },
-    { event_id: events[2].event_id, field_of_study_id: fieldOfStudies[2].field_of_study_id },
-    { event_id: events[3].event_id, field_of_study_id: fieldOfStudies[0].field_of_study_id },
+async function seedEventFieldOfStudies(
+  events: Awaited<ReturnType<typeof seedEvents>>,
+  fieldOfStudies: Awaited<ReturnType<typeof seedFieldOfStudies>>
+) {
+  const AiR = fieldOfStudies.find((fos) => fos.name === 'Automatyka i Robotyka');
+  const CS = fieldOfStudies.find((fos) => fos.name === 'Computer Science');
+  const Elek = fieldOfStudies.find((fos) => fos.name === 'Elektrotechnika');
+  const Inf = fieldOfStudies.find((fos) => fos.name === 'Informatyka');
+  const ISiI = fieldOfStudies.find((fos) => fos.name === 'Informatyka i Systemy Inteligentne');
+  const IB = fieldOfStudies.find((fos) => fos.name === 'Inżynieria Biomedyczna');
+  const MwTiM = fieldOfStudies.find(
+    (fos) => fos.name === 'Mikroelektronika w Technice i Medycynie'
+  );
+  const TP40 = fieldOfStudies.find((fos) => fos.name === 'Technologie Przemysłu 4.0');
+
+  if (!AiR || !CS || !Elek || !Inf || !ISiI || !IB || !MwTiM || !TP40) {
+    throw new Error('Missing item');
+  }
+
+  const eventFieldsOfStudyGroups = [
+    [Elek, MwTiM],
+    [MwTiM],
+    [Elek],
+    [AiR],
+    [ISiI, Inf, TP40, AiR, CS],
+    [Inf, ISiI, IB, CS],
+    [Inf, ISiI, CS],
+    [TP40, AiR],
+    [TP40, AiR],
+    [MwTiM, AiR, TP40],
+    [IB],
   ];
 
-  for (const eventFieldOfStudy of eventFieldsOfStudy) {
-    await prisma.eventFieldOfStudy.create({ data: eventFieldOfStudy });
+  for (const index in eventFieldsOfStudyGroups) {
+    const group = eventFieldsOfStudyGroups[index];
+
+    for (const fieldOfStudy of group) {
+      await prisma.eventFieldOfStudy.create({
+        data: {
+          event_id: events[index].event_id,
+          field_of_study_id: fieldOfStudy.field_of_study_id,
+        },
+      });
+    }
   }
 }
 
 /**
  * Seed Tour entities
  */
-async function seedTours(owners: any[]) {
-  const tours = [
-    {
-      name: 'Computer Science Tour',
-      description: 'Tour of the computer science department and labs',
+async function seedTours(owners: Awaited<ReturnType<typeof seedOwners>>) {
+  const tours = Array(11)
+    .fill(0)
+    .map(() => ({
+      name: 'Dni Otwarte AGH 2025',
+      description: '',
       owner_id: owners[0].owner_id,
-    },
-    {
-      name: 'Electronics Tour',
-      description: 'Tour of the electronics department and labs',
-      owner_id: owners[1].owner_id,
-    },
-    {
-      name: 'Full Faculty Tour',
-      description: 'Comprehensive tour of the entire faculty',
-      owner_id: owners[3].owner_id,
-    },
-  ];
+    }));
 
   const createdTours = [];
   for (const tour of tours) {
@@ -411,67 +630,31 @@ async function seedTours(owners: any[]) {
 /**
  * Seed EventOccurrence relationships
  */
-async function seedEventOccurrences(tours: any[], occurrences: any[], events: any[]) {
-  const eventOccurrences = [
-    {
-      tour_id: tours[0].tour_id,
-      occurrence_id: occurrences[0].occurrence_id,
-      event_id: events[0].event_id,
-    },
-    {
-      tour_id: tours[0].tour_id,
-      occurrence_id: occurrences[1].occurrence_id,
-      event_id: events[3].event_id,
-    },
-    {
-      tour_id: tours[1].tour_id,
-      occurrence_id: occurrences[1].occurrence_id,
-      event_id: events[1].event_id,
-    },
-    {
-      tour_id: tours[2].tour_id,
-      occurrence_id: occurrences[2].occurrence_id,
-      event_id: events[2].event_id,
-    },
-  ];
+async function seedEventOccurrences(
+  tours: Awaited<ReturnType<typeof seedTours>>,
+  occurrences: Awaited<ReturnType<typeof seedOccurrences>>,
+  events: Awaited<ReturnType<typeof seedEvents>>
+) {
+  for (const index in events) {
+    const event = events[index];
+    const occurrence = occurrences[index];
 
-  for (const eventOccurrence of eventOccurrences) {
-    await prisma.eventOccurrence.create({ data: eventOccurrence });
+    for (const occ of occurrence) {
+      await prisma.eventOccurrence.create({
+        data: {
+          tour_id: tours[index].tour_id,
+          occurrence_id: occ.occurrence_id,
+          event_id: event.event_id,
+        },
+      });
+    }
   }
 }
 
 /**
  * Seed EventVisit relationships
  */
-async function seedEventVisits(events: any[]) {
-  const now = new Date();
-  const eventVisits = [
-    {
-      time: new Date(now.getTime() - 86400000), // Yesterday
-      event_id: events[0].event_id,
-      user_id: 'test-id-1',
-    },
-    {
-      time: new Date(now.getTime() - 43200000), // 12 hours ago
-      event_id: events[1].event_id,
-      user_id: 'test-id-3',
-    },
-    {
-      time: new Date(now.getTime() - 86400000), // Yesterday
-      event_id: events[1].event_id,
-      user_id: 'test-id-1',
-    },
-    {
-      time: new Date(now.getTime() - 172800000), // 2 days ago
-      event_id: events[2].event_id,
-      user_id: 'test-id-2',
-    },
-  ];
-
-  for (const eventVisit of eventVisits) {
-    await prisma.eventVisit.create({ data: eventVisit });
-  }
-}
+async function seedEventVisits() {}
 
 /**
  * Seed Question entities
@@ -486,17 +669,17 @@ async function seedQuestions(questionTypes: any[]) {
     {
       title: 'Which of the following are input devices?',
       description: 'Select all that apply',
-      question_type_id: questionTypes[1].question_type_id,
+      question_type_id: questionTypes[0].question_type_id,
     },
     {
       title: 'C++ is a compiled language.',
       description: null,
-      question_type_id: questionTypes[2].question_type_id,
+      question_type_id: questionTypes[0].question_type_id,
     },
     {
       title: 'Explain the concept of polymorphism in OOP',
       description: 'Provide a brief explanation',
-      question_type_id: questionTypes[3].question_type_id,
+      question_type_id: questionTypes[0].question_type_id,
     },
   ];
 
@@ -641,18 +824,18 @@ async function seedPrizes() {
   const prizes: Prisma.PrizeCreateArgs['data'][] = [
     {
       prize_title: 'Nagroda 1',
-      prize_description: 'Odwiedź 3 miejscsa podczas Dni Otwartych AGH 2025',
-      required_visits: 3,
+      prize_description: 'Odwiedź 2 miejsca podczas Dni Otwartych AGH 2025',
+      required_visits: 2,
     },
     {
       prize_title: 'Nagroda 2',
-      prize_description: 'Odwiedź 5 miejsc podczas Dni Otwartych AGH 2025',
-      required_visits: 5,
+      prize_description: 'Odwiedź 4 miejsca podczas Dni Otwartych AGH 2025',
+      required_visits: 4,
     },
     {
       prize_title: 'Nagroda 3',
-      prize_description: 'Odwiedź aż 8 miejscsa podczas Dni Otwartych AGH 2025',
-      required_visits: 8,
+      prize_description: 'Odwiedź aż 6 miejsc podczas Dni Otwartych AGH 2025',
+      required_visits: 6,
     },
   ];
 
