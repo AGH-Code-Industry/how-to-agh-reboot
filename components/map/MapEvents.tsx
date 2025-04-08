@@ -3,14 +3,14 @@ import './MapEvents.scss';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { renderToString } from 'react-dom/server';
 
-import { Layer, Source, useMap } from 'react-map-gl/maplibre';
-import type MapLibreGl from 'maplibre-gl';
+import { Source, Layer, useMap } from 'react-map-gl/maplibre';
 import { Popup } from 'maplibre-gl';
 
-import { layer1, layer2, layer3 } from './layerConfig';
+import { layer1, layer2, layer3, layer4 } from './layerConfig';
 import MapPopup from './MapPopup';
 
 import type { FeatureCollection, Point } from 'geojson';
+import type MapLibreGl from 'maplibre-gl';
 import { EventDTO } from '@/types/Event';
 
 type Props = {
@@ -29,6 +29,14 @@ export default function MapEvents({ eventList }: Props) {
         properties: {
           cluster: false,
           ...event,
+          start_time: new Date(event.occurrences[0].start).toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          end_time: new Date(event.occurrences[0].end).toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
         },
         geometry: {
           type: 'Point',
@@ -45,7 +53,7 @@ export default function MapEvents({ eventList }: Props) {
       if (!map) return;
 
       const features = map.queryRenderedFeatures(e.point, {
-        layers: [layer1.id, layer2.id],
+        layers: [layer1.id, layer2.id, layer3.id, layer4.id],
       });
 
       if (!features.length) return;
@@ -86,6 +94,7 @@ export default function MapEvents({ eventList }: Props) {
 
   useEffect(() => {
     const map = mapRef?.getMap();
+
     if (!map) return;
 
     map.on('click', handleClick);
@@ -106,6 +115,7 @@ export default function MapEvents({ eventList }: Props) {
       <Layer {...layer1} />
       <Layer {...layer2} />
       <Layer {...layer3} />
+      <Layer {...layer4} />
     </Source>
   );
 }
