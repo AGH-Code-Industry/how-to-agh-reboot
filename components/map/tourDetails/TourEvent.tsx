@@ -10,7 +10,7 @@ export default function TourEvent({ event, onClick }: { event: EventDTO; onClick
         <h3 className="text-lg font-semibold">{event.name}</h3>
         <p className="text-sm text-gray-500">
           {/* {event.start.toLocaleDateString()} {event.start.toLocaleTimeString()} */}
-          {event.eventType}
+          {event.eventType.name}
         </p>
         <p className="text-sm text-gray-500">{event.building.name}</p>
         {event.occurrences[0] && (

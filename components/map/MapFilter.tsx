@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EventDTO } from '@/types/Event';
@@ -81,7 +81,7 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
             event.name.toLowerCase().includes(search.toLowerCase()) ||
             (event.description &&
               event.description.toLowerCase().includes(search.toLowerCase()))) &&
-          (selectedType === '-' || event.eventType === selectedType) &&
+          (selectedType === '-' || event.eventType.name === selectedType) &&
           dateCheck
         );
       });
@@ -131,8 +131,8 @@ export default function MapFilter({ originalEvents, onFilterChange, onClose }: M
                 <SelectContent>
                   <SelectItem value={'-'}>-</SelectItem>
                   {eventTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                    <SelectItem key={type.id} value={type.name}>
+                      {type.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
