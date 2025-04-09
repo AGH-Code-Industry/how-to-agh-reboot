@@ -625,7 +625,7 @@ async function seedEventOccurrences(
 /**
  * Seed EventVisit relationships
  */
-async function seedEventVisits() { }
+async function seedEventVisits() {}
 
 /**
  * Seed Question entities
