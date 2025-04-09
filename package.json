@@ -7,6 +7,7 @@
     "dev:ssl": "next dev --turbopack --experimental-https",
     "build": "next build",
     "start": "next start",
+    "ts:check": "tsc",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "prepare": "husky",

@@ -10,7 +10,6 @@ export const eventsRouter = router({
     .input(
       z.object({
         eventTypeId: z.number().positive().optional(),
-        tourId: z.number().positive().optional(),
       })
     )
     .query(async (opts) => {
@@ -19,14 +18,6 @@ export const eventsRouter = router({
 
       if (input.eventTypeId) {
         filter.event_type_id = input.eventTypeId;
-      }
-
-      if (input.tourId) {
-        filter.event_occurrences = {
-          some: {
-            tour_id: input.tourId,
-          },
-        };
       }
 
       const events = (
@@ -38,7 +29,6 @@ export const eventsRouter = router({
             event_occurrences: {
               include: {
                 occurrence: true,
-                tour: true,
               },
             },
             event_field_of_studies: {
@@ -78,7 +68,6 @@ export const eventsRouter = router({
           event_occurrences: {
             include: {
               occurrence: true,
-              tour: true,
             },
           },
           event_field_of_studies: {

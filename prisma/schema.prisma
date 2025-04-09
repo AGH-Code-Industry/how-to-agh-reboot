@@ -70,7 +70,6 @@ model Owner {
   owner_id   Int      @id @default(autoincrement())
   name       String
   events     Event[]
-  tours      Tour[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -125,17 +124,6 @@ model Faculty {
   updated_at       DateTime       @updatedAt
 }
 
-model Tour {
-  tour_id           Int               @id @default(autoincrement())
-  name              String
-  description       String?
-  owner_id          Int
-  owner             Owner             @relation(fields: [owner_id], references: [owner_id])
-  event_occurrences EventOccurrence[]
-  created_at        DateTime          @default(now())
-  updated_at        DateTime          @updatedAt
-}
-
 model Occurrence {
   occurrence_id     Int               @id @default(autoincrement())
   start_time        DateTime
@@ -147,8 +135,6 @@ model Occurrence {
 
 model EventOccurrence {
   event_occurrence_id Int        @id @default(autoincrement())
-  tour_id             Int
-  tour                Tour       @relation(fields: [tour_id], references: [tour_id])
   occurrence_id       Int
   occurrence          Occurrence @relation(fields: [occurrence_id], references: [occurrence_id])
   event_id            Int
@@ -156,7 +142,7 @@ model EventOccurrence {
   created_at          DateTime   @default(now())
   updated_at          DateTime   @updatedAt
 
-  @@unique([tour_id, occurrence_id, event_id])
+  @@unique([occurrence_id, event_id])
 }
 
 model EventVisit {
@@ -237,10 +223,10 @@ model QuizQuestionAnswer {
 }
 
 model Prize {
-  prize_id          Int @id @default(autoincrement())
+  prize_id          Int      @id @default(autoincrement())
   prize_title       String
   prize_description String
   required_visits   Int
-  created_at        DateTime     @default(now())
-  updated_at        DateTime     @updatedAt
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 }

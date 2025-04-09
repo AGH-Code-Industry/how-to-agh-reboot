@@ -33,9 +33,8 @@ async function main(): Promise<void> {
     await seedEventThemes(events, themes);
     await seedEventFieldOfStudies(events, fieldOfStudies);
 
-    // Seed tours and event occurrences
-    const tours = await seedTours(owners);
-    await seedEventOccurrences(tours, occurrences, events);
+    // Seed event occurrences
+    await seedEventOccurrences(occurrences, events);
 
     // Seed event visits
     await seedEventVisits();
@@ -607,31 +606,9 @@ async function seedEventFieldOfStudies(
 }
 
 /**
- * Seed Tour entities
- */
-async function seedTours(owners: Awaited<ReturnType<typeof seedOwners>>) {
-  const tours = Array(11)
-    .fill(0)
-    .map(() => ({
-      name: 'Dni Otwarte AGH 2025',
-      description: '',
-      owner_id: owners[0].owner_id,
-    }));
-
-  const createdTours = [];
-  for (const tour of tours) {
-    const created = await prisma.tour.create({ data: tour });
-    createdTours.push(created);
-  }
-
-  return createdTours;
-}
-
-/**
  * Seed EventOccurrence relationships
  */
 async function seedEventOccurrences(
-  tours: Awaited<ReturnType<typeof seedTours>>,
   occurrences: Awaited<ReturnType<typeof seedOccurrences>>,
   events: Awaited<ReturnType<typeof seedEvents>>
 ) {
@@ -642,7 +619,6 @@ async function seedEventOccurrences(
     for (const occ of occurrence) {
       await prisma.eventOccurrence.create({
         data: {
-          tour_id: tours[index].tour_id,
           occurrence_id: occ.occurrence_id,
           event_id: event.event_id,
         },

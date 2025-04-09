@@ -8,13 +8,12 @@ import {
   Faculty,
   FieldOfStudy,
   Occurrence,
-  Tour,
 } from '@prisma/client';
 
 export type EventDO = Event & { building: Building } & { event_type: EventType } & {
   event_visits: EventVisit[];
 } & {
-  event_occurrences: (EventOccurrence & { occurrence: Occurrence } & { tour: Tour })[];
+  event_occurrences: (EventOccurrence & { occurrence: Occurrence })[];
 } & {
   event_field_of_studies: (EventFieldOfStudy & {
     field_of_study: FieldOfStudy & { faculty: Faculty };
@@ -50,7 +49,6 @@ export type FieldOfStudyDTO = {
 export type EventOccurrenceDTO = {
   start: EventDO['event_occurrences'][0]['occurrence']['start_time'];
   end: EventDO['event_occurrences'][0]['occurrence']['end_time'];
-  tourId: EventDO['event_occurrences'][0]['tour_id'];
 };
 
 export const eventDOtoDTO = (data: EventDO): EventDTO => ({
@@ -68,7 +66,6 @@ export const eventDOtoDTO = (data: EventDO): EventDTO => ({
   occurrences: data.event_occurrences.map((eo) => ({
     start: eo.occurrence.start_time,
     end: eo.occurrence.end_time,
-    tourId: eo.tour_id,
   })),
   fieldOfStudy: data.event_field_of_studies.map(
     (fos): FieldOfStudyDTO => ({
