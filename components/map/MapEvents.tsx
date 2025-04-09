@@ -27,25 +27,31 @@ export default function MapEvents({ eventList }: Props) {
   const geoJsonData = useMemo<FeatureCollection>(
     () => ({
       type: 'FeatureCollection',
-      features: eventList.map((event) => ({
-        type: 'Feature',
-        properties: {
-          cluster: false,
-          ...event,
-          start_time: new Date(event.occurrences[0].start).toLocaleTimeString('en-GB', {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-          end_time: new Date(event.occurrences[0].end).toLocaleTimeString('en-GB', {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: [event.longitude, event.latidute],
-        },
-      })),
+      features: eventList.map((event) => {
+        const foundOccurrence = event.occurrences.find(
+          (occurrence) => occurrence.end.getTime() > Date.now()
+        );
+
+        return {
+          type: 'Feature',
+          properties: {
+            cluster: false,
+            ...event,
+            start_time: foundOccurrence?.start.toLocaleTimeString('en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            end_time: foundOccurrence?.end.toLocaleTimeString('en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [event.longitude, event.latidute],
+          },
+        };
+      }),
     }),
     [eventList]
   );
