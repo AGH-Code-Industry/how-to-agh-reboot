@@ -9,7 +9,6 @@ export const eventsRouter = router({
     .input(
       z.object({
         eventTypeId: z.number().positive().optional(),
-        tourId: z.number().positive().optional(),
         eventId: z.number().positive().optional(),
       })
     )
@@ -25,14 +24,6 @@ export const eventsRouter = router({
         filter.event_id = input.eventId;
       }
 
-      if (input.tourId) {
-        filter.event_occurrences = {
-          some: {
-            tour_id: input.tourId,
-          },
-        };
-      }
-
       const events = (
         await prisma.event.findMany({
           where: filter,
@@ -46,7 +37,6 @@ export const eventsRouter = router({
             event_occurrences: {
               include: {
                 occurrence: true,
-                tour: true,
               },
             },
             event_field_of_studies: {

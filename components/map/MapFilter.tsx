@@ -7,9 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EventDTO } from '@/types/Event';
-import { trpc } from '@/trpc/client';
 import { Drawer } from 'vaul';
 import { MapRef } from 'react-map-gl/maplibre';
+import { trpc } from '@/trpc/client';
 
 interface MapFilterProps {
   mapRef: MapRef | undefined;
@@ -27,14 +27,11 @@ export default function MapFilter({
 }: MapFilterProps) {
   const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState<string>('-');
-  const [selectedRoute, setSelectedRoute] = useState<string>('-');
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
   const [showPastEvents, setShowPastEvents] = useState(true);
 
-  const eventTypes = [...new Set(originalEvents.map((event) => event.eventType))];
-
-  const routes = trpc.tours.getTours.useQuery({}).data ?? [];
+  const eventTypes = trpc.events.getEventTypes.useQuery().data ?? [];
 
   const zoomInToEvents = useCallback(
     (eventList: EventDTO[]) => {
@@ -124,8 +121,7 @@ export default function MapFilter({
           if (
             (!startDate || occStartHour.getTime() >= startDate.getTime()) &&
             (!endDate || occEndHour.getTime() <= endDate.getTime()) &&
-            (showPastEvents || occEndHour.getTime() >= now.getTime()) &&
-            (selectedRoute === '-' || occurrence.tourId === Number(selectedRoute))
+            (showPastEvents || occEndHour.getTime() >= now.getTime())
           ) {
             dateCheck = true;
             break;
@@ -153,7 +149,6 @@ export default function MapFilter({
   const resetFilters = () => {
     setSearch('');
     setSelectedType('-');
-    setSelectedRoute('-');
     setStartTime('');
     setEndTime('');
     setShowPastEvents(true);
@@ -195,28 +190,6 @@ export default function MapFilter({
                   {eventTypes.map((type) => (
                     <SelectItem key={type.id} value={type.name}>
                       {type.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium">Trasa:</label>
-              <Select
-                value={selectedRoute?.toString()}
-                onValueChange={(val) => setSelectedRoute(val)}
-              >
-                <SelectTrigger className="rounded-md border p-2">
-                  {selectedRoute == '-'
-                    ? '-'
-                    : (routes.find((el) => el.id == Number(selectedRoute))?.name ?? '-')}
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={'-'}>-</SelectItem>
-                  {routes.map((route) => (
-                    <SelectItem key={route.id} value={route.id.toString()}>
-                      {route.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

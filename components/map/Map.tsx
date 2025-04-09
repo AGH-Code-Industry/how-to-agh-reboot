@@ -4,29 +4,28 @@ import { GeolocateControl, Map as MapLibre, MapRef } from 'react-map-gl/maplibre
 import type { GeolocateResultEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useEffect, useRef, useState } from 'react';
-import type { Source as SourceType, Map as MapLibreNative } from 'maplibre-gl';
-import { MapEvent } from '@/types/Map/MapEvent';
+import type { Source as SourceType } from 'maplibre-gl';
 import MapEvents from '@/components/map/MapEvents';
 import { polygon, point, booleanPointInPolygon } from '@turf/turf';
-import TourLine from './TourLine';
 import { EventDTO } from '@/types/Event';
 import CampMarker from './CampMarker';
+import { useSearchParams } from 'next/navigation';
 
 type Props = {
   eventList: EventDTO[];
   onAGHLeaveOrEnter: (isOnAGH: boolean) => void;
-  tours: Record<string, MapEvent[]>;
   ref: (arg0: MapRef) => void;
 };
 
 export default function Map(props: Props) {
   const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
   const mapRef = useRef<MapRef>(null);
-  const [mapNative, setMapNative] = useState<MapLibreNative>();
 
   const aghBoundsPolygonRef = useRef<ReturnType<typeof polygon>>(null);
 
   const [isOnAGH, setIsOnAGH] = useState<boolean>();
+
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (mapRef.current) {
@@ -35,8 +34,10 @@ export default function Map(props: Props) {
   }, [mapRef.current]);
 
   const handleMapLoad = async () => {
-    // Centrowanie kamery na pozycji użytkownika przy załadowaniu mapy
-    geoControlRef.current?.trigger();
+    if (!searchParams.get('event')) {
+      // Centrowanie kamery na pozycji użytkownika przy załadowaniu mapy
+      geoControlRef.current?.trigger();
+    }
 
     if (!mapRef.current) {
       return;
@@ -51,7 +52,6 @@ export default function Map(props: Props) {
       aghBoundsPolygonRef.current = polygon(aghSource._data.geometry.coordinates);
     }
 
-    setMapNative(mapRef.current?.getMap());
     const logoImage = await mapRef.current.loadImage('./images/logo.webp');
     mapRef.current.addImage('coin', logoImage.data);
   };
@@ -74,8 +74,6 @@ export default function Map(props: Props) {
     }
   };
 
-  const toursEntries = Object.entries(props.tours);
-
   return (
     <MapLibre
       // Komponent nie przyjmuje className
@@ -95,12 +93,6 @@ export default function Map(props: Props) {
       onLoad={handleMapLoad}
       ref={mapRef}
     >
-      {toursEntries.length == 1 &&
-        toursEntries.map(([key, value]) => (
-          <TourLine key={key} map={mapNative} events={value} color="blue" tourId={key} />
-        ))}
-      {/* <TourLine map={mapNative} events={props.eventList} color="blue" />
-      <TourLine map={mapNative} events={[props.eventList[2], props.eventList[0]]} color="red" /> */}
       <GeolocateControl
         positionOptions={{
           enableHighAccuracy: true,
