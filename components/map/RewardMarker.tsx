@@ -6,8 +6,10 @@ import type MapLibreGl from 'maplibre-gl';
 
 const RewardPopup = () => {
   return (
-    <div className="min-w-36 bg-background text-foreground">
+    <div className="min-w-48 bg-background text-foreground">
       <h3 className="text-center text-base">Miejsce odbioru nagród</h3>
+      <p className="mt-2">B1, pokój 1, parter</p>
+      <p className="mt-2 leading-tight">Odbiór upominków możliwy do godziny 14:45</p>
     </div>
   );
 };
