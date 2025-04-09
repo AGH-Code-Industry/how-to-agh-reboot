@@ -399,8 +399,8 @@ async function seedEvents(
       description:
         'Laboratorium dysponuje mikro-siecią energetyczną, umożliwiającą testowanie inteligentnych sieci elektroenergetycznych (smart grid) oraz pracę wyspową z wykorzystaniem OZE i zasobników energii.',
       should_be_displayed: true,
-      location_longitude: 19.919384,
-      location_latitude: 50.065926,
+      location_longitude: 19.919624,
+      location_latitude: 50.066315,
       event_type_id: lab.event_type_id,
       building_room_id: buildingRooms[0].building_room_id,
       qr_id: qrs[0].qr_id,
@@ -411,8 +411,8 @@ async function seedEvents(
       description:
         'Zobacz fascynujące pokazy wyładowań elektrycznych: iskrowych, powierzchniowych i łukowych. Na koniec czeka pokaz transformatora Tesli, generującego spektakularne iskry i grającego melodie!',
       should_be_displayed: true,
-      location_longitude: 19.919484,
-      location_latitude: 50.066102,
+      location_longitude: 19.919558,
+      location_latitude: 50.0662,
       event_type_id: lab.event_type_id,
       building_room_id: buildingRooms[1].building_room_id,
       qr_id: qrs[1].qr_id,
@@ -506,8 +506,8 @@ async function seedEvents(
       description:
         'Zobacz hamownię silników do motocykli elektrycznych E-MOTO oraz stanowisko do badań prototypu maszyny PMCM, opracowanej we współpracy ze studentami!',
       should_be_displayed: true,
-      location_longitude: 19.91958,
-      location_latitude: 50.066263,
+      location_longitude: 19.91949,
+      location_latitude: 50.066088,
       event_type_id: exhib.event_type_id,
       building_room_id: buildingRooms[9].building_room_id,
       qr_id: qrs[9].qr_id,
