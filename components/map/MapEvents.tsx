@@ -118,8 +118,6 @@ export default function MapEvents({ eventList }: Props) {
     if (!eventId || !mapRef) return;
 
     const event = eventList.find((event) => event.id === +eventId);
-    console.log(eventList);
-    console.log(event);
 
     if (event && mapRef) {
       mapRef.flyTo({
