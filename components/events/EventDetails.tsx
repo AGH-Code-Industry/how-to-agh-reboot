@@ -2,66 +2,58 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { trpc } from '@/trpc/server';
 import EventTypeBadge from '@/components/events/EventTypeBadge';
 import FieldOfStudyBadge from '@/components/events/FieldOfStudyBadge';
-import { MapPin, QrCode } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import Link from 'next/link';
 import EventOccurrence from './EventOccurrence';
+import EventVisitedStatus from '@/components/events/EventVisitedStatus';
 
 type Props = {
   id: number;
 };
 
-export default async function Event({ id }: Props) {
+export default async function EventDetails({ id }: Props) {
   const event = await trpc.events.getEvent({ id: id });
+
+  const activeOccurrence = event.occurrences.find(
+    (occurrence) => new Date(occurrence.end) > new Date(Date.now())
+  );
 
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
-        <div className="mt-2 flex justify-between gap-2">
-          <div className="flex flex-col gap-2">
+        <div className="mt-2 flex flex-col gap-2">
+          <div className="flex justify-between gap-2">
             <EventTypeBadge eventType={event.eventType} />
-            <CardTitle>{event.name}</CardTitle>
+            <Link
+              href={`/map?event=${event.id}`}
+              className="flex shrink-0 items-center gap-2 hover:underline"
+            >
+              <MapPin />
+              {event.building.name}
+            </Link>
           </div>
-          <Link
-            href={`/map?event=${event.id}`}
-            className="flex shrink-0 items-center gap-2 hover:underline"
-          >
-            <MapPin />
-            {event.building.name}
-          </Link>
+          <CardTitle className="leading-tight">{event.name}</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-4">
         <p className="text-sm text-muted-foreground">{event.description}</p>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p>Czas trwania:</p>
-            <div className="mt-1 flex flex-col gap-1">
-              {event.occurrences.map((o) => (
-                <EventOccurrence key={o.start.toString()} occurrence={o} />
-              ))}
-            </div>
-          </div>
-          <div>
-            <p>{event.fieldOfStudy.length == 1 ? 'Powiązany kierunek:' : 'Powiązane kierunki:'}</p>
-            <div className="mt-2 flex flex-wrap items-start gap-2">
-              {event.fieldOfStudy.map((f) => (
-                <FieldOfStudyBadge key={f.id} fieldOfStudy={f} />
-              ))}
-            </div>
+        <div>
+          <p>{event.fieldOfStudy.length == 1 ? 'Powiązany kierunek:' : 'Powiązane kierunki:'}</p>
+          <div className="mt-2 flex flex-wrap items-start gap-2">
+            {event.fieldOfStudy.map((f) => (
+              <FieldOfStudyBadge key={f.id} fieldOfStudy={f} />
+            ))}
           </div>
         </div>
         <div>
-          {event.visited ? (
-            <div className="flex gap-2">
-              <QrCode className="text-success" /> Wydarzenie odwiedzone
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              <QrCode className="text-info" /> Zeskanuj kod QR!
-            </div>
-          )}
+          <p>Czas trwania:</p>
+          <div className="mt-1 flex flex-col gap-1">
+            {event.occurrences.map((o) => (
+              <EventOccurrence key={o.start.toString()} occurrence={o} />
+            ))}
+          </div>
         </div>
+        <EventVisitedStatus visited={event.visited} ended={!activeOccurrence} />
       </CardContent>
     </Card>
   );

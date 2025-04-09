@@ -1,6 +1,6 @@
 import { PageLayout, PageTitle } from '@/components/layout/PageLayout';
 import { trpc } from '@/trpc/server';
-import EventDetails from '@/components/events/EventDetails';
+import Event from '@/components/events/Event';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EventDTO } from '@/types/Event';
 
@@ -12,7 +12,7 @@ function EventList({ events }: EventListProps) {
   return (
     <div className="flex flex-col gap-4">
       {events.map((event) => (
-        <EventDetails key={event.id} id={event.id} />
+        <Event key={event.id} id={event.id} />
       ))}
     </div>
   );
