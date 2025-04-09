@@ -10,6 +10,7 @@ import { polygon, point, booleanPointInPolygon } from '@turf/turf';
 import { EventDTO } from '@/types/Event';
 import CampMarker from './CampMarker';
 import { useSearchParams } from 'next/navigation';
+import RewardMarker from './RewardMarker';
 
 type Props = {
   eventList: EventDTO[];
@@ -102,6 +103,7 @@ export default function Map(props: Props) {
         onGeolocate={handleGeolocate}
       />
       <CampMarker />
+      <RewardMarker />
       <MapEvents eventList={props.eventList} />
     </MapLibre>
   );
