@@ -11,6 +11,7 @@ import { polygon, point, booleanPointInPolygon } from '@turf/turf';
 import TourLine from './TourLine';
 import { EventDTO } from '@/types/Event';
 import CampMarker from './CampMarker';
+import { useSearchParams } from 'next/navigation';
 
 type Props = {
   eventList: EventDTO[];
@@ -28,6 +29,8 @@ export default function Map(props: Props) {
 
   const [isOnAGH, setIsOnAGH] = useState<boolean>();
 
+  const searchParams = useSearchParams();
+
   useEffect(() => {
     if (mapRef.current) {
       props.ref(mapRef.current);
@@ -35,8 +38,10 @@ export default function Map(props: Props) {
   }, [mapRef.current]);
 
   const handleMapLoad = async () => {
-    // Centrowanie kamery na pozycji użytkownika przy załadowaniu mapy
-    geoControlRef.current?.trigger();
+    if (!searchParams.get('event')) {
+      // Centrowanie kamery na pozycji użytkownika przy załadowaniu mapy
+      geoControlRef.current?.trigger();
+    }
 
     if (!mapRef.current) {
       return;

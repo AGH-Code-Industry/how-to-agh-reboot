@@ -12,6 +12,7 @@ import MapPopup from './MapPopup';
 import type { FeatureCollection, Point } from 'geojson';
 import type MapLibreGl from 'maplibre-gl';
 import { EventDTO } from '@/types/Event';
+import { useSearchParams } from 'next/navigation';
 
 type Props = {
   eventList: EventDTO[];
@@ -20,6 +21,8 @@ type Props = {
 export default function MapEvents({ eventList }: Props) {
   const { current: mapRef } = useMap();
   const [popup, setPopup] = useState<Popup | null>(null);
+
+  const searchParams = useSearchParams();
 
   const geoJsonData = useMemo<FeatureCollection>(
     () => ({
@@ -46,6 +49,18 @@ export default function MapEvents({ eventList }: Props) {
     }),
     [eventList]
   );
+
+  const showEventPopup = (event: EventDTO, map: maplibregl.Map) => {
+    popup?.remove();
+
+    const html = renderToString(<MapPopup event={event} />);
+
+    const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
+      .setLngLat([event.longitude, event.latidute])
+      .setHTML(html)
+      .addTo(map);
+    setPopup(newPopup);
+  };
 
   const handleClick = useCallback(
     async (e: MapLibreGl.MapMouseEvent) => {
@@ -80,13 +95,7 @@ export default function MapEvents({ eventList }: Props) {
         props.fieldOfStudy = JSON.parse(props.fieldOfStudy as unknown as string);
         props.occurrences = JSON.parse(props.occurrences as unknown as string);
 
-        const html = renderToString(<MapPopup event={props} />);
-
-        const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
-          .setLngLat(coordinates)
-          .setHTML(html)
-          .addTo(map);
-        setPopup(newPopup);
+        showEventPopup(props, map);
       }
     },
     [popup, mapRef]
@@ -102,6 +111,23 @@ export default function MapEvents({ eventList }: Props) {
       map.off('click', handleClick);
     };
   }, [handleClick, mapRef]);
+
+  useEffect(() => {
+    const eventId = searchParams.get('event');
+
+    if (!eventId || !mapRef) return;
+
+    const event = eventList.find((event) => event.id === +eventId);
+
+    if (event && mapRef) {
+      mapRef.flyTo({
+        center: [event.longitude, event.latidute],
+        zoom: 17,
+      });
+
+      showEventPopup(event, mapRef.getMap());
+    }
+  }, [searchParams, eventList]);
 
   return (
     <Source
