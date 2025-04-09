@@ -10,6 +10,7 @@ import { EventDTO } from '@/types/Event';
 import { Drawer } from 'vaul';
 import { MapRef } from 'react-map-gl/maplibre';
 import { trpc } from '@/trpc/client';
+import { useSearchParams } from 'next/navigation';
 
 interface MapFilterProps {
   mapRef: MapRef | undefined;
@@ -25,12 +26,18 @@ export default function MapFilter({
   onClose,
   mapRef,
 }: MapFilterProps) {
-  const [search, setSearch] = useState('');
-  const [selectedType, setSelectedType] = useState<string>('-');
-  const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>('-');
-  const [startTime, setStartTime] = useState<string>('');
-  const [endTime, setEndTime] = useState<string>('');
-  const [showPastEvents, setShowPastEvents] = useState(true);
+  const searchParams = useSearchParams();
+
+  const [search, setSearch] = useState(searchParams.get('name') ?? '');
+  const [selectedType, setSelectedType] = useState<string>(searchParams.get('type') ?? '-');
+  const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>(
+    searchParams.get('fieldOfStudy') ?? '-'
+  );
+  const [startTime, setStartTime] = useState<string>(searchParams.get('startTime') ?? '');
+  const [endTime, setEndTime] = useState<string>(searchParams.get('endTime') ?? '');
+  const [showPastEvents, setShowPastEvents] = useState<boolean>(
+    searchParams.get('showPastEvents') ? searchParams.get('showPastEvents') === 'false' : false
+  );
 
   const eventTypes = trpc.events.getEventTypes.useQuery().data;
 
@@ -90,7 +97,7 @@ export default function MapFilter({
     [mapRef]
   );
 
-  const applyFilters = () => {
+  const applyFilters = (withClose = true) => {
     const now = new Date();
 
     let startDate = null;
@@ -150,21 +157,47 @@ export default function MapFilter({
           (selectedFieldOfStudy === '-' || isAvailableFieldOfStudy != undefined)
         );
       });
+
+    const params = new URLSearchParams(window.location.search);
+    params.set('name', search);
+    params.set('type', selectedType);
+    params.set('fieldOfStudy', selectedFieldOfStudy);
+    params.set('startTime', startTime);
+    params.set('endTime', endTime);
+    params.set('showPastEvents', showPastEvents.toString());
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
     onFilterChange(filtered);
-    zoomInToEvents(filtered);
-    onClose();
+
+    if (withClose) {
+      zoomInToEvents(filtered);
+      onClose();
+    }
   };
 
   const resetFilters = () => {
     setSearch('');
+    const params = new URLSearchParams(window.location.search);
+    params.set('name', '');
+    params.set('type', '-');
+    params.set('fieldOfStudy', '-');
+    params.set('startTime', '');
+    params.set('endTime', '');
+    params.set('showPastEvents', 'false');
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
     setSelectedType('-');
     setStartTime('');
     setEndTime('');
-    setShowPastEvents(true);
+    setShowPastEvents(false);
     zoomInToEvents(originalEvents);
     onFilterChange(originalEvents);
     onClose();
   };
+
+  // useEffect(() => {
+  //   console.log('hgj');
+
+  //   applyFilters(false);
+  // }, []);
 
   return (
     <div className="flex size-full flex-col bg-background p-4 text-foreground">
@@ -255,7 +288,7 @@ export default function MapFilter({
 
       {/* Przyciski */}
       <div className="mt-4 flex shrink-0 gap-2">
-        <Button onClick={applyFilters}>Zastosuj filtry</Button>
+        <Button onClick={() => applyFilters()}>Zastosuj filtry</Button>
         <Button onClick={resetFilters} className="">
           Reset
         </Button>
