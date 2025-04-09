@@ -1,23 +1,67 @@
-import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { EventDTO } from '@/types/Event';
+import { trpc } from '@/trpc/server';
 import EventTypeBadge from '@/components/events/EventTypeBadge';
+import FieldOfStudyBadge from '@/components/events/FieldOfStudyBadge';
+import { MapPin } from 'lucide-react';
+import Link from 'next/link';
+import EventOccurrence from './EventOccurrence';
+import { Button } from '@/components/ui/button';
+import EventVisitedStatus from '@/components/events/EventVisitedStatus';
 
-export default function Event(event: EventDTO) {
+type Props = {
+  id: number;
+};
+
+export default async function Event({ id }: Props) {
+  const event = await trpc.events.getEvent({ id: id });
+
+  const activeOccurrence = event.occurrences.find(
+    (occurrence) => new Date(occurrence.end) > new Date(Date.now())
+  );
+
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{event.name}</CardTitle>
+      <CardHeader className="pb-3">
+        <div className="mt-2 flex flex-col gap-2">
+          <div className="flex justify-between gap-2">
+            <EventTypeBadge eventType={event.eventType} />
+            <Link
+              href={`/map?event=${event.id}`}
+              className="flex shrink-0 items-center gap-2 hover:underline"
+            >
+              <MapPin />
+              {event.building.name}
+            </Link>
+          </div>
+          <CardTitle className="leading-tight">{event.name}</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-4">
         <p className="text-sm text-muted-foreground">{event.description}</p>
-        <EventTypeBadge eventType={event.eventType} />
-        <div className="flex justify-end gap-2">
-          <a href={'/events/' + event.id}>
-            <Button variant="outline">Szczegóły</Button>
-          </a>
-          <Button>Rozpocznij</Button>
+        <div>
+          <p>{event.fieldOfStudy.length == 1 ? 'Powiązany kierunek:' : 'Powiązane kierunki:'}</p>
+          <div className="mt-2 flex flex-wrap items-start gap-2">
+            {event.fieldOfStudy.map((f) => (
+              <FieldOfStudyBadge key={f.id} fieldOfStudy={f} />
+            ))}
+          </div>
         </div>
+        {activeOccurrence ? (
+          <div>
+            <p>Najbliższe występienie:</p>
+            <EventOccurrence occurrence={activeOccurrence} />
+            <Link href={'/events/' + event.id}>
+              <Button size="sm" className="mt-1">
+                {event.occurrences.length > 1 ? 'Zobacz więcej' : 'Zobacz szczegóły'}
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <Link href={'/events/' + event.id} className="flex justify-center">
+            <Button size="sm">Zobacz szczegóły</Button>
+          </Link>
+        )}
+        <EventVisitedStatus visited={event.visited} ended={!activeOccurrence} />
       </CardContent>
     </Card>
   );

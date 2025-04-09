@@ -1,5 +1,7 @@
 import EventDetails from '@/components/events/EventDetails';
-import { PageLayout, PageSectionTitle, PageTitle } from '@/components/layout/PageLayout';
+import { PageLayout, PageTitle } from '@/components/layout/PageLayout';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -11,9 +13,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <PageLayout>
-      <PageTitle>Wydarzenia</PageTitle>
-      <PageSectionTitle>Aktywne wydarzenia</PageSectionTitle>
-      <EventDetails id={parsedId} />
+      <PageTitle>Wydarzenie</PageTitle>
+      <div className="flex flex-col items-center gap-4">
+        <EventDetails id={parsedId} />
+        <Link href="/events">
+          <Button>Pokaż wszystkie</Button>
+        </Link>
+      </div>
     </PageLayout>
   );
 }
