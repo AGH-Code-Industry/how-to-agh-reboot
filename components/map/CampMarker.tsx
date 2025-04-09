@@ -7,7 +7,7 @@ import type MapLibreGl from 'maplibre-gl';
 const CampPopup = () => {
   return (
     <div className="min-w-36 bg-background text-foreground">
-      <h3 className="text-center text-base">Miejsce odbioru nagród</h3>
+      <h3 className="text-center text-base">Namiot Wydziału</h3>
     </div>
   );
 };
