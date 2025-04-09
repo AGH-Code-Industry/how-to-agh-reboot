@@ -23,7 +23,7 @@ export default function MapPopup({ event }: { event: EventDTO }) {
         <b>Typ:</b> {event.eventType.name}
       </p>
       <p>
-        <b>Budynek:</b> {event.building.name}
+        <b>Budynek:</b> {event.building.name}, sala {event.building.room}, {event.building.floor}
       </p>
       <p>
         <b>Wydział:</b> {event.fieldOfStudy[0]?.faculty?.name || 'Brak'}

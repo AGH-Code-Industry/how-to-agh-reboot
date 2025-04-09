@@ -24,10 +24,11 @@ async function main(): Promise<void> {
     // Seed entities with dependencies
     const fieldOfStudies = await seedFieldOfStudies(faculties);
     await seedBuildingEntries(buildings);
+    const buildingRooms = await seedBuildingRooms(buildings);
     const occurrences = await seedOccurrences();
 
     // Seed events
-    const events = await seedEvents(eventTypes, buildings, qrs, owners);
+    const events = await seedEvents(eventTypes, buildingRooms, qrs, owners);
 
     // Seed event relationships
     await seedEventThemes(events, themes);
@@ -178,6 +179,44 @@ async function seedBuildings() {
 }
 
 /**
+ * Seed Building entities
+ */
+async function seedBuildingRooms(buildings: Awaited<ReturnType<typeof seedBuildings>>) {
+  const A3A4 = buildings.find((b) => b.name === 'A3-A4');
+  const B1 = buildings.find((b) => b.name === 'B-1');
+  const C1 = buildings.find((b) => b.name === 'C-1');
+  const C2 = buildings.find((b) => b.name === 'C-2');
+  const C3 = buildings.find((b) => b.name === 'C-3');
+  const D2 = buildings.find((b) => b.name === 'D-2');
+
+  if (!A3A4 || !B1 || !C1 || !C2 || !C3 || !D2) {
+    throw new Error('Missing item');
+  }
+
+  const buildingRooms: Prisma.BuildingRoomCreateArgs['data'][] = [
+    { room: 'H05', floor: 0, building_id: B1.building_id },
+    { room: 'H113', floor: 1, building_id: B1.building_id },
+    { room: '4.08', floor: 4, building_id: D2.building_id },
+    { room: '1 i 2', floor: 0, building_id: C3.building_id },
+    { room: '308', floor: 3, building_id: C2.building_id },
+    { room: '403', floor: 4, building_id: A3A4.building_id },
+    { room: '313', floor: 3, building_id: C2.building_id },
+    { room: '509', floor: 5, building_id: C1.building_id },
+    { room: '510', floor: 5, building_id: C1.building_id },
+    { room: 'H04', floor: 0, building_id: B1.building_id },
+    { room: '215', floor: 2, building_id: C3.building_id },
+  ];
+
+  const createdBuildingRooms = [];
+  for (const br of buildingRooms) {
+    const created = await prisma.buildingRoom.create({ data: br });
+    createdBuildingRooms.push(created);
+  }
+
+  return createdBuildingRooms;
+}
+
+/**
  * Seed QR entities
  */
 async function seedQRs() {
@@ -258,74 +297,68 @@ async function seedOccurrences() {
   const occurrences = [
     // 1
     [0, 30, 60, 90, 120, 150, 180, 210].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 30) * 1000 * 60),
     })),
 
     // 2
     [30, 90, 150, 210].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 45) * 1000 * 60),
     })),
 
     // 3
     [0, 60, 120, 180].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 45) * 1000 * 60),
     })),
 
     // 4
     [0, 60, 120, 180, 240].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 45) * 1000 * 60),
     })),
 
     // 5
-    [0, 30, 60, 90, 120, 150, 180, 210].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+    [0, 30, 60, 90, 120, 150, 180, 210, 240].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 30) * 1000 * 60),
     })),
 
     // 6
     [90, 120, 150, 180, 210].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
-    })),
-
-    // 6
-    [90, 120, 150, 180, 210].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 30) * 1000 * 60),
     })),
 
     // 7
     [150, 180, 210].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 30) * 1000 * 60),
     })),
 
     // 8
     [0, 60, 120, 180, 240].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 45) * 1000 * 60),
     })),
 
     // 9
-    [0, 60, 120, 180, 240].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+    [0, 60, 120, 180].map((offset) => ({
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 45) * 1000 * 60),
     })),
 
     // 10
     [0, 30, 60, 90, 120, 150, 180, 210].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 30) * 1000 * 60),
     })),
 
     // 11
     [0, 60, 120, 180, 240].map((offset) => ({
-      start_time: new Date(tenAm + offset * 1000),
-      end_time: new Date(tenAm + (offset + 30) * 1000),
+      start_time: new Date(tenAm + offset * 1000 * 60),
+      end_time: new Date(tenAm + (offset + 30) * 1000 * 60),
     })),
   ];
 
@@ -344,36 +377,9 @@ async function seedOccurrences() {
   return createdOccurrences;
 }
 
-/**
- * Seed Event entities
- */
-
-// A3A4
-//              50.065443, 19.920426
-
-// B1
-//              50.065926, 19.919384
-//              50.066102, 19.919484
-//              50.066263, 19.919580
-
-// C1
-//              50.065402, 19.922691
-//              50.065652, 19.922777
-
-// C2
-//              50.065913, 19.922767
-//              50.066013, 19.922303
-
-// C3
-//              50.066113, 19.921882
-//              50.066197, 19.921512
-
-// D2
-//              50.065393, 19.918781
-
 async function seedEvents(
   eventTypes: Awaited<ReturnType<typeof seedEventTypes>>,
-  buildings: Awaited<ReturnType<typeof seedBuildings>>,
+  buildingRooms: Awaited<ReturnType<typeof seedBuildingRooms>>,
   qrs: Awaited<ReturnType<typeof seedQRs>>,
   owners: Awaited<ReturnType<typeof seedOwners>>
 ) {
@@ -386,20 +392,9 @@ async function seedEvents(
     throw new Error('Missing item');
   }
 
-  const A3A4 = buildings.find((b) => b.name === 'A3-A4');
-  const B1 = buildings.find((b) => b.name === 'B-1');
-  const C1 = buildings.find((b) => b.name === 'C-1');
-  const C2 = buildings.find((b) => b.name === 'C-2');
-  const C3 = buildings.find((b) => b.name === 'C-3');
-  const D2 = buildings.find((b) => b.name === 'D-2');
-
-  if (!A3A4 || !B1 || !C1 || !C2 || !C3 || !D2) {
-    throw new Error('Missing item');
-  }
-
   const AGH = owners[0];
 
-  const events = [
+  const events: Prisma.EventCreateArgs['data'][] = [
     {
       name: 'Laboratorium Mikro-sieci i Jakości Energii Elektrycznej',
       description:
@@ -408,7 +403,7 @@ async function seedEvents(
       location_longitude: 19.919384,
       location_latitude: 50.065926,
       event_type_id: lab.event_type_id,
-      building_id: B1.building_id,
+      building_room_id: buildingRooms[0].building_room_id,
       qr_id: qrs[0].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -420,7 +415,7 @@ async function seedEvents(
       location_longitude: 19.919484,
       location_latitude: 50.066102,
       event_type_id: lab.event_type_id,
-      building_id: B1.building_id,
+      building_room_id: buildingRooms[1].building_room_id,
       qr_id: qrs[1].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -432,7 +427,7 @@ async function seedEvents(
       location_longitude: 19.918781,
       location_latitude: 50.065393,
       event_type_id: lab.event_type_id,
-      building_id: D2.building_id,
+      building_room_id: buildingRooms[2].building_room_id,
       qr_id: qrs[2].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -444,7 +439,7 @@ async function seedEvents(
       location_longitude: 19.921882,
       location_latitude: 50.066113,
       event_type_id: lab.event_type_id,
-      building_id: C3.building_id,
+      building_room_id: buildingRooms[3].building_room_id,
       qr_id: qrs[3].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -456,7 +451,7 @@ async function seedEvents(
       location_longitude: 19.922767,
       location_latitude: 50.065913,
       event_type_id: lab.event_type_id,
-      building_id: C2.building_id,
+      building_room_id: buildingRooms[4].building_room_id,
       qr_id: qrs[4].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -468,7 +463,7 @@ async function seedEvents(
       location_longitude: 19.920426,
       location_latitude: 50.065443,
       event_type_id: lab.event_type_id,
-      building_id: A3A4.building_id,
+      building_room_id: buildingRooms[5].building_room_id,
       qr_id: qrs[5].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -480,7 +475,7 @@ async function seedEvents(
       location_longitude: 19.922303,
       location_latitude: 50.066013,
       event_type_id: lab.event_type_id,
-      building_id: C2.building_id,
+      building_room_id: buildingRooms[6].building_room_id,
       qr_id: qrs[6].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -492,7 +487,7 @@ async function seedEvents(
       location_longitude: 19.922691,
       location_latitude: 50.065402,
       event_type_id: lab.event_type_id,
-      building_id: C1.building_id,
+      building_room_id: buildingRooms[7].building_room_id,
       qr_id: qrs[7].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -503,19 +498,19 @@ async function seedEvents(
       location_longitude: 19.922777,
       location_latitude: 50.065652,
       event_type_id: exhib.event_type_id,
-      building_id: C1.building_id,
+      building_room_id: buildingRooms[8].building_room_id,
       qr_id: qrs[8].qr_id,
       owner_id: AGH.owner_id,
     },
     {
-      name: 'Koło Naukowe Promotor',
+      name: 'Koło Naukowe proMOTOR',
       description:
         'Zobacz hamownię silników do motocykli elektrycznych E-MOTO oraz stanowisko do badań prototypu maszyny PMCM, opracowanej we współpracy ze studentami!',
       should_be_displayed: true,
       location_longitude: 19.91958,
       location_latitude: 50.066263,
       event_type_id: exhib.event_type_id,
-      building_id: B1.building_id,
+      building_room_id: buildingRooms[9].building_room_id,
       qr_id: qrs[9].qr_id,
       owner_id: AGH.owner_id,
     },
@@ -527,7 +522,7 @@ async function seedEvents(
       location_longitude: 19.921512,
       location_latitude: 50.066197,
       event_type_id: exhib.event_type_id,
-      building_id: C3.building_id,
+      building_room_id: buildingRooms[10].building_room_id,
       qr_id: qrs[10].qr_id,
       owner_id: AGH.owner_id,
     },
