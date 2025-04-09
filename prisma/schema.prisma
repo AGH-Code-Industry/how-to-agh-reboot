@@ -16,8 +16,8 @@ model Event {
   location_latitude      Float
   event_type_id          Int
   event_type             EventType           @relation(fields: [event_type_id], references: [event_type_id])
-  building_id            Int
-  building               Building            @relation(fields: [building_id], references: [building_id])
+  building_room_id       Int
+  building_room          BuildingRoom        @relation(fields: [building_room_id], references: [building_room_id])
   qr_id                  Int
   qr                     QR                  @relation(fields: [qr_id], references: [qr_id])
   owner_id               Int
@@ -52,8 +52,19 @@ model BuildingEntry {
 model Building {
   building_id      Int             @id @default(autoincrement())
   name             String
-  events           Event[]
   building_entries BuildingEntry[]
+  building_rooms   BuildingRoom[]
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+}
+
+model BuildingRoom {
+  building_room_id Int @id @default(autoincrement())
+  room             String
+  floor            Int
+  events           Event[]
+  building_id      Int
+  building         Building @relation(fields: [building_id], references: [building_id])
   created_at       DateTime        @default(now())
   updated_at       DateTime        @updatedAt
 }

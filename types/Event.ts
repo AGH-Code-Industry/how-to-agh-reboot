@@ -1,5 +1,6 @@
 import {
   Building,
+  BuildingRoom,
   Event,
   EventFieldOfStudy,
   EventOccurrence,
@@ -10,7 +11,9 @@ import {
   Occurrence,
 } from '@prisma/client';
 
-export type EventDO = Event & { building: Building } & { event_type: EventType } & {
+export type EventDO = Event & { building_room: BuildingRoom & { building: Building } } & {
+  event_type: EventType;
+} & {
   event_visits: EventVisit[];
 } & {
   event_occurrences: (EventOccurrence & { occurrence: Occurrence })[];
@@ -29,8 +32,10 @@ export type EventDTO = {
   longitude: EventDO['location_longitude'];
   eventType: EventTypeDTO;
   building: {
-    id: EventDO['building']['building_id'];
-    name: EventDO['building']['name'];
+    id: EventDO['building_room']['building_id'];
+    name: EventDO['building_room']['building']['name'];
+    floor: string;
+    room: EventDO['building_room']['room'];
   };
   occurrences: EventOccurrenceDTO[];
   fieldOfStudy: FieldOfStudyDTO[];
@@ -60,8 +65,10 @@ export const eventDOtoDTO = (data: EventDO): EventDTO => ({
   longitude: data.location_longitude,
   eventType: eventTypeDOtoDTO(data.event_type),
   building: {
-    id: data.building.building_id,
-    name: data.building.name,
+    id: data.building_room.building.building_id,
+    name: data.building_room.building.name,
+    floor: data.building_room.floor === 0 ? 'parter' : `piętro ${data.building_room.floor}`,
+    room: data.building_room.room,
   },
   occurrences: data.event_occurrences.map((eo) => ({
     start: eo.occurrence.start_time,

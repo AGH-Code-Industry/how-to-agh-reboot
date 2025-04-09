@@ -12,7 +12,7 @@ function EventList({ events }: EventListProps) {
   return (
     <div className="flex flex-col gap-4">
       {events.map((event) => (
-        <Event key={event.id} id={event.id} />
+        <Event key={event.id} data={event} />
       ))}
     </div>
   );
