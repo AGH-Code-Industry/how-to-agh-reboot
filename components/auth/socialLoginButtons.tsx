@@ -1,11 +1,12 @@
 'use client';
 
-import { JSX, useState } from 'react';
+import { JSX, useMemo, useState } from 'react';
 import { Provider } from '@supabase/supabase-js';
 import { FaGoogle } from 'react-icons/fa';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/supabase/client';
+import { trpc } from '@/trpc/client';
 
 type Props = {
   onError?: (error: string) => void;
@@ -15,11 +16,14 @@ export default function SocialLoginButtons({ onError }: Props): JSX.Element {
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { data } = trpc.qr.getScannedAmount.useQuery();
+
+  const shouldNotSocialLogin = useMemo(() => data !== undefined && data.amount > 0, [data]);
 
   const handleSocialLogin = async (provider: Provider) => {
     setIsLoading(true);
 
-    const { error } = await supabase.auth.linkIdentity({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: provider,
       options: {
         redirectTo: `${location.origin}/auth/callback`,
@@ -47,10 +51,16 @@ export default function SocialLoginButtons({ onError }: Props): JSX.Element {
         <span>{isLoading ? 'Przekierowywanie...' : 'Zaloguj przez Google'}</span>
       </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
-        Zostaniesz przekierowany do{' '}
-        <span className="text-foreground">{process.env.NEXT_PUBLIC_SUPABASE_URL}</span>
-      </p>
+      {shouldNotSocialLogin ? (
+        <p className="text-center text-sm text-errorAlert-foreground">
+          Logując się za pomocą Google utracisz obecny postęp.
+        </p>
+      ) : (
+        <p className="text-center text-sm text-muted-foreground">
+          Zostaniesz przekierowany do{' '}
+          <span className="text-foreground">{process.env.NEXT_PUBLIC_SUPABASE_URL}</span>
+        </p>
+      )}
     </div>
   );
 }

@@ -64,4 +64,20 @@ export const qrRouter = router({
 
     return { type: 'success', message: 'Kod pomyślnie zeskanowany' } as SubmitQrResponse;
   }),
+  getScannedAmount: protectedProcedure.query(async (opts) => {
+    const { ctx } = opts;
+
+    const eventVisitCount = await prisma.eventVisit.aggregate({
+      where: {
+        user_id: {
+          equals: ctx.user.id,
+        },
+      },
+      _count: {
+        event_visit_id: true,
+      },
+    });
+
+    return { amount: eventVisitCount._count.event_visit_id };
+  }),
 });
