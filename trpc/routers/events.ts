@@ -1,6 +1,6 @@
 import { procedure, protectedProcedure, router } from '../init';
 import { prisma } from '@/prisma/prisma';
-import { eventDOtoDTO, eventTypeDOtoDTO } from '@/types/Event';
+import { eventDOtoDTO, eventTypeDOtoDTO, FieldOfStudyDOtoDTO } from '@/types/Event';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
@@ -63,5 +63,15 @@ export const eventsRouter = router({
     const eventTypes = (await prisma.eventType.findMany({})).map(eventTypeDOtoDTO);
 
     return eventTypes;
+  }),
+  getFieldsOfStudy: procedure.query(async () => {
+    const fieldsOfStudy = (
+      await prisma.fieldOfStudy.findMany({
+        include: {
+          faculty: true,
+        },
+      })
+    ).map(FieldOfStudyDOtoDTO);
+    return fieldsOfStudy;
   }),
 });
