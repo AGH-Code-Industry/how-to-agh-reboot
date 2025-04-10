@@ -2,7 +2,7 @@
 import Map from '@/components/map/Map';
 import { trpc } from '@/trpc/client';
 import { EventDTO } from '@/types/Event';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import MapFilter from '@/components/map/MapFilter';
 import { MapRef } from 'react-map-gl/maplibre';
@@ -14,22 +14,21 @@ import AGHLeaveIndicator from '@/components/map/AGHLeaveIndicator';
 export default function Page() {
   const [isOnAGH, setIsOnAGH] = useState<boolean>(true);
 
-  const originalEvents = (
-    (trpc.events.getEvents.useQuery({}).data ?? []) as unknown as EventDTO[]
-  ).filter((event) => event.occurrences.length > 0 && event.display);
+  const { data: databaseEvents } = trpc.events.getEvents.useQuery({});
 
-  const preFilteredEvents = (
-    (trpc.events.getEvents.useQuery({}).data ?? []) as unknown as EventDTO[]
-  ).filter((event) => event.occurrences.length > 0);
+  const originalEvents = useMemo(() => {
+    if (!databaseEvents) return [];
+
+    return databaseEvents.filter((event) => event.occurrences.length > 0 && event.display);
+  }, [databaseEvents]);
 
   const [filteredEvents, setFilteredEvents] = useState<EventDTO[]>([]);
-
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [mapRef, setMapRef] = useState<MapRef | undefined>(undefined);
 
   useEffect(() => {
-    setFilteredEvents(preFilteredEvents);
-  }, [preFilteredEvents.length]); // syf
+    setFilteredEvents([...originalEvents]);
+  }, [originalEvents]);
 
   return (
     <div className="relative flex h-full">
