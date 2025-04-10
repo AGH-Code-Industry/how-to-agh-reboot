@@ -14,7 +14,7 @@ export default function StarsRating({ starCount, onRatingChange, initialRating }
 
   const handleRatingChange = (newRating: number) => {
     setRating(newRating);
-    onRatingChange?.(rating);
+    onRatingChange?.(newRating);
   };
 
   return (
