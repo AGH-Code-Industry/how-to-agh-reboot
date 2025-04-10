@@ -1,13 +1,14 @@
 .maplibregl-popup-content {
     @apply text-foreground;
     @apply bg-background;
+    @apply rounded-lg;
 }
 
 .maplibregl-popup-close-button {
     @apply w-5;
     @apply h-5;
     @apply text-foreground;
-    @apply bg-background;
+    @apply bg-transparent;
 }
 
 .maplibregl-popup-tip {
