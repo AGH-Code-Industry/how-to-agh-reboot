@@ -9,9 +9,13 @@ export default function MapPopup({ event }: { event: EventDTO }) {
       <p className="mb-3 mt-5 text-center">
         Budynek {event.building.name}, sala {event.building.room}, {event.building.floor}
       </p>
-      <Button asChild variant="default" className="w-full text-sm">
-        <Link href={`/events/${event.id}`}>Zobacz więcej</Link>
-      </Button>
+      <div className="flex w-full items-center justify-center">
+        <Button asChild variant="default" className=" text-sm">
+          <Link href={`/events/${event.id}`} className="text-sm">
+            Zobacz więcej
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }
