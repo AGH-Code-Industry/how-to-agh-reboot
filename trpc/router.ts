@@ -5,6 +5,7 @@ import { quizesRouter } from './routers/quizes';
 import { buildingsRouter } from '@/trpc/routers/buildings';
 import { qrRouter } from './routers/qr';
 import { prizesRouter } from './routers/prizes';
+import { ratingRouter } from './routers/rating';
 
 export const appRouter = router({
   example: exampleRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
   buildings: buildingsRouter,
   qr: qrRouter,
   prizes: prizesRouter,
+  rating: ratingRouter,
 });
 
 export type AppRouter = typeof appRouter;

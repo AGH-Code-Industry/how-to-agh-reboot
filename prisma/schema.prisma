@@ -26,6 +26,7 @@ model Event {
   event_field_of_studies EventFieldOfStudy[]
   event_occurrences      EventOccurrence[]
   event_visits           EventVisit[]
+  event_ratings          EventRating[]
   created_at             DateTime            @default(now())
   updated_at             DateTime            @updatedAt
 }
@@ -240,4 +241,14 @@ model Prize {
   required_visits   Int
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
+}
+
+model EventRating {
+  event_rating_id Int      @id @default(autoincrement())
+  event_id        Int
+  event           Event    @relation(fields: [event_id], references: [event_id])
+  user_id         String
+  rating          Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 }

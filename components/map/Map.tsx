@@ -57,6 +57,18 @@ export default function Map(props: Props) {
 
     const logoImage = await mapRef.current.loadImage('./images/logo.webp');
     mapRef.current.addImage('coin', logoImage.data);
+
+    const lectureImage = await mapRef.current.loadImage('./images/eventTypes/Wykład.webp');
+    mapRef.current.addImage('event_type_1', lectureImage.data);
+
+    const labsImage = await mapRef.current.loadImage('./images/eventTypes/Laboratorium.webp');
+    mapRef.current.addImage('event_type_2', labsImage.data);
+
+    const exhibitionImage = await mapRef.current.loadImage('./images/eventTypes/Wystawa.webp');
+    mapRef.current.addImage('event_type_3', exhibitionImage.data);
+
+    const standImage = await mapRef.current.loadImage('./images/eventTypes/Stoisko.webp');
+    mapRef.current.addImage('event_type_4', standImage.data);
   };
 
   const handleGeolocate = (e: GeolocateResultEvent) => {
@@ -87,7 +99,7 @@ export default function Map(props: Props) {
         longitude: campCoordinatesRef.current[0],
         latitude: campCoordinatesRef.current[1],
         zoom: 17,
-        pitch: 60,
+        pitch: 50,
         bearing: -30,
       }}
       // Zablokowałem pochylanie góra dół przy obracaniu, do przemyślenia czy chcemy to włączone

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 type SystemNotificationData = {
@@ -21,7 +21,30 @@ type ToastNotificationData = {
 const useNotifications = () => {
   const [permission, setPermission] = useState(Notification.permission);
 
-  const requestPermissions = async () => {
+  const showToast = useCallback(async (data: ToastNotificationData) => {
+    toast(data.title, {
+      description: data.description,
+      action: data.button
+        ? {
+            label: data.button!.title,
+            onClick: () => {
+              data.button!.action();
+            },
+          }
+        : null,
+      icon: data.icon,
+    });
+
+    if (
+      data.vibrate !== undefined &&
+      'vibrate' in navigator &&
+      typeof navigator.vibrate === 'function'
+    ) {
+      navigator.vibrate(data.vibrate);
+    }
+  }, []);
+
+  const requestPermissions = useCallback(async () => {
     if (permission === 'granted') {
       return true;
     }
@@ -47,63 +70,46 @@ const useNotifications = () => {
 
     await showToast(toastData);
     return false;
-  };
+  }, [permission, showToast]);
 
-  const sendNotification = async (data: SystemNotificationData) => {
-    const permissionGranted = await requestPermissions();
-    if (!permissionGranted) return;
+  const sendNotification = useCallback(
+    async (data: SystemNotificationData) => {
+      const permissionGranted = await requestPermissions();
+      if (!permissionGranted) return;
 
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.ready;
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
 
-      const { title, description, ...payload } = data;
+        const { title, description, ...payload } = data;
 
-      await registration.showNotification(title, {
-        body: description,
-        icon: '/logo.png',
-        badge: '/logo.png',
-        data: payload,
-      });
-    }
-  };
-
-  const showToast = async (data: ToastNotificationData) => {
-    toast(data.title, {
-      description: data.description,
-      action: data.button
-        ? {
-            label: data.button!.title,
-            onClick: () => {
-              data.button!.action();
-            },
-          }
-        : null,
-      icon: data.icon,
-    });
-
-    if (
-      data.vibrate !== undefined &&
-      'vibrate' in navigator &&
-      typeof navigator.vibrate === 'function'
-    ) {
-      navigator.vibrate(data.vibrate);
-    }
-  };
-
-  const scheduleNotification = async (data: SystemNotificationData, date: Date) => {
-    const permissionGranted = await requestPermissions();
-    if (!permissionGranted) return;
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.active?.postMessage({
-          type: 'schedule-notification',
-          data,
-          date: date.getTime(),
+        await registration.showNotification(title, {
+          body: description,
+          icon: '/logo.png',
+          badge: '/logo.png',
+          data: payload,
         });
-      });
-    }
-  };
+      }
+    },
+    [requestPermissions]
+  );
+
+  const scheduleNotification = useCallback(
+    async (data: SystemNotificationData, date: Date) => {
+      const permissionGranted = await requestPermissions();
+      if (!permissionGranted) return;
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.active?.postMessage({
+            type: 'schedule-notification',
+            data,
+            date: date.getTime(),
+          });
+        });
+      }
+    },
+    [requestPermissions]
+  );
 
   return { sendNotification, showToast, scheduleNotification };
 };
