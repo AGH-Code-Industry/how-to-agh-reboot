@@ -19,7 +19,7 @@ export const layer2 = {
   filter: ['!', ['has', 'point_count']],
   source: 'events',
   layout: {
-    'icon-image': 'event_type_{eventType}',
+    'icon-image': 'event_type_{eventTypeImageID}',
     'icon-size': 0.7,
     'icon-allow-overlap': true,
   },

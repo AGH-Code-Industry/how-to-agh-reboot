@@ -37,7 +37,7 @@ export default function MapEvents({ eventList }: Props) {
           properties: {
             cluster: false,
             ...event,
-            eventType: event.eventType.id,
+            eventTypeImageID: event.eventType.id,
             start_time: foundOccurrence?.start.toLocaleTimeString('en-GB', {
               hour: '2-digit',
               minute: '2-digit',
@@ -112,6 +112,7 @@ export default function MapEvents({ eventList }: Props) {
         props.building = JSON.parse(props.building as unknown as string);
         props.fieldOfStudy = JSON.parse(props.fieldOfStudy as unknown as string);
         props.occurrences = JSON.parse(props.occurrences as unknown as string);
+        props.eventType = JSON.parse(props.eventType as unknown as string);
 
         showEventPopup(props, map);
       }
