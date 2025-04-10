@@ -1,5 +1,5 @@
 import { Popup } from 'maplibre-gl';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Marker, useMap } from 'react-map-gl/maplibre';
 import { renderToString } from 'react-dom/server';
 import type MapLibreGl from 'maplibre-gl';
@@ -12,10 +12,9 @@ const CampPopup = () => {
   );
 };
 
-const CampMarker = () => {
+const CampMarker = ({ coordinates }: { coordinates: [number, number] }) => {
   const { current: mapRef } = useMap();
   const [popup, setPopup] = useState<Popup | null>(null);
-  const campLocationRef = useRef<[number, number]>([19.921339, 50.065236]);
 
   const handleMarkerClick = useCallback(
     (e: MapLibreGl.MapMouseEvent) => {
@@ -35,7 +34,7 @@ const CampMarker = () => {
       }
 
       const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
-        .setLngLat(campLocationRef.current)
+        .setLngLat(coordinates)
         .setHTML(renderToString(<CampPopup />))
         .addTo(mapRef.getMap());
 
@@ -56,7 +55,7 @@ const CampMarker = () => {
   }, [handleMarkerClick, mapRef]);
 
   return (
-    <Marker longitude={campLocationRef.current[0]} latitude={campLocationRef.current[1]}>
+    <Marker longitude={coordinates[0]} latitude={coordinates[1]}>
       <img
         className="camp-marker"
         style={{ width: '40px' }}

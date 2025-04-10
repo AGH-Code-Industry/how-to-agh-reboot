@@ -22,6 +22,8 @@ export default function Map(props: Props) {
   const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
   const mapRef = useRef<MapRef>(null);
 
+  const campCoordinatesRef = useRef<[number, number]>([19.921339, 50.065236]);
+
   const aghBoundsPolygonRef = useRef<ReturnType<typeof polygon>>(null);
 
   const [isOnAGH, setIsOnAGH] = useState<boolean>();
@@ -94,10 +96,11 @@ export default function Map(props: Props) {
         height: '100%',
       }}
       initialViewState={{
-        longitude: 19.908207508138602,
-        latitude: 50.06807388275794,
+        longitude: campCoordinatesRef.current[0],
+        latitude: campCoordinatesRef.current[1],
         zoom: 17,
         pitch: 50,
+        bearing: -30,
       }}
       // Zablokowałem pochylanie góra dół przy obracaniu, do przemyślenia czy chcemy to włączone
       pitchWithRotate={false}
@@ -114,7 +117,7 @@ export default function Map(props: Props) {
         ref={geoControlRef}
         onGeolocate={handleGeolocate}
       />
-      <CampMarker />
+      <CampMarker coordinates={campCoordinatesRef.current} />
       <RewardMarker />
       <MapEvents eventList={props.eventList} />
     </MapLibre>
