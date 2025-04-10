@@ -13,22 +13,30 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 type WelcomeOverlayProps = {
   forceOpen?: boolean;
+  mode: 'automatic' | 'force-open';
   onClose?: () => void;
 };
 
-export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOverlayProps) {
+export default function WelcomeOverlay({ mode, forceOpen = false, onClose }: WelcomeOverlayProps) {
   const [visible, setVisible] = useState(false);
   const [currStepId, setCurrStepId] = useState(welcomeSteps[0]?.id ?? 1);
   const cardContent = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (forceOpen || !Cookies.get('seen_welcome')) {
+    if (
+      (mode === 'force-open' && forceOpen) ||
+      (mode === 'automatic' && !Cookies.get('seen_welcome'))
+    ) {
       setVisible(true);
+      setCurrStepId(1);
     }
-  }, [forceOpen]);
+  }, [forceOpen, mode]);
 
   const handleClose = () => {
-    Cookies.set('seen_welcome', 'true', { expires: 365 });
+    if (mode === 'automatic') {
+      Cookies.set('seen_welcome', 'true', { expires: 365 });
+    }
+
     setVisible(false);
     setCurrStepId(welcomeSteps[0]?.id ?? 1);
     if (onClose) onClose();

@@ -9,7 +9,11 @@ export default function AboutApplicationButton() {
   return (
     <>
       <Button onClick={() => setShowWelcome(true)}>O aplikacji</Button>
-      <WelcomeOverlay forceOpen={showWelcome} onClose={() => setShowWelcome(false)} />
+      <WelcomeOverlay
+        mode={'force-open'}
+        forceOpen={showWelcome}
+        onClose={() => setShowWelcome(false)}
+      />
     </>
   );
 }
