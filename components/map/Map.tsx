@@ -88,7 +88,7 @@ export default function Map(props: Props) {
         latitude: campCoordinatesRef.current[1],
         zoom: 17,
         pitch: 60,
-        bearing: -75,
+        bearing: -30,
       }}
       // Zablokowałem pochylanie góra dół przy obracaniu, do przemyślenia czy chcemy to włączone
       pitchWithRotate={false}
