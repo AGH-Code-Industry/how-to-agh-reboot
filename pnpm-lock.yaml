@@ -101,6 +101,9 @@ importers:
       geojson:
         specifier: ^0.5.0
         version: 0.5.0
+      idb:
+        specifier: ^8.0.2
+        version: 8.0.2
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -2567,6 +2570,9 @@ packages:
     resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
     engines: {node: '>=18'}
     hasBin: true
+
+  idb@8.0.2:
+    resolution: {integrity: sha512-CX70rYhx7GDDQzwwQMDwF6kDRQi5vVs6khHUumDrMecBylKkwvZ8HWvKV08AGb7VbpoGCWUQ4aHzNDgoUiOIUg==}
 
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -6906,6 +6912,8 @@ snapshots:
       function-bind: 1.1.2
 
   husky@9.1.7: {}
+
+  idb@8.0.2: {}
 
   ieee754@1.2.1: {}
 

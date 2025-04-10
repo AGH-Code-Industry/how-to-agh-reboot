@@ -67,14 +67,14 @@ export default async function Event({ id, data, showDetails = false }: Props) {
             <p>Czas trwania:</p>
             <div className="mt-1 flex flex-col gap-1">
               {event.occurrences.map((o) => (
-                <EventOccurrence key={o.start.toString()} occurrence={o} />
+                <EventOccurrence key={o.start.toString()} occurrence={o} eventId={event.id} />
               ))}
             </div>
           </div>
         ) : activeOccurrence ? (
           <div>
             <p>Najbliższe występienie:</p>
-            <EventOccurrence occurrence={activeOccurrence} />
+            <EventOccurrence occurrence={activeOccurrence} eventId={event.id} />
             <Link href={'/events/' + event.id}>
               <Button size="sm" className="mt-1">
                 {event.occurrences.length > 1 ? 'Zobacz więcej' : 'Zobacz szczegóły'}

@@ -52,6 +52,7 @@ export type FieldOfStudyDTO = {
 };
 
 export type EventOccurrenceDTO = {
+  id: EventDO['event_occurrences'][0]['event_occurrence_id'];
   start: EventDO['event_occurrences'][0]['occurrence']['start_time'];
   end: EventDO['event_occurrences'][0]['occurrence']['end_time'];
 };
@@ -71,6 +72,7 @@ export const eventDOtoDTO = (data: EventDO): EventDTO => ({
     room: data.building_room.room,
   },
   occurrences: data.event_occurrences.map((eo) => ({
+    id: eo.event_occurrence_id,
     start: eo.occurrence.start_time,
     end: eo.occurrence.end_time,
   })),
