@@ -19,8 +19,8 @@ export const layer2 = {
   filter: ['!', ['has', 'point_count']],
   source: 'events',
   layout: {
-    'icon-image': 'coin',
-    'icon-size': 0.8,
+    'icon-image': 'event_type_{eventTypeImageID}',
+    'icon-size': 0.7,
     'icon-allow-overlap': true,
   },
 } satisfies LayerProps;
@@ -47,7 +47,7 @@ export const layer4 = {
     'text-size': 12,
     'text-font': ['Noto Sans Bold'], // Changed to bold for thicker text
     'icon-allow-overlap': true,
-    'text-offset': [0, -1.7],
+    'text-offset': [0, -2.2],
   },
   paint: {
     'text-halo-color': '#000000',
