@@ -5,6 +5,7 @@ type SystemNotificationData = {
   title: string;
   description: string;
   url: string;
+  keepAfterClick?: boolean;
 };
 
 type ToastNotificationData = {
@@ -93,25 +94,56 @@ const useNotifications = () => {
     [requestPermissions]
   );
 
-  const scheduleNotification = useCallback(
-    async (data: SystemNotificationData, date: Date) => {
-      const permissionGranted = await requestPermissions();
-      if (!permissionGranted) return;
+  const scheduleNotification = async (id: string, data: SystemNotificationData, date: Date) => {
+    const permissionGranted = await requestPermissions();
+    if (!permissionGranted) return;
 
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.active?.postMessage({
-            type: 'schedule-notification',
-            data,
-            date: date.getTime(),
-          });
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.active?.postMessage({
+          type: 'schedule-notification',
+          data,
+          date: date.getTime(),
+          id,
         });
-      }
-    },
-    [requestPermissions]
-  );
+      });
+    }
+  };
 
-  return { sendNotification, showToast, scheduleNotification };
+  const isNotificationScheduled = async (id: string): Promise<boolean> => {
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      return new Promise((resolve) => {
+        const messageChannel = new MessageChannel();
+        messageChannel.port1.onmessage = (event) => {
+          resolve(event.data.isScheduled);
+        };
+        registration.active?.postMessage({ type: 'is-notification-scheduled', id }, [
+          messageChannel.port2,
+        ]);
+      });
+    }
+    return false;
+  };
+
+  const cancelNotification = async (id: string) => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.active?.postMessage({
+          type: 'cancel-notification',
+          id,
+        });
+      });
+    }
+  };
+
+  return {
+    sendNotification,
+    showToast,
+    scheduleNotification,
+    isNotificationScheduled,
+    cancelNotification,
+  };
 };
 
 export { useNotifications };
