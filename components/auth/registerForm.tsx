@@ -37,12 +37,19 @@ export default function RegisterForm({ className }: RegisterFormProps) {
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    const email = data.email;
+    const password = data.password;
+
     setLoading(true);
 
-    const { data: loginInfo, error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
+    const { data: loginInfo, error } = await supabase.auth.updateUser({
+      email,
+      password,
     });
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     setLoading(false);
 
@@ -51,14 +58,14 @@ export default function RegisterForm({ className }: RegisterFormProps) {
       return;
     }
 
-    if (loginInfo.user && !loginInfo.session) {
+    if (loginInfo.user && !session) {
       // This means email confirmation is REQUIRED
       setServerMessage({
         type: 'success',
         message:
           'Zarejestrowano pomyślnie! Sprawdź swoją skrzynkę pocztową w celu potwierdzenia konta.',
       });
-    } else if (loginInfo.user && loginInfo.session) {
+    } else if (loginInfo.user && session) {
       // This means email confirmation is DISABLED - user is signed up and logged in
       setServerMessage({
         type: 'success',
