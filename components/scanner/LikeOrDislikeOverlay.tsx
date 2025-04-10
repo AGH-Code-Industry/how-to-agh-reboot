@@ -53,6 +53,7 @@ const LikeOrDislikeOverlay = forwardRef<LikeOrDislikeOverlayHandle, Props>((prop
   const open = (id: number) => {
     setVisible(true);
     setEventId(id);
+    setRating(initialRating);
   };
 
   const handleClose = () => {
