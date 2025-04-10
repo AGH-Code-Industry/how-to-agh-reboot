@@ -22,15 +22,13 @@ export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOv
   const cardContent = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (forceOpen) {
+    if (forceOpen || !Cookies.get('seen_welcome')) {
       setVisible(true);
-    } else if (!Cookies.get('seen_welcome')) {
-      setVisible(true);
-      Cookies.set('seen_welcome', 'true', { expires: 365 });
     }
   }, [forceOpen]);
 
   const handleClose = () => {
+    Cookies.set('seen_welcome', 'true', { expires: 365 });
     setVisible(false);
     setCurrStepId(welcomeSteps[0]?.id ?? 1);
     if (onClose) onClose();
@@ -73,6 +71,7 @@ export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOv
                     width={currentStep.image.width}
                     height={currentStep.image.height}
                     className="rounded-lg"
+                    border={currentStep.image.border}
                   />
                 )}
                 <p className="text-justify">{currentStep.description}</p>

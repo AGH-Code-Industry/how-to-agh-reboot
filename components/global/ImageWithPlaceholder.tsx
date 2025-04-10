@@ -9,6 +9,7 @@ type ImageWithPlaceholderProps = {
   width: number;
   height: number;
   className?: string;
+  border?: string;
 };
 
 export default function ImageWithPlaceholder({
@@ -17,6 +18,7 @@ export default function ImageWithPlaceholder({
   width,
   height,
   className = '',
+  border = undefined,
 }: ImageWithPlaceholderProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -37,6 +39,7 @@ export default function ImageWithPlaceholder({
         onLoad={() => setImageLoaded(true)}
         placeholder="empty"
         className={`${!imageLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300 ${className}`}
+        style={{ border: border }}
       />
     </div>
   );
