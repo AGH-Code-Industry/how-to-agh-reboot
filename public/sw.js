@@ -12,11 +12,13 @@ self.addEventListener('message', async (event) => {
     const delay = date - Date.now();
     if (delay > 0) {
       await saveNotification(id, { data, date });
+      console.error('Scheduled notification', id, data, date, new Date(date));
       setTimeout(async () => {
         self.registration.showNotification(data.title, {
           body: data.description,
           icon: '/logo.png',
           data: { url: data.url, id: id },
+          requireInteraction: data.keepAfterClick,
         });
         await deleteNotification(id);
       }, delay);

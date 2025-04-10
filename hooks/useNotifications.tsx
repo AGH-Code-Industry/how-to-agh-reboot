@@ -5,6 +5,7 @@ type SystemNotificationData = {
   title: string;
   description: string;
   url: string;
+  keepAfterClick?: boolean;
 };
 
 type ToastNotificationData = {
@@ -26,11 +27,11 @@ const useNotifications = () => {
       description: data.description,
       action: data.button
         ? {
-          label: data.button!.title,
-          onClick: () => {
-            data.button!.action();
-          },
-        }
+            label: data.button!.title,
+            onClick: () => {
+              data.button!.action();
+            },
+          }
         : null,
       icon: data.icon,
     });
