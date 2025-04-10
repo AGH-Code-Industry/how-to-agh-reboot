@@ -43,7 +43,7 @@ export default function RootLayout({
         >
           <TRPCProvider>
             <AuthProvider>
-              <WelcomeOverlay mode={'force-open'} />
+              <WelcomeOverlay mode={'automatic'} />
               <main className="grow overflow-y-auto">{children}</main>
               <NavBar />
               <Toaster position="top-center" />
