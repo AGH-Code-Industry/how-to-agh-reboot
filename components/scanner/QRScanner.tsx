@@ -5,11 +5,11 @@ import './QRScanner.scss';
 
 import { IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
 import { trpc } from '@/trpc/client';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { SubmitQrResponseType } from '@/trpc/routers/qr';
 import { CircleCheck, CircleX, Info } from 'lucide-react';
 import { useCameraPermissions } from '@/hooks/useCameraPermissions';
-import LikeOrDislikeOverlay, { LikeOrDislikeOverlayHandle } from './LikeOrDislikeOverlay';
+import { useRouter } from 'next/navigation';
 
 const typeToText = (type: SubmitQrResponseType) => {
   if (type === 'error') {
@@ -30,13 +30,9 @@ const typeToText = (type: SubmitQrResponseType) => {
 export default function QRScanner() {
   const { showToast } = useNotifications();
   const camera = useCameraPermissions();
-  const likeOrDislikeOverlay = useRef<LikeOrDislikeOverlayHandle>(null);
+  const router = useRouter();
 
   const { data, mutateAsync: submitQr } = trpc.qr.submitQr.useMutation();
-
-  const openRating = useCallback(() => {
-    return data?.eventId !== undefined && likeOrDislikeOverlay.current?.open(data?.eventId);
-  }, [data, likeOrDislikeOverlay]);
 
   useEffect(() => {
     if (!data) {
@@ -52,8 +48,10 @@ export default function QRScanner() {
       vibrate: 200,
     });
 
-    openRating();
-  }, [showToast, data, openRating]);
+    if (data.eventId !== undefined) {
+      router.push(`/events/${data.eventId}/rate`);
+    }
+  }, [showToast, data, router]);
 
   const MemoizedScanner = useMemo(() => {
     const scanHandler = (codes: IDetectedBarcode[]) => {
@@ -79,7 +77,6 @@ export default function QRScanner() {
 
   return (
     <div className="flex size-full flex-col justify-center">
-      <LikeOrDislikeOverlay ref={likeOrDislikeOverlay} />
       {camera.hasPermission === false ? (
         <div className="flex flex-col items-center px-6">
           <Info />
