@@ -13,24 +13,30 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 type WelcomeOverlayProps = {
   forceOpen?: boolean;
+  mode: 'automatic' | 'force-open';
   onClose?: () => void;
 };
 
-export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOverlayProps) {
+export default function WelcomeOverlay({ mode, forceOpen = false, onClose }: WelcomeOverlayProps) {
   const [visible, setVisible] = useState(false);
   const [currStepId, setCurrStepId] = useState(welcomeSteps[0]?.id ?? 1);
   const cardContent = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (forceOpen) {
+    if (
+      (mode === 'force-open' && forceOpen) ||
+      (mode === 'automatic' && !Cookies.get('seen_welcome'))
+    ) {
       setVisible(true);
-    } else if (!Cookies.get('seen_welcome')) {
-      setVisible(true);
-      Cookies.set('seen_welcome', 'true', { expires: 365 });
+      setCurrStepId(1);
     }
-  }, [forceOpen]);
+  }, [forceOpen, mode]);
 
   const handleClose = () => {
+    if (mode === 'automatic') {
+      Cookies.set('seen_welcome', 'true', { expires: 365 });
+    }
+
     setVisible(false);
     setCurrStepId(welcomeSteps[0]?.id ?? 1);
     if (onClose) onClose();
@@ -73,6 +79,7 @@ export default function WelcomeOverlay({ forceOpen = false, onClose }: WelcomeOv
                     width={currentStep.image.width}
                     height={currentStep.image.height}
                     className="rounded-lg"
+                    border={currentStep.image.border}
                   />
                 )}
                 <p className="text-justify">{currentStep.description}</p>
