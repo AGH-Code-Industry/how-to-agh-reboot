@@ -1,9 +1,8 @@
 'use client';
 
 import StarsRating from './StarsRating';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { trpc } from '@/trpc/client';
 import { useNotifications } from '@/hooks/useNotifications';
 import { CircleCheck, CircleX, Info, Loader2 } from 'lucide-react';
@@ -11,6 +10,7 @@ import { RateEventResponse } from '@/trpc/routers/rating';
 import { useRouter } from 'next/navigation';
 
 type Props = {
+  eventName: string;
   eventId: number;
 };
 
@@ -30,7 +30,7 @@ const typeToText = (type: RateEventResponse['type']) => {
   return { title: '' };
 };
 
-export default function EventRate({ eventId }: Props) {
+export default function EventRate({ eventId, eventName }: Props) {
   const [rating, setRating] = useState(3);
   const { showToast } = useNotifications();
   const router = useRouter();
@@ -39,10 +39,7 @@ export default function EventRate({ eventId }: Props) {
     setRating(rating);
   }, []);
 
-  const { data: events } = trpc.events.getEvents.useQuery({ eventId: eventId });
   const { data: rateResult, mutate: rateEvent, isPending } = trpc.rating.rateEvent.useMutation();
-
-  const event = useMemo(() => (events?.length === 1 ? events[0] : null), [events]);
 
   const sendRating = useCallback(async () => {
     rateEvent({ eventId, rating });
@@ -71,20 +68,8 @@ export default function EventRate({ eventId }: Props) {
         <span className="mb-1 text-center text-muted-foreground">
           Jak bardzo podobało Ci się wydarzenie:
         </span>
-        {event !== null ? (
-          <>
-            <span className="mb-4 text-center text-lg font-bold">{event?.name}</span>
-            <StarsRating starCount={5} initialRating={3} onRatingChange={handleRatingChange} />
-          </>
-        ) : (
-          <div className="flex flex-col space-y-3">
-            <Skeleton className="rounded-lg" />
-            <div className="flex flex-col items-center space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-        )}
+        <span className="mb-4 text-center text-lg font-bold">{eventName}</span>
+        <StarsRating starCount={5} initialRating={3} onRatingChange={handleRatingChange} />
       </div>
       <div className="m-0 mb-4 flex w-full shrink-0 flex-col gap-4 p-0">
         <div className="flex w-full justify-center">
