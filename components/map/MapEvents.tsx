@@ -37,6 +37,7 @@ export default function MapEvents({ eventList }: Props) {
           properties: {
             cluster: false,
             ...event,
+            eventType: event.eventType.id,
             start_time: foundOccurrence?.start.toLocaleTimeString('en-GB', {
               hour: '2-digit',
               minute: '2-digit',
@@ -153,12 +154,12 @@ export default function MapEvents({ eventList }: Props) {
       data={geoJsonData}
       cluster={true}
       clusterMaxZoom={14}
-      clusterRadius={50}
+      clusterRadius={20}
     >
       <Layer {...layer1} />
       <Layer {...layer2} />
-      <Layer {...layer3} />
       <Layer {...layer4} />
+      <Layer {...layer3} />
     </Source>
   );
 }
