@@ -7,6 +7,7 @@ export type SubmitQrResponseType = 'error' | 'info' | 'success';
 export type SubmitQrResponse = {
   type: SubmitQrResponseType;
   message: string;
+  eventId?: number;
 };
 
 export const qrRouter = router({
@@ -62,6 +63,10 @@ export const qrRouter = router({
       },
     });
 
-    return { type: 'success', message: 'Kod pomyślnie zeskanowany' } as SubmitQrResponse;
+    return {
+      type: 'success',
+      message: 'Kod pomyślnie zeskanowany',
+      eventId: event.event_id,
+    } as SubmitQrResponse;
   }),
 });
