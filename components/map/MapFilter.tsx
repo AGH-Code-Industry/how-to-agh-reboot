@@ -10,14 +10,13 @@ import { EventDTO } from '@/types/Event';
 import { Drawer } from 'vaul';
 import { MapRef } from 'react-map-gl/maplibre';
 import { trpc } from '@/trpc/client';
-import { useSearchParams } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 interface MapFilterProps {
   mapRef: MapRef | undefined;
   originalEvents: EventDTO[];
   eventList: EventDTO[];
   onFilterChange: (filteredEvents: EventDTO[]) => void;
-  // onClose: () => void;
   isFilterOpen: boolean;
   setIsFilterOpen: (open: boolean) => void;
 }
@@ -25,22 +24,19 @@ interface MapFilterProps {
 export default function MapFilter({
   originalEvents,
   onFilterChange,
-  // onClose,
   mapRef,
   isFilterOpen,
   setIsFilterOpen,
 }: MapFilterProps) {
-  const searchParams = useSearchParams();
-
-  const [search, setSearch] = useState(searchParams.get('name') ?? '');
-  const [selectedType, setSelectedType] = useState<string>(searchParams.get('type') ?? '-');
+  const [search, setSearch] = useState(Cookies.get('name') ?? '');
+  const [selectedType, setSelectedType] = useState<string>(Cookies.get('type') ?? '-');
   const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>(
-    searchParams.get('fieldOfStudy') ?? '-'
+    Cookies.get('fieldOfStudy') ?? '-'
   );
-  const [startTime, setStartTime] = useState<string>(searchParams.get('startTime') ?? '');
-  const [endTime, setEndTime] = useState<string>(searchParams.get('endTime') ?? '');
+  const [startTime, setStartTime] = useState<string>(Cookies.get('startTime') ?? '');
+  const [endTime, setEndTime] = useState<string>(Cookies.get('endTime') ?? '');
   const [showPastEvents, setShowPastEvents] = useState<boolean>(
-    searchParams.get('showPastEvents') ? searchParams.get('showPastEvents') === 'false' : false
+    Cookies.get('showPastEvents') ? Cookies.get('showPastEvents') === 'false' : false
   );
 
   const eventTypes = trpc.events.getEventTypes.useQuery().data;
@@ -162,14 +158,13 @@ export default function MapFilter({
         );
       });
 
-    const params = new URLSearchParams(window.location.search);
-    params.set('name', search);
-    params.set('type', selectedType);
-    params.set('fieldOfStudy', selectedFieldOfStudy);
-    params.set('startTime', startTime);
-    params.set('endTime', endTime);
-    params.set('showPastEvents', showPastEvents.toString());
-    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+    Cookies.set('name', search, { expires: 365 });
+    Cookies.set('type', selectedType, { expires: 365 });
+    Cookies.set('fieldOfStudy', selectedFieldOfStudy, { expires: 365 });
+    Cookies.set('startTime', startTime, { expires: 365 });
+    Cookies.set('endTime', endTime, { expires: 365 });
+    Cookies.set('showPastEvents', showPastEvents.toString(), { expires: 365 });
+
     onFilterChange(filtered);
 
     if (withClose) {
@@ -180,14 +175,14 @@ export default function MapFilter({
 
   const resetFilters = () => {
     setSearch('');
-    const params = new URLSearchParams(window.location.search);
-    params.set('name', '');
-    params.set('type', '-');
-    params.set('fieldOfStudy', '-');
-    params.set('startTime', '');
-    params.set('endTime', '');
-    params.set('showPastEvents', 'false');
-    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+
+    Cookies.set('name', '', { expires: 365 });
+    Cookies.set('type', '-', { expires: 365 });
+    Cookies.set('fieldOfStudy', '-', { expires: 365 });
+    Cookies.set('startTime', '', { expires: 365 });
+    Cookies.set('endTime', '', { expires: 365 });
+    Cookies.set('showPastEvents', 'false', { expires: 365 });
+
     setSelectedType('-');
     setSelectedFieldOfStudy('-');
     setStartTime('');
