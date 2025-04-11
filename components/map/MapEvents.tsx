@@ -62,7 +62,7 @@ export default function MapEvents({ eventList }: Props) {
     setGeoJsonData(getGeoJsonData());
     const interval = setInterval(() => {
       setGeoJsonData(getGeoJsonData());
-    }, 60000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [getGeoJsonData]);
