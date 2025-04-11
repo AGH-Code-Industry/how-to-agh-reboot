@@ -94,6 +94,7 @@ export default function MapFilter({
           {
             padding: 50,
             duration: 600,
+            bearing: -30,
           }
         );
       }
