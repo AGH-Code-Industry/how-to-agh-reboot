@@ -9,12 +9,7 @@ export function RequestPWAButton() {
   const handleInstallClick = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the PWA installation');
-      } else {
-        console.log('User dismissed the PWA installation');
-      }
+      await deferredPrompt.userChoice;
       setDeferredPrompt(null);
     }
   };
