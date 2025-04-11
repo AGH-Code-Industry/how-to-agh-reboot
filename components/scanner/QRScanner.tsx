@@ -10,6 +10,7 @@ import { SubmitQrResponseType } from '@/trpc/routers/qr';
 import { CircleCheck, CircleX, Info } from 'lucide-react';
 import { useCameraPermissions } from '@/hooks/useCameraPermissions';
 import { useRouter } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 const typeToText = (type: SubmitQrResponseType) => {
   if (type === 'error') {
@@ -51,6 +52,9 @@ export default function QRScanner() {
     if (data.eventId !== undefined) {
       router.push(`/events/${data.eventId}/rate`);
     }
+
+    revalidatePath('/events');
+    revalidatePath('/prizes');
   }, [showToast, data, router]);
 
   const MemoizedScanner = useMemo(() => {

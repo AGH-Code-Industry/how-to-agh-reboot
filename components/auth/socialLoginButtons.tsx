@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/supabase/client';
 import { trpc } from '@/trpc/client';
+import { revalidatePath } from 'next/cache';
 
 type Props = {
   onError?: (error: string) => void;
@@ -34,6 +35,10 @@ export default function SocialLoginButtons({ onError }: Props): JSX.Element {
       setIsLoading(false);
       onError?.(error.message);
     }
+
+    revalidatePath('/events');
+    revalidatePath('/prizes');
+    revalidatePath('/settings');
   };
 
   return (

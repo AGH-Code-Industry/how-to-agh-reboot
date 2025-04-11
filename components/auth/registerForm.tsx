@@ -16,6 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SocialLoginButtons from './socialLoginButtons';
 import { createClient } from '@/supabase/client';
+import { revalidatePath } from 'next/cache';
 
 type RegisterFormProps = {
   className?: string;
@@ -74,6 +75,10 @@ export default function RegisterForm({ className }: RegisterFormProps) {
 
       router.push('/');
       router.refresh();
+
+      revalidatePath('/events');
+      revalidatePath('/prizes');
+      revalidatePath('/settings');
     } else {
       setServerMessage({
         type: 'error',

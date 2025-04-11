@@ -16,6 +16,7 @@ import SocialLoginButtons from './socialLoginButtons';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/supabase/client';
+import { revalidatePath } from 'next/cache';
 
 type LoginFormProps = {
   className?: string;
@@ -56,6 +57,10 @@ export default function LoginForm({ className }: LoginFormProps) {
 
     router.push('/');
     router.refresh();
+
+    revalidatePath('/events');
+    revalidatePath('/prizes');
+    revalidatePath('/settings');
   };
 
   return (
