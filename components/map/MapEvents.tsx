@@ -1,6 +1,6 @@
 import './MapEvents.scss';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { renderToString } from 'react-dom/server';
 
 import { Source, Layer, useMap } from 'react-map-gl/maplibre';
@@ -24,7 +24,7 @@ export default function MapEvents({ eventList }: Props) {
 
   const searchParams = useSearchParams();
 
-  const geoJsonData = useMemo<FeatureCollection>(
+  const getGeoJsonData = useCallback<() => FeatureCollection>(
     () => ({
       type: 'FeatureCollection',
       features: eventList.map((event) => {
@@ -55,6 +55,17 @@ export default function MapEvents({ eventList }: Props) {
     }),
     [eventList]
   );
+
+  const [geoJsonData, setGeoJsonData] = useState<FeatureCollection>(getGeoJsonData());
+
+  useEffect(() => {
+    setGeoJsonData(getGeoJsonData());
+    const interval = setInterval(() => {
+      setGeoJsonData(getGeoJsonData());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [getGeoJsonData]);
 
   const showEventPopup = (event: EventDTO, map: maplibregl.Map) => {
     popup?.remove();
