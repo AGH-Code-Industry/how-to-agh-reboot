@@ -59,7 +59,8 @@ export default function QRScanner() {
         return;
       }
 
-      submitQr(codes[0].rawValue);
+      const value = codes[0].rawValue.replace('https://howtoagh.coin.agh.edu.pl/qr/', '');
+      submitQr(value);
     };
 
     return (
