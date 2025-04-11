@@ -77,7 +77,7 @@ export const welcomeSteps: WelcomeStep[] = [
   },
   {
     id: 6,
-    title: 'Nagrody',
+    title: 'Upominki',
     description:
       'Po odwiedzeniu wymaganej ilości pokazów i zeskanowaniu kodów, upominki będą możliwe do odebrania w budynku B1 do godziny 14:45 - szukaj znacznika medalu na mapie.',
     image: {

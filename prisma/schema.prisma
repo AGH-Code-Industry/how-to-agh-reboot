@@ -239,6 +239,7 @@ model Prize {
   prize_title       String
   prize_description String
   required_visits   Int
+  redeem_codes      PrizeRedeemCode[]
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 }
@@ -251,4 +252,15 @@ model EventRating {
   rating          Int
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
+}
+
+model PrizeRedeemCode {
+  prize_redeem_code_id Int      @id @default(autoincrement())
+  user_id              String
+  prize_id             Int
+  prize                Prize    @relation(fields: [prize_id], references: [prize_id])
+  code                 String
+  used                 Boolean  @default(false)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
 }
