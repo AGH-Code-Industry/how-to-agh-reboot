@@ -1,5 +1,6 @@
 import { ReactNode, useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { redirect } from 'next/navigation';
 
 type SystemNotificationData = {
   title: string;
@@ -46,6 +47,25 @@ const useNotifications = () => {
   }, []);
 
   const requestPermissions = useCallback(async () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+
+    if (isIOS && !isInStandaloneMode) {
+      const toastData = {
+        title: 'Zainstaluj aplikację',
+        description:
+          'Aby otrzymywać powiadomienia, przejdź do ustawień i zainstaluj aplikację na ekranie głównym',
+        button: {
+          title: 'Ustawienia',
+          action: async () => {
+            redirect('/settings');
+          },
+        },
+      };
+      await showToast(toastData);
+      return false;
+    }
+
     if (permission === 'granted') {
       return true;
     }
@@ -76,7 +96,7 @@ const useNotifications = () => {
   const sendNotification = useCallback(
     async (data: SystemNotificationData) => {
       const permissionGranted = await requestPermissions();
-      if (!permissionGranted) return;
+      if (!permissionGranted) return false;
 
       if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.ready;
@@ -90,13 +110,14 @@ const useNotifications = () => {
           data: payload,
         });
       }
+      return true;
     },
     [requestPermissions]
   );
 
   const scheduleNotification = async (id: string, data: SystemNotificationData, date: Date) => {
     const permissionGranted = await requestPermissions();
-    if (!permissionGranted) return;
+    if (!permissionGranted) return false;
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then((registration) => {
@@ -108,6 +129,7 @@ const useNotifications = () => {
         });
       });
     }
+    return true;
   };
 
   const isNotificationScheduled = async (id: string): Promise<boolean> => {

@@ -2,6 +2,7 @@ import { ThemeToggleButton } from '@/app/settings/ChangeTheme';
 import { PageSectionTitle } from '@/components/layout/PageLayout';
 import AboutApplicationButton from '@/components/settings/AboutApplicationButton';
 import AboutUsButton from '@/components/settings/AboutUsButton';
+import { RequestPWAButton } from '@/app/settings/RequestPWAButton';
 
 export default function GeneralSettings() {
   return (
@@ -13,6 +14,7 @@ export default function GeneralSettings() {
           <AboutApplicationButton />
           <AboutUsButton />
         </div>
+        <RequestPWAButton />
       </div>
     </>
   );
