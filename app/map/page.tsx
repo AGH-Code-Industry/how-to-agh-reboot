@@ -31,25 +31,20 @@ export default function Page() {
 
   return (
     <div className="relative flex h-full">
-      {/* Panel z filtrem */}
-
       <MapFilter
         originalEvents={originalEvents}
         eventList={filteredEvents}
         onFilterChange={setFilteredEvents}
-        // onClose={() => setIsFilterOpen(false)}
         isFilterOpen={isFilterOpen}
         setIsFilterOpen={setIsFilterOpen}
         mapRef={mapRef}
       />
 
-      {/* Mapa zajmuje resztę miejsca */}
       <Button
         onClick={() => setIsFilterOpen(true)}
         className="absolute left-4 top-4 z-40"
         variant="secondary"
       >
-        {/* Filtruj wydarzenia */}
         <ListFilter />
       </Button>
 
