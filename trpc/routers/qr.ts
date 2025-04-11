@@ -69,4 +69,20 @@ export const qrRouter = router({
       eventId: event.event_id,
     } as SubmitQrResponse;
   }),
+  getScannedAmount: protectedProcedure.query(async (opts) => {
+    const { ctx } = opts;
+
+    const eventVisitCount = await prisma.eventVisit.aggregate({
+      where: {
+        user_id: {
+          equals: ctx.user.id,
+        },
+      },
+      _count: {
+        event_visit_id: true,
+      },
+    });
+
+    return { amount: eventVisitCount._count.event_visit_id };
+  }),
 });
