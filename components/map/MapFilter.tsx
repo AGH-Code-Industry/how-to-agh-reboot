@@ -36,18 +36,6 @@ export default function MapFilter({
 
   const fieldsOfStudyList = trpc.events.getFieldsOfStudy.useQuery().data;
 
-  console.log('fieldsOfStudyList', fieldsOfStudyList);
-
-  // const fieldsOfStudyList = useMemo(() => {
-  //   const majors = new Set<string>();
-  //   originalEvents.forEach((event) => {
-  //     event.fieldOfStudy.forEach((field) => {
-  //       majors.add(field.name);
-  //     });
-  //   });
-  //   return Array.from(majors);
-  // }, [originalEvents]);
-
   const zoomInToEvents = useCallback(
     (eventList: EventDTO[]) => {
       const map = mapRef?.getMap();

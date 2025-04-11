@@ -43,15 +43,6 @@ export type EventDO = Event & { building_room: BuildingRoom & { building: Buildi
   })[];
 };
 
-// export type FieldOfStudyDTO = {
-//   id: EventDO['event_field_of_studies'][0]['field_of_study']['field_of_study_id'];
-//   name: EventDO['event_field_of_studies'][0]['field_of_study']['name'];
-//   faculty: {
-//     id: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['faculty_id'];
-//     name: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['name'];
-//   };
-// };
-
 export type EventDTO = {
   id: EventDO['event_id'];
   name: EventDO['name'];
