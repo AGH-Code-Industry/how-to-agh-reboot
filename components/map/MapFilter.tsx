@@ -199,8 +199,6 @@ export default function MapFilter({
   };
 
   useEffect(() => {
-    console.log('MapFilter mounted');
-    console.log('searchParams', searchParams.toString());
     setTimeout(() => {
       applyFilters(false);
     }, 2);
