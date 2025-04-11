@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 import MapFilter from '@/components/map/MapFilter';
 import { MapRef } from 'react-map-gl/maplibre';
-import { Drawer } from 'vaul';
 import { ListFilter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AGHLeaveIndicator from '@/components/map/AGHLeaveIndicator';
@@ -33,7 +32,7 @@ export default function Page() {
   return (
     <div className="relative flex h-full">
       {/* Panel z filtrem */}
-
+      {/* 
       <Drawer.Root
         open={isFilterOpen}
         onOpenChange={(open) => setIsFilterOpen(open)}
@@ -51,7 +50,17 @@ export default function Page() {
             />
           </Drawer.Content>
         </Drawer.Portal>
-      </Drawer.Root>
+      </Drawer.Root> */}
+
+      <MapFilter
+        originalEvents={originalEvents}
+        eventList={filteredEvents}
+        onFilterChange={setFilteredEvents}
+        // onClose={() => setIsFilterOpen(false)}
+        isFilterOpen={isFilterOpen}
+        setIsFilterOpen={setIsFilterOpen}
+        mapRef={mapRef}
+      />
 
       {/* Mapa zajmuje resztę miejsca */}
       <Button
