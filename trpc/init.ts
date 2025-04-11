@@ -26,3 +26,13 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
     },
   });
 });
+
+export const privateProcedure = protectedProcedure.use(async (opts) => {
+  const { ctx } = opts;
+
+  if (ctx.user?.email !== 'codeindustry@agh.edu.pl') {
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+
+  return opts.next({ ctx: { ...ctx } });
+});

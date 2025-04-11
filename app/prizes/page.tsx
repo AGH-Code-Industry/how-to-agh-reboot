@@ -7,18 +7,22 @@ export default async function Prizes() {
 
   return (
     <PageLayout>
-      <PageTitle>Nagrody</PageTitle>
+      <PageTitle>Upominki</PageTitle>
       <PageSectionTitle className="m-4 text-center text-base font-normal">
-        Wykonuj zadania w zamian za nagrody! Odbiór nagród - namiot WRSS
+        Odwiedzaj wydarzenia w zamian za gadżety! Odbiór upominków - B1, pokój 1, parter, do godziny
+        14:45.
       </PageSectionTitle>
       <div className="flex flex-col gap-4">
         {prizes.map((prize) => (
           <Reward
             key={prize.id}
+            rewardId={prize.id}
             title={prize.title}
             description={prize.description}
             required={prize.requirement}
             completed={prize.progress}
+            code={prize.redeemCode}
+            redeemed={prize.redeemed}
           />
         ))}
       </div>
