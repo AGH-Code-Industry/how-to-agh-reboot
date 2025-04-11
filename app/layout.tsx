@@ -9,6 +9,7 @@ import WelcomeOverlay from '@/components/global/WelcomeOverlay';
 import { Toaster } from '@/components/ui/sonner';
 import ServiceWorkerRegister from '@/components/layout/ServiceWorkerRegister';
 import { AuthProvider } from '@/components/auth/AuthContext';
+import { PWAProvider } from '@/components/layout/PWAContext';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -43,11 +44,13 @@ export default function RootLayout({
         >
           <TRPCProvider>
             <AuthProvider>
-              <WelcomeOverlay mode={'automatic'} />
-              <main className="grow overflow-y-auto">{children}</main>
-              <NavBar />
-              <Toaster position="top-center" />
-              <ServiceWorkerRegister />
+              <PWAProvider>
+                <WelcomeOverlay mode={'automatic'} />
+                <main className="grow overflow-y-auto">{children}</main>
+                <NavBar />
+                <Toaster position="top-center" />
+                <ServiceWorkerRegister />
+              </PWAProvider>
             </AuthProvider>
           </TRPCProvider>
         </ThemeProvider>

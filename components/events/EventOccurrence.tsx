@@ -60,11 +60,17 @@ export default function EventOccurrence({ eventId, eventName, eventLocation, occ
         keepAfterClick: true,
       };
 
-      await scheduleNotification(occurrence.id.toString(), notificationData, notificationTime);
-      showToast({
-        title: 'Powiadomienie zaplanowane',
-        description: `Dostaniesz przypomnienie 15 min przed wydarzeniem (${formatTime(notificationTime)})`,
-      });
+      const success = await scheduleNotification(
+        occurrence.id.toString(),
+        notificationData,
+        notificationTime
+      );
+      if (success) {
+        showToast({
+          title: 'Powiadomienie zaplanowane',
+          description: `Dostaniesz przypomnienie 15 min przed wydarzeniem (${formatTime(notificationTime)})`,
+        });
+      }
     }
     setIsScheduled(!isScheduled);
   };

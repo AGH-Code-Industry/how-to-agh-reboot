@@ -19,7 +19,7 @@ export default function SocialLoginButtons({ onError }: Props): JSX.Element {
   const handleSocialLogin = async (provider: Provider) => {
     setIsLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: provider,
       options: {
         redirectTo: `${location.origin}/auth/callback`,
@@ -30,8 +30,6 @@ export default function SocialLoginButtons({ onError }: Props): JSX.Element {
       setIsLoading(false);
       onError?.(error.message);
     }
-
-    console.log(data);
   };
 
   return (
