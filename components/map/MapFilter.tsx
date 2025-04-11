@@ -27,11 +27,14 @@ export default function MapFilter({
 }: MapFilterProps) {
   const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState<string>('-');
+  const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>('-');
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
   const [showPastEvents, setShowPastEvents] = useState(true);
 
-  const eventTypes = trpc.events.getEventTypes.useQuery().data ?? [];
+  const eventTypes = trpc.events.getEventTypes.useQuery().data;
+
+  const fieldsOfStudyList = trpc.events.getFieldsOfStudy.useQuery().data;
 
   const zoomInToEvents = useCallback(
     (eventList: EventDTO[]) => {
@@ -79,6 +82,7 @@ export default function MapFilter({
           {
             padding: 50,
             duration: 600,
+            bearing: -30,
           }
         );
       }
@@ -109,6 +113,10 @@ export default function MapFilter({
 
         let newOccurrences = [...event.occurrences];
 
+        const isAvailableFieldOfStudy = event.fieldOfStudy.find(
+          (el) => el.name === selectedFieldOfStudy
+        );
+
         for (const occurrence of event.occurrences) {
           const occStartHour = new Date(occurrence.start);
           occStartHour.setSeconds(0, 0);
@@ -138,7 +146,8 @@ export default function MapFilter({
             (event.description &&
               event.description.toLowerCase().includes(search.toLowerCase()))) &&
           (selectedType === '-' || event.eventType.name === selectedType) &&
-          dateCheck
+          dateCheck &&
+          (selectedFieldOfStudy === '-' || isAvailableFieldOfStudy != undefined)
         );
       });
     onFilterChange(filtered);
@@ -187,9 +196,26 @@ export default function MapFilter({
                 <SelectTrigger className="rounded-md border p-2">{selectedType}</SelectTrigger>
                 <SelectContent>
                   <SelectItem value={'-'}>-</SelectItem>
-                  {eventTypes.map((type) => (
+                  {eventTypes?.map((type) => (
                     <SelectItem key={type.id} value={type.name}>
                       {type.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium">Kierunek:</label>
+              <Select value={selectedFieldOfStudy} onValueChange={setSelectedFieldOfStudy}>
+                <SelectTrigger className="rounded-md border p-2">
+                  {selectedFieldOfStudy}
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={'-'}>-</SelectItem>
+                  {fieldsOfStudyList?.map((fieldOfStudy) => (
+                    <SelectItem key={fieldOfStudy.id} value={fieldOfStudy.name}>
+                      {fieldOfStudy.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

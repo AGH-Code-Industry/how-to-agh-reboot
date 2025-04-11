@@ -11,6 +11,26 @@ import {
   Occurrence,
 } from '@prisma/client';
 
+export type FieldOfStudyDO = FieldOfStudy & { faculty: Faculty };
+
+export type FieldOfStudyDTO = {
+  id: FieldOfStudyDO['field_of_study_id'];
+  name: FieldOfStudyDO['name'];
+  faculty: {
+    id: FieldOfStudyDO['faculty']['faculty_id'];
+    name: FieldOfStudyDO['faculty']['name'];
+  };
+};
+
+export const FieldOfStudyDOtoDTO = (data: FieldOfStudyDO): FieldOfStudyDTO => ({
+  id: data.field_of_study_id,
+  name: data.name,
+  faculty: {
+    id: data.faculty_id,
+    name: data.faculty.name,
+  },
+});
+
 export type EventDO = Event & { building_room: BuildingRoom & { building: Building } } & {
   event_type: EventType;
 } & {
@@ -40,15 +60,6 @@ export type EventDTO = {
   occurrences: EventOccurrenceDTO[];
   fieldOfStudy: FieldOfStudyDTO[];
   visited: boolean;
-};
-
-export type FieldOfStudyDTO = {
-  id: EventDO['event_field_of_studies'][0]['field_of_study']['field_of_study_id'];
-  name: EventDO['event_field_of_studies'][0]['field_of_study']['name'];
-  faculty: {
-    id: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['faculty_id'];
-    name: EventDO['event_field_of_studies'][0]['field_of_study']['faculty']['name'];
-  };
 };
 
 export type EventOccurrenceDTO = {
