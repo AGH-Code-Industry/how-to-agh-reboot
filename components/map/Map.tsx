@@ -3,38 +3,26 @@ import { GeolocateControl, Map as MapLibre, MapRef } from 'react-map-gl/maplibre
 
 import type { GeolocateResultEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useRef, useState } from 'react';
 import type { Source as SourceType } from 'maplibre-gl';
 import MapEvents from '@/components/map/MapEvents';
 import { polygon, point, booleanPointInPolygon } from '@turf/turf';
-import { EventDTO } from '@/types/Event';
 import CampMarker from './CampMarker';
 import { useSearchParams } from 'next/navigation';
 import RewardMarker from './RewardMarker';
+import { Feature, Polygon, GeoJsonProperties } from 'geojson';
 
 type Props = {
-  eventList: EventDTO[];
   onAGHLeaveOrEnter: (isOnAGH: boolean) => void;
-  ref: (arg0: MapRef) => void;
 };
 
 export default function Map(props: Props) {
   const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
   const mapRef = useRef<MapRef>(null);
-
   const campCoordinatesRef = useRef<[number, number]>([19.921339, 50.065236]);
-
   const aghBoundsPolygonRef = useRef<ReturnType<typeof polygon>>(null);
-
   const [isOnAGH, setIsOnAGH] = useState<boolean>();
-
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (mapRef.current) {
-      props.ref(mapRef.current);
-    }
-  }, [mapRef.current]);
 
   const handleMapLoad = async () => {
     if (!searchParams.get('event')) {
@@ -46,29 +34,8 @@ export default function Map(props: Props) {
       return;
     }
 
-    // Stworzenie wielokąta wyznaczającego granice miasteczka
-    const aghSource:
-      | (SourceType & { _data: { geometry: { coordinates: number[][][] } } })
-      | undefined = mapRef.current?.getSource('agh');
-
-    if (aghSource && aghSource._data.geometry.coordinates[0]) {
-      aghBoundsPolygonRef.current = polygon(aghSource._data.geometry.coordinates);
-    }
-
-    const logoImage = await mapRef.current.loadImage('./images/logo.webp');
-    mapRef.current.addImage('coin', logoImage.data);
-
-    const lectureImage = await mapRef.current.loadImage('./images/eventTypes/Wykład.webp');
-    mapRef.current.addImage('event_type_1', lectureImage.data);
-
-    const labsImage = await mapRef.current.loadImage('./images/eventTypes/Laboratorium.webp');
-    mapRef.current.addImage('event_type_2', labsImage.data);
-
-    const exhibitionImage = await mapRef.current.loadImage('./images/eventTypes/Wystawa.webp');
-    mapRef.current.addImage('event_type_3', exhibitionImage.data);
-
-    const standImage = await mapRef.current.loadImage('./images/eventTypes/Stoisko.webp');
-    mapRef.current.addImage('event_type_4', standImage.data);
+    createPolygon(mapRef.current, aghBoundsPolygonRef);
+    await AddImagesToMap(mapRef.current);
   };
 
   const handleGeolocate = (e: GeolocateResultEvent) => {
@@ -119,7 +86,37 @@ export default function Map(props: Props) {
       />
       <CampMarker coordinates={campCoordinatesRef.current} />
       <RewardMarker />
-      <MapEvents eventList={props.eventList} />
+      <MapEvents />
     </MapLibre>
   );
+}
+
+function createPolygon(
+  mapRef: MapRef,
+  aghBoundsPolygonRef: RefObject<Feature<Polygon, GeoJsonProperties> | null>
+) {
+  const aghSource:
+    | (SourceType & { _data: { geometry: { coordinates: number[][][] } } })
+    | undefined = mapRef.getSource('agh');
+
+  if (aghSource && aghSource._data.geometry.coordinates[0]) {
+    aghBoundsPolygonRef.current = polygon(aghSource._data.geometry.coordinates);
+  }
+}
+
+async function AddImagesToMap(mapRef: MapRef) {
+  const logoImage = await mapRef.loadImage('./images/logo.webp');
+  mapRef.addImage('coin', logoImage.data);
+
+  const lectureImage = await mapRef.loadImage('./images/eventTypes/Wykład.webp');
+  mapRef.addImage('event_type_1', lectureImage.data);
+
+  const labsImage = await mapRef.loadImage('./images/eventTypes/Laboratorium.webp');
+  mapRef.addImage('event_type_2', labsImage.data);
+
+  const exhibitionImage = await mapRef.loadImage('./images/eventTypes/Wystawa.webp');
+  mapRef.addImage('event_type_3', exhibitionImage.data);
+
+  const standImage = await mapRef.loadImage('./images/eventTypes/Stoisko.webp');
+  mapRef.addImage('event_type_4', standImage.data);
 }

@@ -6,80 +6,44 @@ import { renderToString } from 'react-dom/server';
 import { Source, Layer, useMap } from 'react-map-gl/maplibre';
 import { Popup } from 'maplibre-gl';
 
-import { layer1, layer2, layer3, layer4 } from './layerConfig';
+import { layer1, layer2, layer3, layer4 } from '../../data/layerConfig';
 import MapPopup from './MapPopup';
 
-import type { FeatureCollection, Point } from 'geojson';
+import type { Point } from 'geojson';
 import type MapLibreGl from 'maplibre-gl';
 import { EventDTO } from '@/types/Event';
 import { useSearchParams } from 'next/navigation';
+import { useEventsStore } from '@/store/map/eventsStore';
+import useGeoJsonData from '@/hooks/map/useGeoJsonData';
 
-type Props = {
-  eventList: EventDTO[];
-};
-
-export default function MapEvents({ eventList }: Props) {
+export default function MapEvents() {
+  const eventList = useEventsStore((state) => state.eventsFiltered);
+  const filterChangeCounter = useEventsStore((state) => state.filterChangeCounter);
   const { current: mapRef } = useMap();
   const [popup, setPopup] = useState<Popup | null>(null);
-
   const searchParams = useSearchParams();
+  const geoJsonData = useGeoJsonData(eventList);
 
-  const getGeoJsonData = useCallback<() => FeatureCollection>(
-    () => ({
-      type: 'FeatureCollection',
-      features: eventList.map((event) => {
-        const foundOccurrence = event.occurrences.find(
-          (occurrence) => occurrence.end.getTime() > Date.now()
-        );
-
-        return {
-          type: 'Feature',
-          properties: {
-            cluster: false,
-            ...event,
-            eventTypeImageID: event.eventType.id,
-            start_time: foundOccurrence?.start.toLocaleTimeString('en-GB', {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-            end_time: foundOccurrence?.end.toLocaleTimeString('en-GB', {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: [event.longitude, event.latidute],
-          },
-        };
-      }),
-    }),
-    [eventList]
+  const showEventPopup = useCallback(
+    (event: EventDTO, map: maplibregl.Map) => {
+      popup?.remove();
+      const html = renderToString(<MapPopup event={event} />);
+      const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
+        .setLngLat([event.longitude, event.latidute])
+        .setHTML(html)
+        .addTo(map);
+      setPopup(newPopup);
+    },
+    [popup]
   );
 
-  const [geoJsonData, setGeoJsonData] = useState<FeatureCollection>(getGeoJsonData());
-
-  useEffect(() => {
-    setGeoJsonData(getGeoJsonData());
-    const interval = setInterval(() => {
-      setGeoJsonData(getGeoJsonData());
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [getGeoJsonData]);
-
-  const showEventPopup = (event: EventDTO, map: maplibregl.Map) => {
-    popup?.remove();
-
-    const html = renderToString(<MapPopup event={event} />);
-
-    const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
-      .setLngLat([event.longitude, event.latidute])
-      .setHTML(html)
-      .addTo(map);
-    setPopup(newPopup);
-  };
-
+  /**
+   * Handle click event on the map.
+   * This function checks if the clicked feature is a cluster or an event.
+   * If it's a cluster, it zooms in on the cluster.
+   * If it's an event, it shows the event popup.
+   * @param e - Map mouse event
+   */
   const handleClick = useCallback(
     async (e: MapLibreGl.MapMouseEvent) => {
       const map = mapRef?.getMap();
@@ -117,12 +81,11 @@ export default function MapEvents({ eventList }: Props) {
         showEventPopup(props, map);
       }
     },
-    [popup, mapRef]
+    [mapRef, popup, showEventPopup]
   );
 
   useEffect(() => {
     const map = mapRef?.getMap();
-
     if (!map) return;
 
     map.on('click', handleClick);
@@ -131,11 +94,12 @@ export default function MapEvents({ eventList }: Props) {
     };
   }, [handleClick, mapRef]);
 
+  /**
+   * Check if the URL contains an event ID and zoom to that event
+   */
   useEffect(() => {
     const eventId = searchParams.get('event');
-
     if (!eventId || !mapRef) return;
-
     const event = eventList.find((event) => event.id === +eventId);
 
     if (event && mapRef) {
@@ -146,7 +110,57 @@ export default function MapEvents({ eventList }: Props) {
 
       showEventPopup(event, mapRef.getMap());
     }
-  }, [searchParams, eventList]);
+  }, [searchParams, eventList, mapRef, showEventPopup]);
+
+  /**
+   * Zoom to the bounds of all events
+   */
+  useEffect(() => {
+    if (filterChangeCounter === 0) return;
+    const map = mapRef?.getMap();
+    if (!map) return;
+    if (eventList.length === 0) return;
+
+    if (eventList.length === 1) {
+      const singleEvent = eventList[0];
+      map.easeTo({
+        center: [singleEvent.longitude, singleEvent.latidute],
+        zoom: 18,
+        duration: 600,
+      });
+      return;
+    }
+
+    const [minLng, minLat, maxLng, maxLat] = eventList.reduce(
+      ([minLng, minLat, maxLng, maxLat], event) => [
+        Math.min(minLng, event.longitude),
+        Math.min(minLat, event.latidute),
+        Math.max(maxLng, event.longitude),
+        Math.max(maxLat, event.latidute),
+      ],
+      [180, 90, -180, -90]
+    );
+
+    if (minLng === maxLng && minLat === maxLat) {
+      map.easeTo({
+        center: [minLng, minLat],
+        zoom: 14,
+        duration: 600,
+      });
+    } else {
+      map.fitBounds(
+        [
+          [minLng, minLat],
+          [maxLng, maxLat],
+        ],
+        {
+          padding: 50,
+          duration: 600,
+          bearing: -30,
+        }
+      );
+    }
+  }, [eventList, mapRef, filterChangeCounter]);
 
   return (
     <Source
