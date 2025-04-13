@@ -1,6 +1,6 @@
 import './MapEvents.scss';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
 
 import { Source, Layer, useMap } from 'react-map-gl/maplibre';
@@ -20,22 +20,19 @@ export default function MapEvents() {
   const eventList = useEventsStore((state) => state.eventsFiltered);
   const filterChangeCounter = useEventsStore((state) => state.filterChangeCounter);
   const { current: mapRef } = useMap();
-  const [popup, setPopup] = useState<Popup | null>(null);
+  const popup = useRef<Popup>(null);
   const searchParams = useSearchParams();
   const geoJsonData = useGeoJsonData(eventList);
 
-  const showEventPopup = useCallback(
-    (event: EventDTO, map: maplibregl.Map) => {
-      popup?.remove();
-      const html = renderToString(<MapPopup event={event} />);
-      const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
-        .setLngLat([event.longitude, event.latidute])
-        .setHTML(html)
-        .addTo(map);
-      setPopup(newPopup);
-    },
-    [popup]
-  );
+  const showEventPopup = useCallback((event: EventDTO, map: maplibregl.Map) => {
+    popup.current?.remove();
+    const html = renderToString(<MapPopup event={event} />);
+    const newPopup = new Popup({ closeOnClick: true, offset: [0, -20] })
+      .setLngLat([event.longitude, event.latidute])
+      .setHTML(html)
+      .addTo(map);
+    popup.current = newPopup;
+  }, []);
 
   /**
    * Handle click event on the map.
@@ -58,7 +55,7 @@ export default function MapEvents() {
       const feature = features[0];
       const coordinates = (feature.geometry as Point).coordinates as [number, number];
 
-      popup?.remove();
+      popup.current?.remove();
 
       if (feature.properties?.cluster) {
         const clusterId = feature.properties.cluster_id;
@@ -81,7 +78,7 @@ export default function MapEvents() {
         showEventPopup(props, map);
       }
     },
-    [mapRef, popup, showEventPopup]
+    [mapRef, showEventPopup]
   );
 
   useEffect(() => {
@@ -110,7 +107,7 @@ export default function MapEvents() {
 
       showEventPopup(event, mapRef.getMap());
     }
-  }, [searchParams, eventList, mapRef, showEventPopup]);
+  }, [eventList, mapRef, searchParams, showEventPopup]);
 
   /**
    * Zoom to the bounds of all events
