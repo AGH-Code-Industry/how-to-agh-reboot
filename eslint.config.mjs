@@ -21,8 +21,22 @@ const eslintConfig = [
     plugins: ['prettier', 'tailwindcss'],
     rules: {
       'prettier/prettier': 'error',
+      '@next/next/no-img-element': 'off',
+      'tailwindcss/no-custom-classname': 'off',
     },
-    overrides: [{ files: ['*.js', '*.jsx', '*.ts', '*.tsx'] }],
+    overrides: [
+      {
+        files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      },
+      {
+        files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+        rules: {
+          '@typescript-eslint/no-explicit-any': 'off',
+          '@typescript-eslint/no-unused-vars': 'off',
+          'react-hooks/exhaustive-deps': 'off',
+        },
+      },
+    ],
     parserOptions: {
       project: './tsconfig.json',
       tsconfigRootDir: '.',
