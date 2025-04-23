@@ -36,6 +36,13 @@ const eslintConfig = [
           'react-hooks/exhaustive-deps': 'off',
         },
       },
+      {
+        files: ['cypress.config.ts', 'cypress/**/*.ts', 'cypress/**/*.tsx'],
+        parserOptions: {
+          project: './cypress/tsconfig.spec.json', // Use Cypress-specific tsconfig
+          tsconfigRootDir: __dirname,
+        },
+      },
     ],
     parserOptions: {
       project: './tsconfig.json',
