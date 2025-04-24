@@ -23,6 +23,7 @@ export default function StarsRating({ starCount, onRatingChange, initialRating }
         .fill(0)
         .map((_, i) => (
           <StarIcon
+            data-testid="star"
             key={i + 1}
             className={cn(
               'size-8',

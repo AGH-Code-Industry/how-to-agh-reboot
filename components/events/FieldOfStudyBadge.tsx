@@ -24,7 +24,8 @@ export default function FieldOfStudyBadge({ fieldOfStudy }: Props) {
     };
   }, [showTooltip]);
 
-  const handleBadgeClick = () => {
+  const handleBadgeClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation(); // Prevent the click event from bubbling up to the document
     setShowTooltip((prev) => !prev);
   };
 
@@ -32,9 +33,11 @@ export default function FieldOfStudyBadge({ fieldOfStudy }: Props) {
     <TooltipProvider>
       <Tooltip open={showTooltip}>
         <TooltipTrigger asChild>
-          <Badge onClick={handleBadgeClick}>{fieldOfStudy.name}</Badge>
+          <Badge data-testid="field-of-study-badge" onClick={handleBadgeClick}>
+            {fieldOfStudy.name}
+          </Badge>
         </TooltipTrigger>
-        <TooltipContent>{fieldOfStudy.faculty.name}</TooltipContent>
+        <TooltipContent data-testid="tooltip-content">{fieldOfStudy.faculty.name}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

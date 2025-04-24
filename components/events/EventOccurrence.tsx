@@ -79,6 +79,7 @@ export default function EventOccurrence({ eventId, eventName, eventLocation, occ
     <div
       key={occurrence.start.toString()}
       className="flex items-center gap-2 text-muted-foreground"
+      data-testid="event-occurrence"
     >
       {occurrence.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
       {occurrence.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -87,6 +88,7 @@ export default function EventOccurrence({ eventId, eventName, eventLocation, occ
         pressed={isScheduled}
         size="sm"
         className="data-[state=on]:bg-successAlert data-[state=on]:text-successAlert-foreground"
+        data-testid="notification-button"
         disabled={disabled}
       >
         {isScheduled ? <BellRing size={20} /> : <Bell size={20} />}
