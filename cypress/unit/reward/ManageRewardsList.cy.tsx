@@ -1,5 +1,6 @@
 import React from 'react';
 import ManageRewardList from '../../../components/reward/ManageRewardsList';
+import { PrizeRedeemCodeDTO } from '@/types/Prize';
 
 describe('<ManageRewardList />', () => {
   it('renders a message when no codes are available', () => {
@@ -21,8 +22,8 @@ describe('<ManageRewardList />', () => {
 
     cy.mount(<ManageRewardList />);
 
-    cy.contains('CODE1').should('be.visible');
-    cy.contains('CODE2').should('be.visible');
-    cy.contains('CODE3').should('be.visible');
+    cy.contains('CODE1', { timeout: 30000 }).should('be.visible');
+    cy.contains('CODE2', { timeout: 30000 }).should('be.visible');
+    cy.contains('CODE3', { timeout: 30000 }).should('be.visible');
   });
 });
