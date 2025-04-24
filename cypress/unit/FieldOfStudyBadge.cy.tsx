@@ -1,5 +1,5 @@
 import React from 'react';
-import FieldOfStudyBadge from './FieldOfStudyBadge';
+import FieldOfStudyBadge from '../../components/events/FieldOfStudyBadge';
 
 const fieldOfStudy = {
   id: 0,
