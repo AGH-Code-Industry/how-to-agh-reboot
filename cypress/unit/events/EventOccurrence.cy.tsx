@@ -1,5 +1,5 @@
 import React from 'react';
-import EventOccurrence from '../../components/events/EventOccurrence';
+import EventOccurrence from '../../../components/events/EventOccurrence';
 
 const props = {
   eventId: 1,

@@ -1,5 +1,5 @@
 import React from 'react';
-import StarsRating from '../../components/events/rate/StarsRating';
+import StarsRating from '../../../components/events/rate/StarsRating';
 
 const props = {
   starCount: 5,
