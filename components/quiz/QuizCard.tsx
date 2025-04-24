@@ -18,7 +18,7 @@ export default function QuizCard({ quiz }: { quiz: QuizDTO }) {
       </CardHeader>
       <CardContent>
         {!completed && (
-          <p className="pb-2 text-xs text-muted-foreground/75">
+          <p className="pb-2 text-xs text-muted-foreground/75" data-testid="completion-info">
             Żeby ukończyć quiz, musisz odpowiedzieć na przynajmniej 50% pytań poprawnie.
           </p>
         )}
@@ -26,6 +26,7 @@ export default function QuizCard({ quiz }: { quiz: QuizDTO }) {
           <div className="flex items-center gap-x-2">
             <p className="text-sm">Ukończony:</p>
             <div
+              data-testid="completion-indicator"
               className={cn(
                 'size-4 rounded-full',
                 completed ? 'bg-successAlert-foreground/75' : 'bg-errorAlert-foreground/75'
