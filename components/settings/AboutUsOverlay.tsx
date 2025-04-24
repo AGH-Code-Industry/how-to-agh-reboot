@@ -4,7 +4,9 @@ import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import ImageWithPlaceholder from '../global/ImageWithPlaceholder';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { FaDiscord, FaFacebookF, FaLink } from 'react-icons/fa';
+import { FaDiscord } from '@react-icons/all-files/fa/FaDiscord';
+import { FaFacebookF } from '@react-icons/all-files/fa/FaFacebookF';
+import { FaLink } from '@react-icons/all-files/fa/FaLink';
 import { cn } from '@/lib/utils';
 
 type AboutUsOverlayProps = {
@@ -19,7 +21,11 @@ export default function AboutUsOverlay({ visible, onClose }: AboutUsOverlayProps
     <ScreenOverlay>
       <Card className="relative flex size-full flex-col gap-y-4 p-6">
         <CardHeader className="m-0 p-0">
-          <button onClick={onClose} className="flex justify-end">
+          <button
+            onClick={onClose}
+            className="flex justify-end"
+            data-testid="close-about-us-overlay"
+          >
             <X size={24} />
           </button>
         </CardHeader>
