@@ -5,6 +5,7 @@ import { TRPCProvider } from '@/trpc/client';
 import { ReactNode } from 'react';
 import { stubTRPC } from './trpc-stub';
 import { AppRouter } from '@/trpc/router';
+import { AppRouterMock } from './app-router-mock';
 
 function withTrpcProvider(children: ReactNode) {
   return <TRPCProvider>{children}</TRPCProvider>;
@@ -12,7 +13,7 @@ function withTrpcProvider(children: ReactNode) {
 
 // Nadpisanie `cy.mount` dla testów komponentowych
 Cypress.Commands.add('mount', (component, options) => {
-  const wrapped = withTrpcProvider(component);
+  const wrapped = withTrpcProvider(<AppRouterMock>{component}</AppRouterMock>);
   return mount(wrapped, options);
 });
 
