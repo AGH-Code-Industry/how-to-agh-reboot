@@ -39,7 +39,7 @@ const eslintConfig = [
       {
         files: ['cypress.config.ts', 'cypress/**/*.ts', 'cypress/**/*.tsx'],
         parserOptions: {
-          project: './cypress/tsconfig.spec.json', // Use Cypress-specific tsconfig
+          project: './cypress/tsconfig.json', // Use Cypress-specific tsconfig
           tsconfigRootDir: __dirname,
         },
       },
