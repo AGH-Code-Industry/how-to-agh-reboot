@@ -2,6 +2,7 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
   component: {
+    supportFile: 'cypress/support/component.tsx',
     devServer: {
       framework: 'next',
       bundler: 'webpack',

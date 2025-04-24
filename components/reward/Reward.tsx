@@ -2,6 +2,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import RedeemReward from './RedeemReward';
 import { cn } from '@/lib/utils';
+
 type RewardProps = {
   rewardId: number;
   title: string;
@@ -39,7 +40,11 @@ export default function Reward({
               <div className="mb-1 font-semibold">
                 {completed < required ? completed + ' / ' + required : 'Ukończono'}
               </div>
-              <Progress className="mb-4 h-4" value={(completed / required) * 100}></Progress>
+              <Progress
+                className="mb-4 h-4"
+                value={(completed / required) * 100}
+                data-testid="progress"
+              ></Progress>
             </>
           )}
 
