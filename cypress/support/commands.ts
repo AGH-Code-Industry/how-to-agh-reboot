@@ -47,5 +47,5 @@ declare namespace Cypress {
 }
 
 Cypress.Commands.add('getById', (testId: string) => {
-  return cy.get(`[data-test-id="${testId}"]`);
+  return cy.get(`[data-testid="${testId}"]`);
 });

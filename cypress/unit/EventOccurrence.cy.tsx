@@ -20,18 +20,18 @@ describe('<EventOccurrence />', () => {
   it('enables notification button when more than 15 minutes before the event', () => {
     cy.clock(props.occurrence.start.getTime() - 16 * 60 * 1000);
     cy.mount(<EventOccurrence {...props} />);
-    cy.get('[data-testid="notification-button"]').should('not.be.disabled');
+    cy.getById('notification-button').should('not.be.disabled');
   });
 
   it('disables notification button 15 minutes before the event', () => {
     cy.clock(props.occurrence.start.getTime() - 15 * 60 * 1000);
     cy.mount(<EventOccurrence {...props} />);
-    cy.get('[data-testid="notification-button"]').should('be.disabled');
+    cy.getById('notification-button').should('be.disabled');
   });
 
   it('shows event start time', () => {
     cy.mount(<EventOccurrence {...props} />);
-    cy.get('[data-testid="event-occurrence"]').should(
+    cy.getById('event-occurrence').should(
       'contain',
       props.occurrence.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     );
@@ -39,7 +39,7 @@ describe('<EventOccurrence />', () => {
 
   it('shows event end time', () => {
     cy.mount(<EventOccurrence {...props} />);
-    cy.get('[data-testid="event-occurrence"]').should(
+    cy.getById('event-occurrence').should(
       'contain',
       props.occurrence.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     );
