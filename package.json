@@ -19,7 +19,8 @@
     "postgres:up": "docker-compose -f .docker/postgresql.yaml up -d",
     "postgres:down": "docker-compose -f .docker/postgresql.yaml stop",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
@@ -83,6 +84,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cypress": "^14.3.2",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "eslint-config-prettier": "^10.0.1",

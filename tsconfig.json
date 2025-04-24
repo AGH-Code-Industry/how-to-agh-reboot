@@ -26,16 +26,19 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "types": ["jest"]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "./cypress.config.ts",
+    "cypress"
   ]
 }
