@@ -1,5 +1,5 @@
 import React from 'react';
-import EventTypeBadge from './EventTypeBadge';
+import EventTypeBadge from '@/components/events/EventTypeBadge';
 import { EventTypeDTO } from '@/types/Event';
 
 describe('<EventTypeBadge />', () => {
