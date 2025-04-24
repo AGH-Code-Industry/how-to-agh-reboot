@@ -1,4 +1,4 @@
-import RegisterForm from '@/components/auth/RegisterForm';
+import RegisterForm from '@/components/auth/registerForm';
 import { createClient } from '@/supabase/client';
 
 describe('<RegisterForm />', () => {

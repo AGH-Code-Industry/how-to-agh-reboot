@@ -12,7 +12,7 @@ function withTrpcProvider(children: ReactNode) {
 }
 
 // Nadpisanie `cy.mount` dla testów komponentowych
-Cypress.Commands.add('mount', (component, options) => {
+Cypress.Commands.add('mount', (component, options?) => {
   const wrapped = withTrpcProvider(<AppRouterMock>{component}</AppRouterMock>);
   return mount(wrapped, options);
 });
