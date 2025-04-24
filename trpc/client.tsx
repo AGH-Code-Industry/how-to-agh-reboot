@@ -40,6 +40,7 @@ export function TRPCProvider(
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         typeof window !== 'undefined' && (window as any).Cypress
           ? httpBatchLink({
               transformer: superjson,

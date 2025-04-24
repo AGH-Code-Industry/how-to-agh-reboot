@@ -20,7 +20,8 @@
     "postgres:down": "docker-compose -f .docker/postgresql.yaml stop",
     "test": "jest",
     "test:watch": "jest --watch",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "cy:run": "cypress run --component"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",

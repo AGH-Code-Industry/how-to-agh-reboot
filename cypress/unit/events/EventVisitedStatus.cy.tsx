@@ -1,5 +1,5 @@
 import React from 'react';
-import EventVisitedStatus from '../../components/events/EventVisitedStatus';
+import EventVisitedStatus from '../../../components/events/EventVisitedStatus';
 
 describe('<EventVisitedStatus />', () => {
   it('renders', () => {
