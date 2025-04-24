@@ -6,17 +6,9 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 
 export function ThemeToggleButton() {
-  const { setTheme, resolvedTheme, systemTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
 
   const toggleTheme = () => {
-    console.log(
-      'resolvedTheme',
-      resolvedTheme,
-      'setting',
-      resolvedTheme === 'light' ? 'dark' : 'light',
-      'systemTheme',
-      systemTheme
-    );
     setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
   };
 
