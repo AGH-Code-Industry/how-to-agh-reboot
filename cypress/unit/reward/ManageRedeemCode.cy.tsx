@@ -1,10 +1,11 @@
 import React from 'react';
 import ManageRedeemCode from '../../../components/reward/ManageRedeemCode';
+import { PrizeRedeemCodeDTO } from '@/types/Prize';
 
 describe('<ManageRedeemCode />', () => {
   it('renders code and handles confirmation state', () => {
     const mockOnRemove = cy.stub();
-    const mockPrizeRedeemCode = { id: '1', code: 'TESTCODE' };
+    const mockPrizeRedeemCode: PrizeRedeemCodeDTO = { id: 1, code: 'TESTCODE', redeemed: false };
 
     cy.mount(
       <ManageRedeemCode

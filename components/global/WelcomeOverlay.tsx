@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import Cookies from 'js-cookie';
-import { welcomeSteps } from '@/data/welcomeStepsData';
-import { WelcomeStep } from '@/data/welcomeStepsData';
+import { WelcomeStep, welcomeSteps } from '@/data/welcomeStepsData';
 import ImageWithPlaceholder from './ImageWithPlaceholder';
 import ScreenOverlay from './ScreenOverlay';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -59,7 +58,7 @@ export default function WelcomeOverlay({ mode, forceOpen = false, onClose }: Wel
       <Card className="relative flex size-full flex-col gap-y-4 p-6">
         <CardHeader className="m-0 shrink-0 p-0">
           <div className="flex justify-end">
-            <button onClick={handleClose}>
+            <button onClick={handleClose} data-testid="close-welcome-overlay">
               <X size={24} />
             </button>
           </div>

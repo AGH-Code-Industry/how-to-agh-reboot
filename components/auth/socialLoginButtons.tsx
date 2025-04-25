@@ -2,7 +2,7 @@
 
 import { JSX, useMemo, useState } from 'react';
 import { Provider } from '@supabase/supabase-js';
-import { FaGoogle } from 'react-icons/fa';
+import { FaGoogle } from '@react-icons/all-files/fa/FaGoogle';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/supabase/client';
