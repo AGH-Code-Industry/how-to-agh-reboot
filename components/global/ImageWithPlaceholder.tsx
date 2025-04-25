@@ -28,10 +28,14 @@ export default function ImageWithPlaceholder({
       className="relative flex items-center justify-center overflow-hidden rounded-lg"
     >
       {!imageLoaded && (
-        <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-muted/50 via-muted to-muted/50 bg-[length:300%_100%]" />
+        <div
+          data-testid="placeholder"
+          className="absolute inset-0 animate-shimmer bg-gradient-to-r from-muted/50 via-muted to-muted/50 bg-[length:300%_100%]"
+        />
       )}
 
       <Image
+        data-testid="image"
         src={src}
         alt={alt}
         width={width}
