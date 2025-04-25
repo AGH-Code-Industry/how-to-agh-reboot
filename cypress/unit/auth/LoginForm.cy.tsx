@@ -1,4 +1,4 @@
-import LoginForm from '@/components/auth/LoginForm';
+import LoginForm from '@/components/auth/loginForm';
 import { createClient } from '@/supabase/client';
 
 describe('<LoginForm />', () => {
