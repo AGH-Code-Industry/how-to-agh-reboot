@@ -80,13 +80,6 @@ export function QuizQuestionAnswer({
     }
   };
 
-  console.log(
-    cn(
-      `transition-colors duration-100 text-white size-full min-h-32 min-w-32 flex-1 grow text-wrap break-words rounded-md p-2 text-lg font-bold`,
-      getButtonClass()
-    )
-  );
-
   return (
     <motion.div
       initial={{ scale: 1 }}
