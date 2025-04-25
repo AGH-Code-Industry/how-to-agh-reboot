@@ -15,7 +15,10 @@ export default function QuizStatusBar({
   large = false,
 }: QuizStatusBarProps) {
   return (
-    <div className={cn('flex w-fit items-center justify-between gap-x-4', large && 'scale-x-110')}>
+    <div
+      className={cn('flex w-fit items-center justify-between gap-x-4', large && 'scale-x-110')}
+      data-testid="quiz-status-bar"
+    >
       {Array.from({ length: totalQuestions }).map((_, index) => {
         const color =
           index < boolAnswers.length
