@@ -54,7 +54,7 @@ export default function WelcomeOverlay({ mode, forceOpen = false, onClose }: Wel
   };
 
   return (
-    <ScreenOverlay>
+    <ScreenOverlay data-testid="screen-overlay">
       <Card className="relative flex size-full flex-col gap-y-4 p-6">
         <CardHeader className="m-0 shrink-0 p-0">
           <div className="flex justify-end">
@@ -108,7 +108,7 @@ export default function WelcomeOverlay({ mode, forceOpen = false, onClose }: Wel
                 Dalej
               </Button>
             ) : (
-              <Button onClick={handleClose} className="w-1/2">
+              <Button data-testid="close-welcome-overlay" onClick={handleClose} className="w-1/2">
                 Zamknij
               </Button>
             )}
