@@ -6,22 +6,22 @@ import { ReactNode } from 'react';
 import { stubTRPC } from './trpc-stub';
 import { AppRouter } from '@/trpc/router';
 import { ThemeProvider } from '@/components/theme-provider';
+import { AppRouterMock } from './app-router-mock';
 
-function withContext(children: ReactNode) {
+function withTrpcProvider(children: ReactNode) {
   return <TRPCProvider>{children}</TRPCProvider>;
 }
 
 function withThemeProvider(children: ReactNode) {
-  return withContext(
+  return withTrpcProvider(
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       {children}
     </ThemeProvider>
   );
 }
 
-// Nadpisanie `cy.mount` dla testów komponentowych
 Cypress.Commands.add('mount', (component, options) => {
-  const wrapped = withContext(component);
+  const wrapped = withTrpcProvider(<AppRouterMock>{component}</AppRouterMock>);
   return mount(wrapped, options);
 });
 

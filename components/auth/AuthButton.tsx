@@ -12,5 +12,9 @@ type Props = {
 export function AuthButton({ path, text }: Props): JSX.Element {
   const router = useRouter();
 
-  return <Button onClick={() => router.push(path)}>{text}</Button>;
+  return (
+    <Button onClick={() => router.push(path)} data-testid="AuthButton">
+      {text}
+    </Button>
+  );
 }
