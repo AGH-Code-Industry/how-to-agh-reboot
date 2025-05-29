@@ -1,4 +1,5 @@
 import maplibregl from 'maplibre-gl';
+import { trpc } from '../support/trpc-client';
 
 declare global {
   interface Window {
@@ -16,6 +17,8 @@ describe('Map has correct data', () => {
   it('should display markers matching tRPC API data', () => {
     cy.intercept('GET', '/api/trpc/events.getEvents*').as('getEvents');
     cy.reload();
+
+    trpc.events.getEvents.query({});
 
     cy.wait('@getEvents', { timeout: 1000000 }).then((interception) => {
       if (interception.response) {
