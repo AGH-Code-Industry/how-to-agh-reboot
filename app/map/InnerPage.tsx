@@ -25,7 +25,7 @@ export default function InnerPage({ databaseEvents }: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   return (
-    <div className="relative flex h-full">
+    <div className="relative flex h-full" data-testid="map-container">
       <MapFilter isFilterOpen={isFilterOpen} setIsFilterOpen={setIsFilterOpen} />
 
       <Button

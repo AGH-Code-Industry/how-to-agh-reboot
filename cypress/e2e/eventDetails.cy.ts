@@ -55,11 +55,11 @@ describe('Event details', () => {
       .should('have.length', event.occurrences.length)
       .each((element, index) => {
         const occurrence = event.occurrences[index];
-        const startTime = new Date(occurrence.start).toLocaleTimeString('pl-PL', {
+        const startTime = new Date(occurrence.start).toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
         });
-        const endTime = new Date(occurrence.end).toLocaleTimeString('pl-PL', {
+        const endTime = new Date(occurrence.end).toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
         });
