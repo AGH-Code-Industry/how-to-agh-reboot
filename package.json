@@ -21,7 +21,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "cy:open": "cypress open",
-    "cy:run": "cypress run --component"
+    "cy:unit": "cypress run --component",
+    "cy:e2e": "cypress run --e2e"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",

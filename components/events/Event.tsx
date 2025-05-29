@@ -44,19 +44,24 @@ export default async function Event({ id, data, showDetails = false }: Props) {
             <Link
               href={`/map?event=${event.id}`}
               className="flex shrink-0 items-center gap-2 hover:underline"
+              data-testid="event-location"
             >
               <MapPin />
               {event.building.name}, {event.building.room}, {event.building.floor}
             </Link>
           </div>
-          <CardTitle className="leading-tight">{event.name}</CardTitle>
+          <CardTitle className="leading-tight" data-testid={'event-title'}>
+            {event.name}
+          </CardTitle>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-4">
-        <p className="text-sm text-muted-foreground">{event.description}</p>
+        <p className="text-sm text-muted-foreground" data-testid={'event-description'}>
+          {event.description}
+        </p>
         <div>
           <p>{event.fieldOfStudy.length == 1 ? 'Powiązany kierunek:' : 'Powiązane kierunki:'}</p>
-          <div className="mt-2 flex flex-wrap items-start gap-2">
+          <div className="mt-2 flex flex-wrap items-start gap-2" data-testid="event-field-of-study">
             {event.fieldOfStudy.map((f) => (
               <FieldOfStudyBadge key={f.id} fieldOfStudy={f} />
             ))}
@@ -65,7 +70,7 @@ export default async function Event({ id, data, showDetails = false }: Props) {
         {showDetails ? (
           <div>
             <p>Czas trwania:</p>
-            <div className="mt-1 flex flex-col gap-1">
+            <div className="mt-1 flex flex-col gap-1" data-testid="event-occurrences">
               {event.occurrences.map((o) => (
                 <EventOccurrence
                   key={o.start.toString()}
