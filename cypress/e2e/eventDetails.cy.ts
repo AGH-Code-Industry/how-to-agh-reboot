@@ -84,7 +84,10 @@ describe('Event details', () => {
       // Verify event location matches exactly
       cy.getById('event-location')
         .invoke('text')
-        .should('equal', `${eventData.building.name}, ${eventData.building.room}, ${eventData.building.floor}`);
+        .should(
+          'equal',
+          `${eventData.building.name}, ${eventData.building.room}, ${eventData.building.floor}`
+        );
 
       // Verify fields of study match exactly
       cy.getById('event-field-of-study')
