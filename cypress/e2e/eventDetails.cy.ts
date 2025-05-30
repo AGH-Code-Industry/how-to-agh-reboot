@@ -73,7 +73,7 @@ describe('Event details', () => {
     cy.wrap(trpc.events.getEvents.query({ eventId: event.id })).then((events) => {
       const typedEvents = events as EventDTO[];
       const eventData = typedEvents[0];
-      expect(eventData).to.exist;
+      cy.wrap(eventData).should('exist');
 
       // Verify event title matches exactly
       cy.getById('event-title').invoke('text').should('equal', eventData.name);
