@@ -36,6 +36,10 @@ export default function Map(props: Props) {
 
     createPolygon(mapRef.current, aghBoundsPolygonRef);
     await AddImagesToMap(mapRef.current);
+
+    if (typeof window !== 'undefined') {
+      window.mapInstance = mapRef.current?.getMap();
+    }
   };
 
   const handleGeolocate = (e: GeolocateResultEvent) => {
