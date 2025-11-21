@@ -16,6 +16,11 @@ type Props = {
   onAGHLeaveOrEnter: (isOnAGH: boolean) => void;
 };
 
+const mapTilesJSON: { [key: string]: string } = {
+  dark: '/map-tiles-dark.json',
+  light: '/map-tiles-light.json',
+};
+
 export default function Map(props: Props) {
   const geoControlRef = useRef<maplibregl.GeolocateControl>(null);
   const mapRef = useRef<MapRef>(null);
@@ -23,6 +28,7 @@ export default function Map(props: Props) {
   const aghBoundsPolygonRef = useRef<ReturnType<typeof polygon>>(null);
   const [isOnAGH, setIsOnAGH] = useState<boolean>();
   const searchParams = useSearchParams();
+  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
   const handleMapLoad = async () => {
     if (!searchParams.get('event')) {
@@ -76,7 +82,7 @@ export default function Map(props: Props) {
       // Zablokowałem pochylanie góra dół przy obracaniu, do przemyślenia czy chcemy to włączone
       pitchWithRotate={false}
       // Styl mapy można edytować np przy użyciu tego https://maputnik.github.io/
-      mapStyle={'/map-tiles.json'}
+      mapStyle={mapTilesJSON[theme]}
       onLoad={handleMapLoad}
       ref={mapRef}
     >
