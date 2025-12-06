@@ -10,6 +10,9 @@ import { Toaster } from '@/components/ui/sonner';
 import ServiceWorkerRegister from '@/components/layout/ServiceWorkerRegister';
 import { AuthProvider } from '@/components/auth/AuthContext';
 import { PWAProvider } from '@/components/layout/PWAContext';
+import { ErrorBoundary } from '@/components/global/ErrorBoundary';
+import PerformanceMonitor from '@/components/global/PerformanceMonitor';
+import { OfflineIndicator } from '@/components/global/OfflineIndicator';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,24 +39,28 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} flex h-dvh flex-col antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TRPCProvider>
-            <AuthProvider>
-              <PWAProvider>
-                <WelcomeOverlay mode={'automatic'} />
-                <main className="grow overflow-y-auto">{children}</main>
-                <NavBar />
-                <Toaster position="top-center" />
-                <ServiceWorkerRegister />
-              </PWAProvider>
-            </AuthProvider>
-          </TRPCProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TRPCProvider>
+              <AuthProvider>
+                <PWAProvider>
+                  <PerformanceMonitor />
+                  <OfflineIndicator />
+                  <WelcomeOverlay mode={'automatic'} />
+                  <main className="grow overflow-y-auto">{children}</main>
+                  <NavBar />
+                  <Toaster position="top-center" />
+                  <ServiceWorkerRegister />
+                </PWAProvider>
+              </AuthProvider>
+            </TRPCProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

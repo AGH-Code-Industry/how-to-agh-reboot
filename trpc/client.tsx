@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { makeQueryClient } from './query-client';
 import { AppRouter } from './router';
 import superjson from 'superjson';
+import { metricsLink } from './metricsLink';
 
 export const trpc = createTRPCReact<AppRouter>();
 
@@ -40,6 +41,7 @@ export function TRPCProvider(
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
+        metricsLink(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         typeof window !== 'undefined' && (window as any).Cypress
           ? httpBatchLink({
